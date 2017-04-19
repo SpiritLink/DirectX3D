@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "DirectX3D.h"
+#include "cMainGame.h"
 
 #define MAX_LOADSTRING 100
 
@@ -16,6 +17,11 @@ ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+
+// >> :
+cMainGame*		g_pMainGame;
+HWND			g_hWnd;
+// << :
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -37,6 +43,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     {
         return FALSE;
     }
+	// >> :
+	g_pMainGame = new cMainGame;
+	g_pMainGame->Setup();
+	// << :
 
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_DIRECTX3D));
 
@@ -45,12 +55,26 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     // 기본 메시지 루프입니다.
     while (GetMessage(&msg, nullptr, 0, 0))
     {
-        if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
-        {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        }
+		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		{
+			if (msg.message == WM_QUIT)
+			{
+				break;
+			}
+			else
+			{
+				TranslateMessage(&msg);
+				DispatchMessage(&msg);
+			}
+		}
+		else
+		{
+			g_pMainGame->Update();
+			g_pMainGame->Render();
+		}
     }
+
+	delete g_pMainGame;
 
     return (int) msg.wParam;
 }
@@ -104,6 +128,10 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    {
       return FALSE;
    }
+   // >> :
+   g_hWnd = hWnd;
+   // << :
+
 
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
