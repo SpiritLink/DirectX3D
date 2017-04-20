@@ -66,12 +66,10 @@ void cCubePNT::Setup()
 	v.p = ptArray[4]; m_vecVertex.push_back(v);
 	v.p = ptArray[3]; m_vecVertex.push_back(v);
 	v.p = ptArray[7]; m_vecVertex.push_back(v);
-
 }
 
 void cCubePNT::Update()
 {
-	// : to do something
 }
 
 void cCubePNT::Render()
