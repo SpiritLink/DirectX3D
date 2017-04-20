@@ -37,8 +37,6 @@ void cCubeNode::Update()
 	D3DXMatrixRotationX(&matRX, m_fRotDeltaX);
 	matR = matRX;
 
-	int a = 3;
-
 	//╥ндц T
 	D3DXMATRIXA16 matT;
 	D3DXMatrixTranslation(&matT, m_vLocalPosition.x, m_vLocalPosition.y, m_vLocalPosition.z);
