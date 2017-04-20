@@ -32,11 +32,9 @@ cMainGame::~cMainGame()
 
 void cMainGame::Setup()
 {
-	m_pCubePC = new cCubePC;
-	m_pCubePC->Setup();
+	//m_pCubePC = new cCubePC;
+	//m_pCubePC->Setup();
 
-	m_pCamera = new cCamera;
-	m_pCamera->Setup(&m_pCubePC->GetPosition());
 
 	m_pGrid = new cGrid;
 	m_pGrid->Setup();
@@ -46,6 +44,9 @@ void cMainGame::Setup()
 
 	m_pCubeMan = new cCubeMan;
 	m_pCubeMan->Setup();
+
+	m_pCamera = new cCamera;
+	m_pCamera->Setup(&m_pCubeMan->GetPosition());
 
 	g_pD3DDevice->SetRenderState(D3DRS_LIGHTING, false);//현재 빛을 사용하지 않기 때문에 꺼줌
 }

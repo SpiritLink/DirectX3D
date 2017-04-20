@@ -30,10 +30,28 @@ void cCubeNode::Setup()
 
 void cCubeNode::Update()
 {
+	//R == 회전 T == 이동 
+	//로컬 R
+	D3DXMATRIXA16 matR, matRY;
+	D3DXMatrixRotationY(&matRY, m_fRotDeltaX);
+	matR = matRY;
+
+	//로컬 T
+	D3DXMATRIXA16 matT;
+	D3DXMatrixTranslation(m_pParentWorldTransMatrix, m_vLocalPosition.x, m_vLocalPosition.y, m_vLocalPosition.z);
+
+	//m_matWorld에 S, R, T를 곱한다.
+	m_matLocalTransMatrix = matR * matT;
+
+	//자신의 R
+	//자신의 T
+	//부모 이동과 자신의 이동을 합쳐서 곱하면 월드가 된다.
+
+	m_matWorldTransMatrix = m_matLocalTransMatrix * *m_pParentWorldTransMatrix;
+
 	for (int i = 0; i < m_vecChild.size(); ++i)
 	{
-		m_vecChild[i]->SetParentWorldTransMatrix(m_pParentWorldTransMatrix);
-		m_vecChild[i]->SetRotateDeltaX(m_fRotDeltaX);
+		m_vecChild[i]->SetParentWorldTransMatrix(&m_matWorldTransMatrix);
 		m_vecChild[i]->Update();
 	}
 }

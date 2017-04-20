@@ -49,10 +49,13 @@ void cCubeMan::Setup()
 
 void cCubeMan::Update()
 {
+	cCharacter::Update();
+	m_pRoot->SetParentWorldTransMatrix(&m_matWorld);
 	m_pRoot->Update();
 }
 
 void cCubeMan::Render()
 {
+	cCharacter::Render();
 	m_pRoot->Render();
 }
