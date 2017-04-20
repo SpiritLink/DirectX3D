@@ -29,57 +29,57 @@ void cCubePC::Setup()
 	ptVector[6] = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
 	ptVector[7] = D3DXVECTOR3(1.0f, -1.0f, 1.0f);
 
-	ST_PC_VERTEX v;
+	{
+		ST_PC_VERTEX v;
 
-	v.c = D3DCOLOR_XRGB(rand() % 256, rand() % 256, rand() % 256);
-	v.p = ptVector[0]; m_vecVertex.push_back(v);
-	v.p = ptVector[1]; m_vecVertex.push_back(v);
-	v.p = ptVector[2]; m_vecVertex.push_back(v);
-	v.p = ptVector[0]; m_vecVertex.push_back(v);
-	v.p = ptVector[2]; m_vecVertex.push_back(v);
-	v.p = ptVector[3]; m_vecVertex.push_back(v);
+		v.c = D3DCOLOR_XRGB(rand() % 256, rand() % 256, rand() % 256);
+		v.p = ptVector[0]; m_vecVertex.push_back(v);
+		v.p = ptVector[1]; m_vecVertex.push_back(v);
+		v.p = ptVector[2]; m_vecVertex.push_back(v);
+		v.p = ptVector[0]; m_vecVertex.push_back(v);
+		v.p = ptVector[2]; m_vecVertex.push_back(v);
+		v.p = ptVector[3]; m_vecVertex.push_back(v);
 
-	v.c = D3DCOLOR_XRGB(rand() % 256, rand() % 256, rand() % 256);
-	v.p = ptVector[4]; m_vecVertex.push_back(v);
-	v.p = ptVector[6]; m_vecVertex.push_back(v);
-	v.p = ptVector[5]; m_vecVertex.push_back(v);
-	v.p = ptVector[4]; m_vecVertex.push_back(v);
-	v.p = ptVector[7]; m_vecVertex.push_back(v);
-	v.p = ptVector[6]; m_vecVertex.push_back(v);
+		v.c = D3DCOLOR_XRGB(rand() % 256, rand() % 256, rand() % 256);
+		v.p = ptVector[4]; m_vecVertex.push_back(v);
+		v.p = ptVector[6]; m_vecVertex.push_back(v);
+		v.p = ptVector[5]; m_vecVertex.push_back(v);
+		v.p = ptVector[4]; m_vecVertex.push_back(v);
+		v.p = ptVector[7]; m_vecVertex.push_back(v);
+		v.p = ptVector[6]; m_vecVertex.push_back(v);
 
-	v.c = D3DCOLOR_XRGB(rand() % 256, rand() % 256, rand() % 256);
-	v.p = ptVector[4]; m_vecVertex.push_back(v);
-	v.p = ptVector[5]; m_vecVertex.push_back(v);
-	v.p = ptVector[1]; m_vecVertex.push_back(v);
-	v.p = ptVector[4]; m_vecVertex.push_back(v);
-	v.p = ptVector[1]; m_vecVertex.push_back(v);
-	v.p = ptVector[0]; m_vecVertex.push_back(v);
+		v.c = D3DCOLOR_XRGB(rand() % 256, rand() % 256, rand() % 256);
+		v.p = ptVector[4]; m_vecVertex.push_back(v);
+		v.p = ptVector[5]; m_vecVertex.push_back(v);
+		v.p = ptVector[1]; m_vecVertex.push_back(v);
+		v.p = ptVector[4]; m_vecVertex.push_back(v);
+		v.p = ptVector[1]; m_vecVertex.push_back(v);
+		v.p = ptVector[0]; m_vecVertex.push_back(v);
 
-	v.c = D3DCOLOR_XRGB(rand() % 256, rand() % 256, rand() % 256);
-	v.p = ptVector[3]; m_vecVertex.push_back(v);
-	v.p = ptVector[2]; m_vecVertex.push_back(v);
-	v.p = ptVector[6]; m_vecVertex.push_back(v);
-	v.p = ptVector[3]; m_vecVertex.push_back(v);
-	v.p = ptVector[6]; m_vecVertex.push_back(v);
-	v.p = ptVector[7]; m_vecVertex.push_back(v);
+		v.c = D3DCOLOR_XRGB(rand() % 256, rand() % 256, rand() % 256);
+		v.p = ptVector[3]; m_vecVertex.push_back(v);
+		v.p = ptVector[2]; m_vecVertex.push_back(v);
+		v.p = ptVector[6]; m_vecVertex.push_back(v);
+		v.p = ptVector[3]; m_vecVertex.push_back(v);
+		v.p = ptVector[6]; m_vecVertex.push_back(v);
+		v.p = ptVector[7]; m_vecVertex.push_back(v);
 
-	v.c = D3DCOLOR_XRGB(rand() % 256, rand() % 256, rand() % 256);
-	v.p = ptVector[1]; m_vecVertex.push_back(v);
-	v.p = ptVector[5]; m_vecVertex.push_back(v);
-	v.p = ptVector[6]; m_vecVertex.push_back(v);
-	v.p = ptVector[1]; m_vecVertex.push_back(v);
-	v.p = ptVector[6]; m_vecVertex.push_back(v);
-	v.p = ptVector[2]; m_vecVertex.push_back(v);
+		v.c = D3DCOLOR_XRGB(rand() % 256, rand() % 256, rand() % 256);
+		v.p = ptVector[1]; m_vecVertex.push_back(v);
+		v.p = ptVector[5]; m_vecVertex.push_back(v);
+		v.p = ptVector[6]; m_vecVertex.push_back(v);
+		v.p = ptVector[1]; m_vecVertex.push_back(v);
+		v.p = ptVector[6]; m_vecVertex.push_back(v);
+		v.p = ptVector[2]; m_vecVertex.push_back(v);
 
-	v.c = D3DCOLOR_XRGB(rand() % 256, rand() % 256, rand() % 256);
-	v.p = ptVector[4]; m_vecVertex.push_back(v);
-	v.p = ptVector[0]; m_vecVertex.push_back(v);
-	v.p = ptVector[3]; m_vecVertex.push_back(v);
-	v.p = ptVector[4]; m_vecVertex.push_back(v);
-	v.p = ptVector[3]; m_vecVertex.push_back(v);
-	v.p = ptVector[7]; m_vecVertex.push_back(v);
-
-
+		v.c = D3DCOLOR_XRGB(rand() % 256, rand() % 256, rand() % 256);
+		v.p = ptVector[4]; m_vecVertex.push_back(v);
+		v.p = ptVector[0]; m_vecVertex.push_back(v);
+		v.p = ptVector[3]; m_vecVertex.push_back(v);
+		v.p = ptVector[4]; m_vecVertex.push_back(v);
+		v.p = ptVector[3]; m_vecVertex.push_back(v);
+		v.p = ptVector[7]; m_vecVertex.push_back(v);
+	}
 }
 
 void cCubePC::Update()
