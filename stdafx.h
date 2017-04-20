@@ -52,6 +52,18 @@ struct ST_PC_VERTEX
 	D3DCOLOR	c;
 	enum { FVF = D3DFVF_XYZ | D3DFVF_DIFFUSE };
 };
-// << :
 
+struct ST_PNT_VERTEX
+{
+	D3DXVECTOR3 p;
+	D3DXVECTOR3 n;	// 법선벡터 (빛의 반사량 결정)
+	D3DXVECTOR2 t;	// 텍스쳐
+
+	enum {FVF = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1};
+};
+// << :
+#define SYNTHESIZE(varType, varName, funName)\
+private: varType varName;\
+public: inline varType Get##funName(void) const { return varName; }\
+public: inline void Set##funName(varType var) { varName = var; }
 #include "cDeviceManager.h"
