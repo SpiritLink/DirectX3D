@@ -40,7 +40,7 @@ void cCubeNode::Update()
 
 void cCubeNode::Render()
 {
-	for (int i = 0; i < m_vecVertex.size(); ++i)
+	for (int i = 0; i < m_vecChild.size(); ++i)
 	{
 		g_pD3DDevice->SetTransform(D3DTS_WORLD, &m_vecChild[i]->m_matWorldTransMatrix);
 		g_pD3DDevice->SetFVF(ST_PNT_VERTEX::FVF);

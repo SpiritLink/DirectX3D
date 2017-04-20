@@ -13,4 +13,5 @@ cBody::~cBody()
 
 void cBody::Setup()
 {
+	cCubeNode::Setup();
 }
