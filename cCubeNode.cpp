@@ -55,17 +55,6 @@ void cCubeNode::Update()
 		m_vecChild[i]->SetParentWorldTransMatrix(&m_matWorldTransMatrix);
 		m_vecChild[i]->Update();
 	}
-
-	//D3DXMATRIXA16 mat;
-	//D3DXMatrixIsIdentity(&mat);
-	//for (int i = 0; i < m_vecChild.size(); ++i)
-	//{
-
-	//	D3DXMatrixTranslation(&mat, m_vecChild[i]->m_vLocalPosition.x, m_vecChild[i]->m_vLocalPosition.y, m_vecChild[i]->m_vLocalPosition.z);
-	//	m_vecChild[i]->m_matLocalTransMatrix = mat;
-
-	//	m_vecChild[i]->m_matWorldTransMatrix = m_vecChild[i]->m_matLocalTransMatrix * (*m_pParentWorldTransMatrix);
-	//}
 }
 
 void cCubeNode::Render()
