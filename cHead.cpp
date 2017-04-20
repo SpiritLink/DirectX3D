@@ -13,4 +13,5 @@ cHead::~cHead()
 
 void cHead::Setup()
 {
+	cCubeNode::Setup();
 }

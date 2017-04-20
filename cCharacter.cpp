@@ -3,8 +3,9 @@
 
 
 cCharacter::cCharacter()
-	// : to do something
+	: m_vDirection(0,0,1), m_vPosition(0,0,0)
 {
+	D3DXMatrixIdentity(&m_matWorld);
 }
 
 
@@ -14,6 +15,7 @@ cCharacter::~cCharacter()
 
 void cCharacter::Setup()
 {
+	//
 }
 
 void cCharacter::Update()
@@ -27,5 +29,5 @@ void cCharacter::Render()
 
 D3DXVECTOR3 & cCharacter::GetPosition()
 {
-	// : to do something
+	return m_vPosition;
 }

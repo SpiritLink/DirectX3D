@@ -13,4 +13,5 @@ cLeftLeg::~cLeftLeg()
 
 void cLeftLeg::Setup()
 {
+	cCubeNode::Setup();
 }

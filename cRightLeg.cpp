@@ -13,4 +13,5 @@ cRightLeg::~cRightLeg()
 
 void cRightLeg::Setup()
 {
+	cCubeNode::Setup();
 }

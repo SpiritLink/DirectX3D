@@ -9,27 +9,50 @@
 #include "cRightLeg.h"
 
 cCubeMan::cCubeMan()
-// : to do something
+	: m_pRoot(NULL)
 {
 }
 
 
 cCubeMan::~cCubeMan()
 {
-	// : to do something
+	m_pRoot->Destroy();
+	SAFE_DELETE(m_pRoot);
 }
 
 void cCubeMan::Setup()
 {
-	// : to do something
+	m_pRoot = new cCubeNode;
+	cCubeNode* head = new cHead;
+	cCubeNode* body = new cBody;
+	cCubeNode* leftArm = new cLeftArm;
+	cCubeNode* leftLeg = new cLeftLeg;
+	cCubeNode* rightArm = new cRightArm;
+	cCubeNode* rightLeg = new cRightLeg;
+
+	head->Setup();
+	body->Setup();
+	leftArm->Setup();
+	leftLeg->Setup();
+	rightArm->Setup();
+	rightLeg->Setup();
+
+	m_pRoot->AddChild(head);
+	m_pRoot->AddChild(body);
+	m_pRoot->AddChild(leftArm);
+	m_pRoot->AddChild(rightArm);
+	m_pRoot->AddChild(leftLeg);
+	m_pRoot->AddChild(rightLeg);
+
+	m_pRoot->Setup();
 }
 
 void cCubeMan::Update()
 {
-	// : to do something
+	m_pRoot->Update();
 }
 
 void cCubeMan::Render()
 {
-	// : to do something
+	m_pRoot->Render();
 }

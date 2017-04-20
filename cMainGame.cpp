@@ -7,6 +7,7 @@
 #include "cGrid.h"
 #include "cCamera.h"
 #include "cPyramid.h"
+#include "cCubeMan.h"
 
 // << :
 cMainGame::cMainGame()
@@ -14,6 +15,7 @@ cMainGame::cMainGame()
 	, m_pGrid(NULL)
 	, m_pCamera(NULL)
 	, m_pPyramid(NULL)
+	, m_pCubeMan(NULL)
 {
 }
 
@@ -24,6 +26,7 @@ cMainGame::~cMainGame()
 	SAFE_DELETE(m_pGrid);
 	SAFE_DELETE(m_pCamera);
 	SAFE_DELETE(m_pPyramid);
+	SAFE_DELETE(m_pCubeMan);
 	g_pDeviceManager->Destroy();	//¼Ò¸êÀÚ ¿ªÈ°À» ÇÏ°Ô²û ¸¸µë
 }
 
@@ -41,6 +44,9 @@ void cMainGame::Setup()
 	m_pPyramid = new cPyramid;
 	m_pPyramid->Setup();
 
+	m_pCubeMan = new cCubeMan;
+	m_pCubeMan->Setup();
+
 	g_pD3DDevice->SetRenderState(D3DRS_LIGHTING, false);//ÇöÀç ºûÀ» »ç¿ëÇÏÁö ¾Ê±â ¶§¹®¿¡ ²¨ÁÜ
 }
 
@@ -49,6 +55,8 @@ void cMainGame::Update()
 	if (m_pCubePC) m_pCubePC->Update();
 
 	if (m_pCamera) m_pCamera->Update();
+
+	if (m_pCubeMan) m_pCubeMan->Update();
 
 }
 
@@ -61,6 +69,7 @@ void cMainGame::Render()
 	if (m_pGrid) m_pGrid->Render();
 	if (m_pPyramid) m_pPyramid->Render();
 	if (m_pCubePC) m_pCubePC->Render();
+	if (m_pCubeMan) m_pCubeMan->Render();
 
 	g_pD3DDevice->EndScene();
 

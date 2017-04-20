@@ -13,4 +13,5 @@ cLeftArm::~cLeftArm()
 
 void cLeftArm::Setup()
 {
+	cCubeNode::Setup();
 }
