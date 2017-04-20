@@ -79,7 +79,6 @@ void cCubeNode::Render()
 			m_vecVertex.size() / 3,
 			&m_vecVertex[0],
 			sizeof(ST_PNT_VERTEX));
-
 	}
 
 	for (int i = 0; i < m_vecChild.size(); ++i)

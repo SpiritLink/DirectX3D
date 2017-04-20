@@ -38,13 +38,11 @@ void cCubeMan::Setup()
 	rightLeg->Setup();
 
 	m_pRoot->AddChild(head);
-	//m_pRoot->AddChild(body);
-	//m_pRoot->AddChild(leftArm);
-	//m_pRoot->AddChild(rightArm);
-	//m_pRoot->AddChild(leftLeg);
-	//m_pRoot->AddChild(rightLeg);
-
-	//m_pRoot->Setup();
+	m_pRoot->AddChild(body);
+	m_pRoot->AddChild(leftArm);
+	m_pRoot->AddChild(rightArm);
+	m_pRoot->AddChild(leftLeg);
+	m_pRoot->AddChild(rightLeg);
 }
 
 void cCubeMan::Update()
