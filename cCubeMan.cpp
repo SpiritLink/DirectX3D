@@ -16,45 +16,64 @@ cCubeMan::cCubeMan()
 
 cCubeMan::~cCubeMan()
 {
-	m_pRoot->Destroy();
-	SAFE_DELETE(m_pRoot);
+	if (m_pRoot)
+		m_pRoot->Destroy();
 }
 
 void cCubeMan::Setup()
 {
-	m_pRoot = new cCubeNode;
-	cCubeNode* head = new cHead;
-	cCubeNode* body = new cBody;
-	cCubeNode* leftArm = new cLeftArm;
-	cCubeNode* leftLeg = new cLeftLeg;
-	cCubeNode* rightArm = new cRightArm;
-	cCubeNode* rightLeg = new cRightLeg;
+	cCharacter::Setup();
 
-	head->Setup();
-	body->Setup();
-	leftArm->Setup();
-	leftLeg->Setup();
-	rightArm->Setup();
-	rightLeg->Setup();
+	ZeroMemory(&m_stMaterial, sizeof(D3DMATERIAL9));
+	m_stMaterial.Diffuse = D3DXCOLOR(0.7f, 0.7f, 0.7f, 1.0f);
+	m_stMaterial.Ambient = D3DXCOLOR(0.7f, 0.7f, 0.7f, 1.0f);
+	m_stMaterial.Specular = D3DXCOLOR(0.7f, 0.7f, 0.7f, 1.0f);
 
-	m_pRoot->AddChild(head);
-	m_pRoot->AddChild(body);
-	m_pRoot->AddChild(leftArm);
-	m_pRoot->AddChild(rightArm);
-	m_pRoot->AddChild(leftLeg);
-	m_pRoot->AddChild(rightLeg);
+	cBody* pBody = new cBody;
+	pBody->Setup();
+	pBody->SetParentWorldTransMatrix(&m_matWorld);
+	m_pRoot = pBody;
+
+	cHead* pHead = new cHead;
+	pHead->Setup();
+	m_pRoot->AddChild(pHead);
+
+	cLeftArm* pLeftArm = new cLeftArm;
+	pLeftArm->Setup();
+	m_pRoot->AddChild(pLeftArm);
+
+	cRightArm* pRightArm = new cRightArm;
+	pRightArm->Setup();
+	m_pRoot->AddChild(pRightArm);
+
+	cLeftLeg* pLeftLeg = new cLeftLeg;
+	pLeftLeg->Setup();
+	m_pRoot->AddChild(pLeftLeg);
+
+	cRightLeg* pRightLeg = new cRightLeg;
+	pRightLeg->Setup();
+	m_pRoot->AddChild(pRightLeg);
+
 }
 
 void cCubeMan::Update()
 {
 	cCharacter::Update();
-	
-	m_pRoot->SetParentWorldTransMatrix(&m_matWorld);
-	m_pRoot->Update();
+	if (m_pRoot)
+		m_pRoot->Update();
 }
 
 void cCubeMan::Render()
 {
-	//cCharacter::Render();
-	m_pRoot->Render();
+	g_pD3DDevice->SetRenderState(D3DRS_LIGHTING, true);
+	g_pD3DDevice->SetMaterial(&m_stMaterial);
+
+	cCharacter::Render();
+
+	D3DXMATRIXA16 matWorld;
+	D3DXMatrixIdentity(&matWorld);
+	g_pD3DDevice->SetTransform(D3DTS_WORLD, &matWorld);
+
+	if (m_pRoot)
+		m_pRoot->Render();
 }
