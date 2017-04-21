@@ -37,8 +37,9 @@ void cCubeNode::Update()
 
 	D3DXMATRIXA16 matR, matT;
 	D3DXMatrixIdentity(&matR);
-	D3DXMatrixIdentity(&matT);
+	D3DXMatrixRotationX(&matR, m_fRotDeltaX);
 
+	D3DXMatrixIdentity(&matT);
 	D3DXMatrixTranslation(&matT,	m_vLocalPosition.x, 
 									m_vLocalPosition.y, 
 									m_vLocalPosition.z);
@@ -53,6 +54,7 @@ void cCubeNode::Update()
 	for each(auto p in m_vecChild)
 	{
 		p->Update();
+		p->SetRotateDeltaX(p->GetRotateDeltaX() + 0.1f);
 	}
 }
 
