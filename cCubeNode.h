@@ -12,7 +12,7 @@ protected:
 	D3DXMATRIXA16	m_matR;
 	std::vector<cCubeNode*>	m_vecChild;
 	bool m_bMoveDirection;
-	void UpdateDeltaX();
+	virtual void UpdateDeltaX();
 
 	SYNTHESIZE(D3DXMATRIXA16*, m_pParentWorldTransMatrix, ParentWorldTransMatrix)
 	SYNTHESIZE(float, m_fRotDeltaX, RotateDeltaX)
