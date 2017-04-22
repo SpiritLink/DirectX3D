@@ -14,7 +14,6 @@ cLeftArm::~cLeftArm()
 void cLeftArm::Setup()
 {
 	cCubeNode::Setup();
-
 	D3DXMATRIXA16 matS, matT, mat;
 	D3DXMatrixScaling(&matS, 0.2f, 0.6f, 0.2f);
 	D3DXMatrixTranslation(&matT, -0.3f, -0.3f, 0.0f);
@@ -28,4 +27,11 @@ void cLeftArm::Setup()
 	}
 
 	m_vLocalPosition.y = 0.3f;
+}
+
+void cLeftArm::Update()
+{
+	D3DXMatrixIdentity(&m_matR);
+	D3DXMatrixRotationX(&m_matR, GetRotateDeltaX());//헤드랑 바디는 회전 않하도록
+	cCubeNode::Update();
 }

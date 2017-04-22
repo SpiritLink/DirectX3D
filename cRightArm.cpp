@@ -29,3 +29,10 @@ void cRightArm::Setup()
 
 	m_vLocalPosition.y = 0.3f;
 }
+
+void cRightArm::Update()
+{
+	D3DXMatrixIdentity(&m_matR);
+	D3DXMatrixRotationX(&m_matR, -GetRotateDeltaX());//헤드랑 바디는 회전 않하도록
+	cCubeNode::Update();
+}

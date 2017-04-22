@@ -3,12 +3,14 @@
 
 
 cCubeNode::cCubeNode()
-	:	m_fRotDeltaX(0.0f)
-	,	m_pParentWorldTransMatrix(NULL),
-		m_vLocalPosition(0, 0, 0)
+	: m_fRotDeltaX(0.0f) ,
+	m_pParentWorldTransMatrix(NULL),
+	m_vLocalPosition(0, 0, 0),
+	m_bMoveDirection(false)
 {
 	D3DXMatrixIdentity(&m_matLocalTransMatrix);
 	D3DXMatrixIdentity(&m_matWorldTransMatrix);
+	D3DXMatrixIdentity(&m_matR);
 }
 
 void cCubeNode::AddChild(cCubeNode * pChild)
@@ -34,17 +36,15 @@ void cCubeNode::Setup()
 void cCubeNode::Update()
 {
 	cCubePNT::Update();
-
-	D3DXMATRIXA16 matR, matT;
-	D3DXMatrixIdentity(&matR);
-	D3DXMatrixRotationX(&matR, m_fRotDeltaX);
+	UpdateDeltaX();
+	D3DXMATRIXA16 matT;
 
 	D3DXMatrixIdentity(&matT);
 	D3DXMatrixTranslation(&matT,	m_vLocalPosition.x, 
 									m_vLocalPosition.y, 
 									m_vLocalPosition.z);
 
-	m_matLocalTransMatrix = matR * matT;
+	m_matLocalTransMatrix = m_matR * matT;
 
 	m_matWorldTransMatrix = m_matLocalTransMatrix;
 
@@ -54,7 +54,6 @@ void cCubeNode::Update()
 	for each(auto p in m_vecChild)
 	{
 		p->Update();
-		p->SetRotateDeltaX(p->GetRotateDeltaX() + 0.1f);
 	}
 }
 
@@ -66,6 +65,33 @@ void cCubeNode::Render()
 	for each(auto p in m_vecChild)
 	{
 		p->Render();
+	}
+}
+
+void cCubeNode::UpdateDeltaX()
+{
+	if (*m_bIsIdle)
+	{
+		//Idle 상태일때
+		if (abs(m_fRotDeltaX) < 0.1f) m_fRotDeltaX = 0;
+		
+		if (m_fRotDeltaX > 0) m_fRotDeltaX -= 0.1f;
+		if (m_fRotDeltaX < 0) m_fRotDeltaX += 0.1f;
+	}
+	else
+	{
+		//움직이는 상태일때
+		if (m_bMoveDirection)
+		{
+			m_fRotDeltaX -= 0.1f;
+			if (m_fRotDeltaX < -0.6f) m_bMoveDirection = false;
+		}
+		else
+		{
+			m_fRotDeltaX += 0.1f;
+			if (m_fRotDeltaX > 0.6f) m_bMoveDirection = true;
+		}
+		
 	}
 }
 

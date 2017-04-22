@@ -25,6 +25,7 @@
 #include <set>
 #include <list>
 #include <assert.h>
+#include <math.h>
 
 #include <d3dx9.h>
 #pragma comment(lib, "d3dx9.lib")
