@@ -3,10 +3,10 @@
 
 
 cCubeNode::cCubeNode()
-	: m_fRotDeltaX(0.0f) ,
+	: m_fRotDeltaX(0.0f),
 	m_pParentWorldTransMatrix(NULL),
 	m_vLocalPosition(0, 0, 0),
-	m_bMoveDirection(false)
+	m_bIsIdle(NULL)
 {
 	D3DXMatrixIdentity(&m_matLocalTransMatrix);
 	D3DXMatrixIdentity(&m_matWorldTransMatrix);
@@ -16,6 +16,7 @@ cCubeNode::cCubeNode()
 void cCubeNode::AddChild(cCubeNode * pChild)
 {
 	pChild->m_pParentWorldTransMatrix = &m_matWorldTransMatrix;
+	pChild->m_bIsIdle = m_bIsIdle;
 	m_vecChild.push_back(pChild);
 }
 

@@ -32,32 +32,27 @@ void cCubeMan::Setup()
 	cBody* pBody = new cBody;
 	pBody->Setup();
 	pBody->SetParentWorldTransMatrix(&m_matWorld);
-	pBody->SetIdle(&m_bIsIdle);
+	pBody->SetIdle(&m_pIsIdle);
 	m_pRoot = pBody;
 
 	cHead* pHead = new cHead;
 	pHead->Setup();
-	pHead->SetIdle(&m_bIsIdle);
 	m_pRoot->AddChild(pHead);
 
 	cLeftArm* pLeftArm = new cLeftArm;
 	pLeftArm->Setup();
-	pLeftArm->SetIdle(&m_bIsIdle);
 	m_pRoot->AddChild(pLeftArm);
 
 	cRightArm* pRightArm = new cRightArm;
 	pRightArm->Setup();
-	pRightArm->SetIdle(&m_bIsIdle);
 	m_pRoot->AddChild(pRightArm);
 
 	cLeftLeg* pLeftLeg = new cLeftLeg;
 	pLeftLeg->Setup();
-	pLeftLeg->SetIdle(&m_bIsIdle);
 	m_pRoot->AddChild(pLeftLeg);
 
 	cRightLeg* pRightLeg = new cRightLeg;
 	pRightLeg->Setup();
-	pRightLeg->SetIdle(&m_bIsIdle);
 	m_pRoot->AddChild(pRightLeg);
 
 }
