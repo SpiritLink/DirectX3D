@@ -19,12 +19,12 @@ void cLeftArm::Setup()
 	{
 		switch (i)
 		{
-		case 0:		cCubeNode::SetCubeTexturePixel(&m_vecVertex, i, 40, 16, 43, 31); break;
-		case 6:		cCubeNode::SetCubeTexturePixel(&m_vecVertex, i, 40, 16, 43, 31); break;
-		case 12:	cCubeNode::SetCubeTexturePixel(&m_vecVertex, i, 48, 16, 51, 31); break;
-		case 18:	cCubeNode::SetCubeTexturePixel(&m_vecVertex, i, 52, 16, 55, 31); break;
-		case 24:	cCubeNode::SetCubeTexturePixel(&m_vecVertex, i, 24, 8, 31, 15); break;
-		case 30:	cCubeNode::SetCubeTexturePixel(&m_vecVertex, i, 24, 8, 31, 15); break;
+		case 0:		cCubeNode::SetCubeTexturePixel(&m_vecVertex, i, 40, 16, 44, 32); break;	//전면
+		case 6:		cCubeNode::SetCubeTexturePixel(&m_vecVertex, i, 40, 16, 44, 32); break;	//후면
+		case 12:	cCubeNode::SetCubeTexturePixel(&m_vecVertex, i, 44, 16, 48, 32); break;	//좌면
+		case 18:	cCubeNode::SetCubeTexturePixel(&m_vecVertex, i, 44, 16, 48, 32); break;	//우면
+		case 24:	cCubeNode::SetCubeTexturePixel(&m_vecVertex, i, 8, 0, 16, 8); break;	//상단
+		case 30:	cCubeNode::SetCubeTexturePixel(&m_vecVertex, i, 16, 0, 24, 8); break;	//하단
 		}
 	}
 

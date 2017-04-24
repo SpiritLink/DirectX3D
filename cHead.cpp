@@ -18,12 +18,12 @@ void cHead::Setup()
 	{
 		switch (i)
 		{
-		case 0:		cCubeNode::SetCubeTexturePixel(&m_vecVertex, i, 0, 8, 5, 15); break;
-		case 6:		cCubeNode::SetCubeTexturePixel(&m_vecVertex, i, 6, 8, 17, 15); break;
-		case 12:	cCubeNode::SetCubeTexturePixel(&m_vecVertex, i, 18, 8, 31, 15); break;
-		case 18:	cCubeNode::SetCubeTexturePixel(&m_vecVertex, i, 18, 8, 31, 15); break;
-		case 24:	cCubeNode::SetCubeTexturePixel(&m_vecVertex, i, 16, 0, 23, 7); break;
-		case 30:	cCubeNode::SetCubeTexturePixel(&m_vecVertex, i, 8, 0, 15, 7); break;
+		case 0:		cCubeNode::SetCubeTexturePixel(&m_vecVertex, i, 8, 8, 16, 16); break;	//전면
+		case 6:		cCubeNode::SetCubeTexturePixel(&m_vecVertex, i, 24, 8, 32,16); break;	//후면
+		case 12:	cCubeNode::SetCubeTexturePixel(&m_vecVertex, i, 0, 8, 8, 16); break;	//좌면
+		case 18:	cCubeNode::SetCubeTexturePixel(&m_vecVertex, i, 16, 8, 24, 16); break;	//우면
+		case 24:	cCubeNode::SetCubeTexturePixel(&m_vecVertex, i, 8, 0, 16, 8); break;	//상단
+		case 30:	cCubeNode::SetCubeTexturePixel(&m_vecVertex, i, 16, 0, 24, 8); break;	//하단
 		}
 	}
 
