@@ -15,7 +15,8 @@ cMainGame::cMainGame()
 	m_pGrid(NULL),
 	m_pCamera(NULL),
 	m_pPyramid(NULL),
-	m_pCubeMan(NULL)
+	m_pCubeMan(NULL),
+	m_pTexture(NULL)
 {
 }
 
@@ -27,6 +28,7 @@ cMainGame::~cMainGame()
 	SAFE_DELETE(m_pCamera);
 	SAFE_DELETE(m_pPyramid);
 	SAFE_DELETE(m_pCubeMan);
+	SAFE_RELEASE(m_pTexture);
 	g_pDeviceManager->Destroy();	//¼Ò¸êÀÚ ¿ªÈ°À» ÇÏ°Ô²û ¸¸µë
 }
 
@@ -34,6 +36,22 @@ void cMainGame::Setup()
 {
 	//m_pCubePC = new cCubePC;
 	//m_pCubePC->Setup();
+
+	{
+		D3DXCreateTextureFromFile(g_pD3DDevice, "sample.PNG", &m_pTexture);
+		ST_PT_VERTEX v;
+		v.p = D3DXVECTOR3(0, 0, 0);
+		v.t = D3DXVECTOR2(0, 1.0f);
+		m_vecVertex.push_back(v);
+
+		v.p = D3DXVECTOR3(0, 1, 0);
+		v.t = D3DXVECTOR2(0, 0.5f);
+		m_vecVertex.push_back(v);
+
+		v.p = D3DXVECTOR3(1, 0, 0);
+		v.t = D3DXVECTOR2(1, 1);
+		m_vecVertex.push_back(v);
+	}
 
 	m_pGrid = new cGrid;
 	m_pGrid->Setup();
@@ -72,6 +90,18 @@ void cMainGame::Render()
 	//if (m_pCubePC) m_pCubePC->Render();
 	if (m_pCubeMan) m_pCubeMan->Render();
 
+	{
+		D3DXMATRIXA16 matWorld;
+		D3DXMatrixIdentity(&matWorld);
+		g_pD3DDevice->SetTransform(D3DTS_WORLD, &matWorld);
+		g_pD3DDevice->SetTexture(0,m_pTexture);
+		g_pD3DDevice->SetFVF(ST_PT_VERTEX::FVF);
+		g_pD3DDevice->DrawPrimitiveUP(	D3DPT_TRIANGLELIST,
+										m_vecVertex.size() / 3,
+										&m_vecVertex[0],
+										sizeof(ST_PT_VERTEX));
+		g_pD3DDevice->SetTexture(0, NULL);
+	}
 	g_pD3DDevice->EndScene();
 
 	g_pD3DDevice->Present(NULL, NULL, NULL, NULL);
