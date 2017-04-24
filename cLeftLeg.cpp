@@ -23,8 +23,8 @@ void cLeftLeg::Setup()
 		case 6:		cCubeNode::SetCubeTexturePixel(&m_vecVertex, i, 32, 16, 38, 32); break;	//후면
 		case 12:	cCubeNode::SetCubeTexturePixel(&m_vecVertex, i, 32, 16, 38, 32); break;	//좌면
 		case 18:	cCubeNode::SetCubeTexturePixel(&m_vecVertex, i, 32, 16, 38, 32); break;	//우면
-		case 24:	cCubeNode::SetCubeTexturePixel(&m_vecVertex, i, 8, 0, 16, 8); break;	//상단
-		case 30:	cCubeNode::SetCubeTexturePixel(&m_vecVertex, i, 16, 0, 24, 8); break;	//하단
+		case 24:	cCubeNode::SetCubeTexturePixel(&m_vecVertex, i, 24, 8, 32, 16); break;	//상단
+		case 30:	cCubeNode::SetCubeTexturePixel(&m_vecVertex, i, 24, 8, 32, 16); break;	//하단
 		}
 	}
 
