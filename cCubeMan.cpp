@@ -9,7 +9,8 @@
 #include "cRightLeg.h"
 
 cCubeMan::cCubeMan()
-	: m_pRoot(NULL)
+	: m_pRoot(NULL),
+	m_pTexture(NULL)
 {
 }
 
@@ -18,11 +19,14 @@ cCubeMan::~cCubeMan()
 {
 	if (m_pRoot)
 		m_pRoot->Destroy();
+	SAFE_RELEASE(m_pTexture);
 }
 
 void cCubeMan::Setup()
 {
 	cCharacter::Setup();
+
+	D3DXCreateTextureFromFile(g_pD3DDevice, "sample.PNG", &m_pTexture);
 
 	ZeroMemory(&m_stMaterial, sizeof(D3DMATERIAL9));
 	m_stMaterial.Diffuse = D3DXCOLOR(0.7f, 0.7f, 0.7f, 1.0f);
