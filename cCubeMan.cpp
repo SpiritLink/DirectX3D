@@ -40,20 +40,23 @@ void cCubeMan::Setup()
 
 	cLeftArm* pLeftArm = new cLeftArm;
 	pLeftArm->Setup();
+	pLeftArm->SetRotateDeltaX(0.1f);
 	m_pRoot->AddChild(pLeftArm);
 
 	cRightArm* pRightArm = new cRightArm;
 	pRightArm->Setup();
+	pRightArm->SetRotateDeltaX(-0.1f);
 	m_pRoot->AddChild(pRightArm);
 
 	cLeftLeg* pLeftLeg = new cLeftLeg;
 	pLeftLeg->Setup();
+	pLeftLeg->SetRotateDeltaX(-0.1f);
 	m_pRoot->AddChild(pLeftLeg);
 
 	cRightLeg* pRightLeg = new cRightLeg;
 	pRightLeg->Setup();
+	pRightLeg->SetRotateDeltaX(0.1f);
 	m_pRoot->AddChild(pRightLeg);
-
 }
 
 void cCubeMan::Update()
