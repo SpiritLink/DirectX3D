@@ -29,6 +29,16 @@ void cCubeNode::Destroy()
 	delete this;
 }
 
+void cCubeNode::SetCubeTexturePixel(std::vector<ST_PNT_VERTEX>* m_vecVertex, int startCnt,int startX, int startY, int endX, int endY)
+{
+	(*m_vecVertex)[startCnt + 0].t = D3DXVECTOR2(startX * DIVIDE64, endY * DIVIDE32);
+	(*m_vecVertex)[startCnt + 1].t = D3DXVECTOR2(startX * DIVIDE64, startY * DIVIDE32);
+	(*m_vecVertex)[startCnt + 2].t = D3DXVECTOR2(endX * DIVIDE64, startY * DIVIDE32);
+	(*m_vecVertex)[startCnt + 3].t = D3DXVECTOR2(startX * DIVIDE64, endY * DIVIDE32);
+	(*m_vecVertex)[startCnt + 4].t = D3DXVECTOR2(endX * DIVIDE64, startY * DIVIDE32);
+	(*m_vecVertex)[startCnt + 5].t = D3DXVECTOR2(endX * DIVIDE64, endY * DIVIDE32);
+}
+
 void cCubeNode::Setup()
 {
 	cCubePNT::Setup();

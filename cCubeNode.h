@@ -1,5 +1,7 @@
 #pragma once
 #include "cCubePNT.h"
+#define DIVIDE64  0.015625f
+#define DIVIDE32  0.03125f
 class cCubeNode : public cCubePNT
 {
 public:
@@ -13,6 +15,7 @@ protected:
 	std::vector<cCubeNode*>	m_vecChild;
 	bool m_bMoveDirection;
 	virtual void UpdateDeltaX();
+	void SetCubeTexturePixel(std::vector<ST_PNT_VERTEX>* m_vecVertex, int startCnt, int startX, int startY, int endX, int endY);
 
 	SYNTHESIZE(D3DXMATRIXA16*, m_pParentWorldTransMatrix, ParentWorldTransMatrix)
 	SYNTHESIZE(float, m_fRotDeltaX, RotateDeltaX)
