@@ -96,7 +96,6 @@ void cCubePNT::Setup()
 		m_vecVertex[i + 0].n = n;
 		m_vecVertex[i + 1].n = n;
 		m_vecVertex[i + 2].n = n;
-
 	}
 
 }

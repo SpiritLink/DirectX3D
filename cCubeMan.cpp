@@ -26,7 +26,7 @@ void cCubeMan::Setup()
 {
 	cCharacter::Setup();
 
-	D3DXCreateTextureFromFile(g_pD3DDevice, "sample.PNG", &m_pTexture);
+	D3DXCreateTextureFromFile(g_pD3DDevice, "CubeMan.png", &m_pTexture);
 
 	ZeroMemory(&m_stMaterial, sizeof(D3DMATERIAL9));
 	m_stMaterial.Diffuse = D3DXCOLOR(0.7f, 0.7f, 0.7f, 1.0f);
@@ -72,6 +72,7 @@ void cCubeMan::Render()
 {
 	g_pD3DDevice->SetRenderState(D3DRS_LIGHTING, true);
 	g_pD3DDevice->SetMaterial(&m_stMaterial);
+	g_pD3DDevice->SetTexture(0, m_pTexture);
 
 	cCharacter::Render();
 
@@ -81,4 +82,6 @@ void cCubeMan::Render()
 
 	if (m_pRoot)
 		m_pRoot->Render();
+
+	g_pD3DDevice->SetTexture(0, 0);
 }
