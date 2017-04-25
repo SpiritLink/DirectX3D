@@ -9,7 +9,8 @@
 #include "cRightLeg.h"
 
 cCubeMan::cCubeMan()
-	: m_pRoot(NULL)
+	: m_pRoot(NULL),
+	m_pTexture(NULL)
 {
 }
 
@@ -18,6 +19,7 @@ cCubeMan::~cCubeMan()
 {
 	if (m_pRoot)
 		m_pRoot->Destroy();
+	SAFE_RELEASE(m_pTexture);
 }
 
 void cCubeMan::Setup()
@@ -29,6 +31,8 @@ void cCubeMan::Setup()
 	m_stMaterial.Ambient = D3DXCOLOR(0.7f, 0.7f, 0.7f, 1.0f);
 	m_stMaterial.Specular = D3DXCOLOR(0.7f, 0.7f, 0.7f, 1.0f);
 
+	D3DXCreateTextureFromFile(g_pD3DDevice, "CubeMan.png", &m_pTexture);
+	
 	cBody* pBody = new cBody;
 	pBody->Setup();
 	pBody->SetParentWorldTransMatrix(&m_matWorld);
@@ -76,6 +80,7 @@ void cCubeMan::Render()
 	D3DXMATRIXA16 matWorld;
 	D3DXMatrixIdentity(&matWorld);
 	g_pD3DDevice->SetTransform(D3DTS_WORLD, &matWorld);
+	g_pD3DDevice->SetTexture(0, m_pTexture);
 
 	if (m_pRoot)
 		m_pRoot->Render();

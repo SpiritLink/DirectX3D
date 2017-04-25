@@ -15,6 +15,10 @@ void cBody::Setup()
 {
 	cCubeNode::Setup();
 
+	{
+
+	}
+
 	D3DXMATRIXA16 matS, matT, mat;
 	D3DXMatrixScaling(&matS, 0.4f, 0.6f, 0.2f);
 	D3DXMatrixTranslation(&matT, 0.0f, 0.0f, 0.0f);
