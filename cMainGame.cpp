@@ -86,13 +86,27 @@ void cMainGame::Set_Light()
 {
 	D3DLIGHT9 stLight;
 	ZeroMemory(&stLight, sizeof(D3DLIGHT9));
-	stLight.Type = D3DLIGHT_DIRECTIONAL;
+	stLight.Type = D3DLIGHT_SPOT;
 	stLight.Ambient = D3DXCOLOR(0.8f, 0.8f, 0.8f, 1.0f);
 	stLight.Diffuse = D3DXCOLOR(0.8f, 0.8f, 0.8f, 1.0f);
 	stLight.Specular = D3DXCOLOR(0.8f, 0.8f, 0.8f, 1.0f);
+	stLight.Position = D3DXVECTOR3(2.0f, 2.0f, 2.0f);
+
+	stLight.Falloff = 1.0f;
+	stLight.Range = 10.0f;
+	stLight.Theta = D3DX_PI / 12.0f;
+	stLight.Phi = D3DX_PI / 8.0f;
+
+	//ºûÀÇ ¹æÇâ ¼³Á¤
 	D3DXVECTOR3 vDir(1.0f, -1.0f, 1.0f);
 	D3DXVec3Normalize(&vDir, &vDir);
 	stLight.Direction = vDir;
+
+	//ºûÀÇ °¨¼â ¼³Á¤
+	stLight.Attenuation0 = 0.0f;
+	stLight.Attenuation1 = 0.0f;
+	stLight.Attenuation2 = 0.0f;
+
 	g_pD3DDevice->SetLight(0, &stLight);
 	g_pD3DDevice->LightEnable(0, true);
 }
