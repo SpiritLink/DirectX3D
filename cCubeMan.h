@@ -12,7 +12,9 @@ protected:
 	LPDIRECT3DTEXTURE9			m_pTexture;
 	std::vector<ST_PC_VERTEX>*	m_pVertex;
 	D3DXVECTOR3					m_vNextPoint;
-	int							m_nVecCnt;
+	int							m_nBeforeCnt;
+	int							m_nViaCnt;
+	int							m_nNextCnt;
 	int							m_nType;
 public:
 	cCubeNode*	m_pRoot;

@@ -65,7 +65,7 @@ void cMainGame::Render()
 
 	if (m_pGrid) m_pGrid->Render();
 	//if (m_pCubePC) m_pCubePC->Render();
-	if (m_pCubeManStraight) m_pCubeManStraight->Render();
+	//if (m_pCubeManStraight) m_pCubeManStraight->Render();
 	if (m_pCubeManCurve) m_pCubeManCurve->Render();
 
 	g_pD3DDevice->EndScene();
