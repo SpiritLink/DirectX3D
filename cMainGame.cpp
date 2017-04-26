@@ -42,7 +42,7 @@ void cMainGame::Setup()
 	m_pCubeManCurve->Setup(m_pGrid->getVertex(), 2);
 
 	m_pCamera = new cCamera;
-	m_pCamera->Setup(&m_pCubeManStraight->GetPosition());
+	m_pCamera->Setup(&m_pCubeManCurve->GetPosition());
 
 	//g_pD3DDevice->SetRenderState(D3DRS_LIGHTING, false);//현재 빛을 사용하지 않기 때문에 꺼줌
 	Set_Light();

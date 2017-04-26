@@ -132,34 +132,49 @@ void cCubeMan::MoveStraight()
 
 void cCubeMan::MoveCurve()
 {
-	D3DXVECTOR3 BeforePt, ViaPt, NextPt;	//출발점, 경유점, 도착점 생성
-	D3DXVECTOR3 StartPt, EndPt;				//방향 계산에 사용할 두점 생성
-	D3DXVECTOR3 ScaleX, ScaleZ;				//스케일한 벡터를 가지고 있을 벡터
+	if (fabs(m_vPosition.x - m_EndPt.x) < EPSILON &&	///x, y, z 의 좌표가 다음 지점까지 도착했는지 확인합니다.
+		fabs(m_vPosition.y - m_EndPt.y) < EPSILON &&
+		fabs(m_vPosition.z - m_EndPt.z) < EPSILON)
+	{
+		m_nBeforeCnt += 4;
+		m_nViaCnt += 4;
+		m_nNextCnt += 4;
+
+		if (m_nBeforeCnt > m_pVertex->size())	m_nBeforeCnt % m_pVertex->size();
+		if (m_nViaCnt > m_pVertex->size())		m_nViaCnt % m_pVertex->size();
+		if (m_nNextCnt > m_pVertex->size())		m_nNextCnt % m_pVertex->size();
+
+		m_vNextPoint = (*m_pVertex)[m_nNextCnt].p;
+	}
+
+	D3DXVECTOR3 BeforePt, ViaPt, NextPt;		///출발점, 경유점, 도착점 생성
+	D3DXVECTOR3 StartPt;						///방향 계산에 사용할 두점 생성
+	D3DXVECTOR3 ScaleX, ScaleZ;					///스케일한 벡터를 가지고 있을 벡터
 	float fScaleX, fScaleZ;
-	BeforePt = (*m_pVertex)[m_nBeforeCnt].p;	//출발점
-	ViaPt = (*m_pVertex)[m_nViaCnt].p;			//경유점
-	NextPt = (*m_pVertex)[m_nNextCnt].p;		//도착점
+	BeforePt = (*m_pVertex)[m_nBeforeCnt].p;	///출발점
+	ViaPt = (*m_pVertex)[m_nViaCnt].p;			///경유점
+	NextPt = (*m_pVertex)[m_nNextCnt].p;		///도착점
 
 	///첫번째 선에서 움직인 거리를 구한다. (X축에서 움직인 거리)
-	if (m_vPosition.x - BeforePt.x == 0) 
+	if (fabs(m_vPosition.x - BeforePt.x) < EPSILON) 
 		fScaleX = 0;
 	else
 		fScaleX = (m_vPosition.x - BeforePt.x) / (ViaPt.x - BeforePt.x);	///X축의 움직인 비율을 구합니다.
 	
-	D3DXVec3Scale(&ScaleX, &BeforePt, fScaleX);	/// 비율만큼 이동한 좌표를 구합니다.(m_vPosition과 다르기 때문에)
-	StartPt = BeforePt + ScaleX;				/// 각도를 구할 출발점을 구합니다.
+	D3DXVec3Scale(&ScaleX, &BeforePt, fabs(fScaleX));				/// 동비율만큼 이한 좌표를 구합니다.(m_vPosition과 다르기 때문에)
+	StartPt = BeforePt + ScaleX;							/// 각도를 구할 출발점을 구합니다.
 
-	if (m_vPosition.z - NextPt.z == 0)
+	if (fabs(NextPt.z - ViaPt.z) < EPSILON )
 		fScaleZ = 0;
 	else
-		fScaleZ = 1 - ((m_vPosition.z - ViaPt.z) / (m_vPosition.z - ViaPt.z));	///Z축의 움직인 비율을 구합니다.
+		fScaleZ = ((m_vPosition.z - ViaPt.z) / (NextPt.z - ViaPt.z));	///Z축의 움직인 비율을 구합니다.
 
-	D3DXVec3Scale(&ScaleZ, &ViaPt, fScaleZ);	/// 비율만큼 이동한 좌표를 구합니다.(m_vPosition과 다르기 때문에)
-	EndPt = ViaPt + ScaleZ;						/// 각도를 구할 도착점을 구합니다.
+	D3DXVec3Scale(&ScaleZ, &ViaPt, fabs(fScaleZ));				/// 비율만큼 이동한 좌표를 구합니다.(m_vPosition과 다르기 때문에)
+	m_EndPt = ViaPt + ScaleZ;								/// 각도를 구할 도착점을 구합니다.
 
-		D3DXVec3Normalize(&m_vDirection, &(EndPt - StartPt));
+	D3DXVec3Normalize(&m_vDirection, &(m_EndPt - StartPt));	///보간한 두개의 점을 이용해 플레이어의 방향을 결정합니다.
 
-	m_vPosition = m_vPosition + m_vDirection * 0.1f;
+	m_vPosition = m_vPosition + m_vDirection * 0.05f;		///플레이어의 위치를 변경합니다.
 
 }
 void cCubeMan::SetMaterial()

@@ -12,6 +12,7 @@ protected:
 	LPDIRECT3DTEXTURE9			m_pTexture;
 	std::vector<ST_PC_VERTEX>*	m_pVertex;
 	D3DXVECTOR3					m_vNextPoint;
+	D3DXVECTOR3					m_EndPt;
 	int							m_nBeforeCnt;
 	int							m_nViaCnt;
 	int							m_nNextCnt;
