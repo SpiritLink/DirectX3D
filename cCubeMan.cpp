@@ -10,7 +10,8 @@
 
 cCubeMan::cCubeMan()
 	: m_pRoot(NULL),
-	m_pTexture(NULL)
+	m_pTexture(NULL),
+	m_pVertex(NULL)
 {
 }
 
@@ -20,12 +21,13 @@ cCubeMan::~cCubeMan()
 	if (m_pRoot)
 		m_pRoot->Destroy();
 	SAFE_RELEASE(m_pTexture);
+	SAFE_DELETE(m_pVertex);
 }
 
-void cCubeMan::Setup()
+void cCubeMan::Setup(std::vector<ST_PC_VERTEX>* vecVertex)
 {
-	cCharacter::Setup();
-
+	cCharacter::Setup(vecVertex);
+	m_pVertex = vecVertex;
 	D3DXCreateTextureFromFile(g_pD3DDevice, "CubeMan.png", &m_pTexture);
 
 	SetMaterial();

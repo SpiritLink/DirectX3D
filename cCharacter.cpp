@@ -16,7 +16,7 @@ cCharacter::~cCharacter()
 {
 }
 
-void cCharacter::Setup()
+void cCharacter::Setup(std::vector<ST_PC_VERTEX>* vecVertex)
 {
 	//
 }

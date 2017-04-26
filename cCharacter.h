@@ -1,4 +1,6 @@
 #pragma once
+class cGrid;
+
 class cCharacter
 {
 public:
@@ -14,7 +16,7 @@ protected:
 public:
 	virtual ~cCharacter();
 
-	virtual void Setup();
+	virtual void Setup(std::vector<ST_PC_VERTEX>* vecVertex);
 	virtual void Update();
 	virtual void Render();
 

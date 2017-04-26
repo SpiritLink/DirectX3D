@@ -11,5 +11,6 @@ private:
 public:
 	void Setup();//인자는 자기가 설정
 	void Render();
+	std::vector<ST_PC_VERTEX>* getVertex() { return &m_vecVertex; }
 };
 
