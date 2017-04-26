@@ -34,7 +34,7 @@ void cMainGame::Setup()
 	m_pGrid->Setup();
 
 	m_pCubeMan = new cCubeMan;
-	m_pCubeMan->Setup(m_pGrid->getVertex());
+	m_pCubeMan->Setup(m_pGrid->getVertex(),1);
 
 	m_pCamera = new cCamera;
 	m_pCamera->Setup(&m_pCubeMan->GetPosition());

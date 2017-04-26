@@ -16,7 +16,7 @@ protected:
 public:
 	virtual ~cCharacter();
 
-	virtual void Setup(std::vector<ST_PC_VERTEX>* vecVertex);
+	virtual void Setup(std::vector<ST_PC_VERTEX>* vecVertex, int nType);
 	virtual void Update();
 	virtual void Render();
 
