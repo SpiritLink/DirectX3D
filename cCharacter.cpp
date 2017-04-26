@@ -50,8 +50,8 @@ void cCharacter::Update()
 	matR = matRY;
 
 	//방향 설정
-	m_vDirection = D3DXVECTOR3(0, 0, 1);
-	D3DXVec3TransformNormal(&m_vDirection, &m_vDirection, &matR);
+	//m_vDirection = D3DXVECTOR3(0, 0, 1);
+	//D3DXVec3TransformNormal(&m_vDirection, &m_vDirection, &matR);
 
 	//Translate
 	D3DXMATRIXA16 matT;

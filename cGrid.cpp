@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "cGrid.h"
 
-#define DISTANCE 8.0f
+#define DISTANCE 15.0f
 cGrid::cGrid()
 {
 }

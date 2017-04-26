@@ -28,6 +28,10 @@ void cCubeMan::Setup(std::vector<ST_PC_VERTEX>* vecVertex)
 {
 	cCharacter::Setup(vecVertex);
 	m_pVertex = vecVertex;
+	m_vNextPoint = (*vecVertex)[1].p;
+	m_vPosition = (*vecVertex)[0].p;
+
+	D3DXVec3Normalize(&m_vDirection, &(m_vNextPoint - m_vPosition));
 	D3DXCreateTextureFromFile(g_pD3DDevice, "CubeMan.png", &m_pTexture);
 
 	SetMaterial();
@@ -62,6 +66,7 @@ void cCubeMan::Setup(std::vector<ST_PC_VERTEX>* vecVertex)
 
 void cCubeMan::Update()
 {
+	MoveHexagon();
 	cCharacter::Update();
 	if (m_pRoot)
 		m_pRoot->Update();
@@ -85,6 +90,10 @@ void cCubeMan::Render()
 	g_pD3DDevice->SetTexture(0, 0);
 }
 
+void cCubeMan::MoveHexagon()
+{
+	m_vPosition = m_vPosition + m_vDirection * 0.1f;
+}
 void cCubeMan::SetMaterial()
 {
 	ZeroMemory(&m_stMaterial, sizeof(D3DMATERIAL9));
