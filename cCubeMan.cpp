@@ -29,9 +29,19 @@ void cCubeMan::Setup(std::vector<ST_PC_VERTEX>* vecVertex, int nType)
 {
 	cCharacter::Setup(vecVertex,nType);
 	m_pVertex = vecVertex;
-	m_vNextPoint = (*vecVertex)[1].p;
-	m_vPosition = (*vecVertex)[0].p;
-	m_nVecCnt = 1;
+	if (nType == 1)
+	{
+		m_vPosition = (*vecVertex)[0].p;
+		m_nVecCnt = 1;
+		m_vNextPoint = (*vecVertex)[1].p;
+	}
+	
+	if (nType == 2)
+	{
+		m_vPosition = (*vecVertex)[2].p;
+		m_nVecCnt = 3;
+		m_vNextPoint = (*vecVertex)[3].p;
+	}
 	m_nType = nType;
 
 	D3DXVec3Normalize(&m_vDirection, &(m_vNextPoint - m_vPosition));
@@ -69,7 +79,8 @@ void cCubeMan::Setup(std::vector<ST_PC_VERTEX>* vecVertex, int nType)
 
 void cCubeMan::Update()
 {
-	if(m_nType == 1) MoveHexagon();
+	if (m_nType == 1) MoveStraight();
+	if (m_nType == 2) MoveCurve();
 	cCharacter::Update();
 	if (m_pRoot)
 		m_pRoot->Update();
@@ -93,7 +104,7 @@ void cCubeMan::Render()
 	g_pD3DDevice->SetTexture(0, 0);
 }
 
-void cCubeMan::MoveHexagon()
+void cCubeMan::MoveStraight()
 {
 	if (fabs(m_vPosition.x - m_vNextPoint.x) < EPSILON &&	///x, y, z 의 좌표가 다음 지점까지 도착했는지 확인합니다.
 		fabs(m_vPosition.y - m_vNextPoint.y) < EPSILON &&
@@ -113,6 +124,29 @@ void cCubeMan::MoveHexagon()
 		}
 	}
 	m_vPosition = m_vPosition + m_vDirection * 0.1f;
+}
+
+void cCubeMan::MoveCurve()
+{
+	if (fabs(m_vPosition.x - m_vNextPoint.x) < EPSILON &&	///x, y, z 의 좌표가 다음 지점까지 도착했는지 확인합니다.
+		fabs(m_vPosition.y - m_vNextPoint.y) < EPSILON &&
+		fabs(m_vPosition.z - m_vNextPoint.z) < EPSILON)
+	{
+		if (m_nVecCnt + 2 < m_pVertex->size())
+		{
+			m_nVecCnt += 2;
+			m_vNextPoint = (*m_pVertex)[m_nVecCnt].p;
+			D3DXVec3Normalize(&m_vDirection, &(m_vNextPoint - m_vPosition));
+		}
+		else
+		{
+			m_nVecCnt = 2;
+			m_vNextPoint = (*m_pVertex)[m_nVecCnt].p;
+			D3DXVec3Normalize(&m_vDirection, &(m_vNextPoint - m_vPosition));
+		}
+	}
+	m_vPosition = m_vPosition + m_vDirection * 0.1f;
+
 }
 void cCubeMan::SetMaterial()
 {

@@ -15,7 +15,8 @@ private:
 	//cCubePC*	m_pCubePC;
 	cCamera*	m_pCamera;
 	cGrid*		m_pGrid;
-	cCubeMan*	m_pCubeMan;
+	cCubeMan*	m_pCubeManStraight;
+	cCubeMan*	m_pCubeManCurve;
 public:
 	void Setup();
 	void Update();

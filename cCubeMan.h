@@ -21,7 +21,8 @@ public:
 	virtual void Setup(std::vector<ST_PC_VERTEX>* vecVertex, int nType) override;
 	virtual void Update() override;
 	virtual void Render() override;
-	void MoveHexagon();
+	void MoveStraight();
+	void MoveCurve();
 	void SetMaterial();
 };
 
