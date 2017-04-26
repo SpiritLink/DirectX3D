@@ -30,6 +30,7 @@ void cCubeMan::Setup(std::vector<ST_PC_VERTEX>* vecVertex)
 	m_pVertex = vecVertex;
 	m_vNextPoint = (*vecVertex)[1].p;
 	m_vPosition = (*vecVertex)[0].p;
+	m_nVecCnt = 1;
 
 	D3DXVec3Normalize(&m_vDirection, &(m_vNextPoint - m_vPosition));
 	D3DXCreateTextureFromFile(g_pD3DDevice, "CubeMan.png", &m_pTexture);
@@ -92,6 +93,23 @@ void cCubeMan::Render()
 
 void cCubeMan::MoveHexagon()
 {
+	if (fabs(m_vPosition.x - m_vNextPoint.x) < EPSILON &&	///x, y, z 의 좌표가 다음 지점까지 도착했는지 확인합니다.
+		fabs(m_vPosition.y - m_vNextPoint.y) < EPSILON &&
+		fabs(m_vPosition.z - m_vNextPoint.z) < EPSILON)
+	{
+		if (m_nVecCnt + 2 < m_pVertex->size())
+		{
+			m_nVecCnt += 2;
+			m_vNextPoint = (*m_pVertex)[m_nVecCnt].p;
+			D3DXVec3Normalize(&m_vDirection, &(m_vNextPoint - m_vPosition));
+		}
+		else
+		{
+			m_nVecCnt = 1;
+			m_vNextPoint = (*m_pVertex)[m_nVecCnt].p;
+			D3DXVec3Normalize(&m_vDirection, &(m_vNextPoint - m_vPosition));
+		}
+	}
 	m_vPosition = m_vPosition + m_vDirection * 0.1f;
 }
 void cCubeMan::SetMaterial()

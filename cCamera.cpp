@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "cCamera.h"
 
-
 cCamera::cCamera()
 	:m_vEye(0, 0, -5)
 	, m_vLookAt(0, 0, 0)

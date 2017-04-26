@@ -34,6 +34,7 @@
 extern HWND g_hWnd;
 #define SAFE_RELEASE(p) {if(p) p->Release(); p = NULL;}
 #define SAFE_DELETE(p) {if(p) delete p; p = NULL;}
+#define EPSILON 0.001f
 
 // >> :
 #define SINGLETONE(class_name) \
