@@ -34,6 +34,7 @@
 extern HWND g_hWnd;
 #define SAFE_RELEASE(p) {if(p) p->Release(); p = NULL;}
 #define SAFE_DELETE(p) {if(p) delete p; p = NULL;}
+#define SAFE_ADD_REF(p) {if(p) p->AddRef();}
 #define EPSILON 0.001f
 
 // >> :
@@ -75,4 +76,23 @@ struct ST_PNT_VERTEX
 private: varType varName;\
 public: inline varType Get##funName(void) const { return varName; }\
 public: inline void Set##funName(varType var) { varName = var; }
+
+#define SYNTHESIZE_PASS_BY_REF(varType, varName, funName)\
+protected: varType varName;\
+public: inline varType& Get##funName(void) { return varName; }\
+public: inline void Set##funName(varType& var) { varName = var; }
+
+#define SYNTHESIZE_ADD_REF(varType, varName, funName)\
+protected: varType varName;\
+public: virtual varType Get##funName(void) const {return varName;}\
+public: virtual void Set##funName(varType var) {\
+		if(varName != var) { \
+			SAFE_ADD_REF(var) ; \
+			SAFE_RELEASE(varName);\
+			varName = var;\
+		}\
+}
+
+#include "cObject.h"
 #include "cDeviceManager.h"
+#include "cTextureManager.h"
