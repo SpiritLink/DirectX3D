@@ -1,9 +1,16 @@
 #pragma once
+#include "stdafx.h"
 class cObject
 {
-protected:
-
 public:
 	cObject();
-	~cObject();
+	//~cObject();
+	// >> :
+protected:
+	ULONG m_ulRefCount;
+public:
+	virtual ~cObject();
+	virtual void AddRef();
+	virtual void Release();
+	// << :
 };

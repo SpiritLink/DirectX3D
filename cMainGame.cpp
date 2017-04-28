@@ -9,6 +9,9 @@
 #include "cPyramid.h"
 #include "cCubeMan.h"
 
+#include "cObjLoader.h"
+#include "cObject.h"
+
 // << :
 cMainGame::cMainGame()
 	: //m_pCubePC(NULL),
