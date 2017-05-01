@@ -3,10 +3,12 @@
 
 
 cCharacter::cCharacter()
-	: m_fRotY(0.0f), 
-	m_vDirection(0,0,1), 
-	m_vPosition(0,0,0),
-	m_pIsIdle(true)
+	: m_fRotY(0.0f),
+	m_vDirection(0, 0, 1),
+	m_vPosition(0, 0, 0),
+	m_pIsIdle(true),
+	m_vRayPosition(0, 1000, 0),
+	m_vRayDirection(0, -1, 0)
 {
 	D3DXMatrixIdentity(&m_matWorld);
 }
@@ -38,6 +40,10 @@ void cCharacter::Update()
 		m_vPosition = m_vPosition - m_vDirection * 0.1f;
 		m_pIsIdle = false;
 	}
+
+	m_vRayPosition.x = m_vPosition.x;
+	m_vRayPosition.y = 1000;
+	m_vRayPosition.z = m_vPosition.z;
 
 	RECT rc;
 	GetClientRect(g_hWnd, &rc);

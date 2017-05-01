@@ -17,6 +17,7 @@ private:
 	cGrid*					m_pGrid;
 	cCubeMan*				m_pCubeMan;
 	std::vector<cGroup*>	m_vecGroup;
+	std::vector<cGroup*>	m_vecMap;
 public:
 	void Setup();
 	void Update();

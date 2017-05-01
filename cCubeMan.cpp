@@ -7,11 +7,16 @@
 #include "cLeftLeg.h"
 #include "cRightArm.h"
 #include "cRightLeg.h"
+#include "cGroup.h"
 
 cCubeMan::cCubeMan()
 	: m_pRoot(NULL),
 	m_pTexture(NULL),
-	m_pVertex(NULL)
+	m_pVertex(NULL),
+	m_pVecGroup(NULL),
+	m_pU(0.0f),
+	m_pV(0.0f),
+	m_pDist(0.0f)
 {
 }
 
@@ -65,6 +70,8 @@ void cCubeMan::Update()
 	cCharacter::Update();
 	if (m_pRoot)
 		m_pRoot->Update();
+	if (m_pVecGroup)
+		CollisionCheck();
 }
 
 void cCubeMan::Render()
@@ -94,3 +101,36 @@ void cCubeMan::SetMaterial()
 	m_stMaterial.Emissive = D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
+void cCubeMan::CollisionCheck()
+{
+	D3DXVECTOR3 vTemp1, vTemp2, vTemp3;
+	D3DXMATRIXA16 matWorld, matS, matR;
+	D3DXMatrixScaling(&matS, 0.01f, 0.01f, 0.01f);
+	D3DXMatrixRotationX(&matR, -D3DX_PI / 2.0F);
+	matWorld = matS * matR;
+	
+	D3DXVECTOR4 vTemp4, vTemp5, vTemp6;
+	
+
+	for (int i = 0; i < (*m_pVecGroup).size(); ++i)
+	{
+		for (int j = 0; j < (*m_pVecGroup)[i]->GetVertex().size(); j += 3)	//점들을 3개씩 확인
+		{
+			vTemp1 = (*m_pVecGroup)[i]->GetVertex()[j + 0].p;
+			vTemp2 = (*m_pVecGroup)[i]->GetVertex()[j + 1].p;
+			vTemp3 = (*m_pVecGroup)[i]->GetVertex()[j + 2].p;
+
+			D3DXVec3TransformCoord(&vTemp1, &vTemp1, &matWorld);
+			D3DXVec3TransformCoord(&vTemp2, &vTemp2, &matWorld);
+			D3DXVec3TransformCoord(&vTemp3, &vTemp3, &matWorld);
+
+			if (D3DXIntersectTri(&vTemp1, &vTemp2, &vTemp3, &m_vRayPosition, &m_vRayDirection, &m_pU, &m_pV,
+				&m_pDist))
+			{
+				m_vPosition.y = 1000 - m_pDist + 1;
+				return;
+			}
+		}
+	}
+	m_vPosition.y = 1000 - m_pDist;
+}

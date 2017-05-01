@@ -37,11 +37,13 @@ void cMainGame::Setup()
 	m_pGrid = new cGrid;
 	m_pGrid->Setup();
 
-	m_pCubeMan = new cCubeMan;
-	m_pCubeMan->Setup(m_pGrid->getVertex(),1);
-
 	cObjLoader loadObj;
 	loadObj.Load(m_vecGroup, "obj", "Map.obj");
+	loadObj.Load(m_vecMap, "obj", "Map_surface.obj");
+
+	m_pCubeMan = new cCubeMan;
+	m_pCubeMan->Setup(m_pGrid->getVertex(), 1);
+	m_pCubeMan->SetGroup(&m_vecMap);
 
 	m_pCamera = new cCamera;
 	m_pCamera->Setup(&m_pCubeMan->GetPosition());
@@ -106,6 +108,10 @@ void cMainGame::Obj_Render()
 	matWorld = matS * matR;
 	g_pD3DDevice->SetTransform(D3DTS_WORLD, &matWorld);
 	for each(auto p in m_vecGroup)
+	{
+		//p->Render();
+	}
+	for each(auto p in m_vecMap)
 	{
 		p->Render();
 	}
