@@ -5,7 +5,7 @@
 
 cCubePC::cCubePC()
 	: m_vDirection(0, 0, 1)	//보는 방향
-	, m_vPosition(0, 0, 0)	//위치
+	, m_vPosition(0, 1, 0)	//위치
 	, m_fRotY(0.0f)			//회전값
 {
 	D3DXMatrixIdentity(&m_matWorld);

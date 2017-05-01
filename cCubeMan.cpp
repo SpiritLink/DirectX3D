@@ -127,10 +127,19 @@ void cCubeMan::CollisionCheck()
 			if (D3DXIntersectTri(&vTemp1, &vTemp2, &vTemp3, &m_vRayPosition, &m_vRayDirection, &m_pU, &m_pV,
 				&m_pDist))
 			{
-				m_vPosition.y = 1000 - m_pDist + 1;
-				return;
+				float diffrence = 1000 - m_pDist + 1;
+				if (fabs(m_vPosition.y - diffrence) < 0.5f)
+				{
+					m_vPosition.y = diffrence;
+					return;
+				}
+				else
+				{
+					m_vPosition = m_vPosition + (m_vDirection * 0.1f);
+					return;
+				}
 			}
 		}
 	}
-	m_vPosition.y = 1000 - m_pDist;
+	m_vPosition.y = 1;
 }
