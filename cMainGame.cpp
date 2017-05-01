@@ -18,8 +18,7 @@ cMainGame::cMainGame()
 	: //m_pCubePC(NULL),
 	m_pGrid(NULL),
 	m_pCamera(NULL),
-	m_pCubeManStraight(NULL),
-	m_pCubeManCurve(NULL)
+	m_pCubeMan(NULL)
 {
 }
 
@@ -29,8 +28,7 @@ cMainGame::~cMainGame()
 	//SAFE_DELETE(m_pCubePC);
 	SAFE_DELETE(m_pGrid);
 	SAFE_DELETE(m_pCamera);
-	SAFE_DELETE(m_pCubeManStraight);
-	SAFE_DELETE(m_pCubeManCurve);
+	SAFE_DELETE(m_pCubeMan);
 	g_pDeviceManager->Destroy();	//¼Ò¸êÀÚ ¿ªÈ°À» ÇÏ°Ô²û ¸¸µë
 }
 
@@ -39,17 +37,14 @@ void cMainGame::Setup()
 	m_pGrid = new cGrid;
 	m_pGrid->Setup();
 
-	m_pCubeManStraight = new cCubeMan;
-	m_pCubeManStraight->Setup(m_pGrid->getVertex(),1);
-
-	m_pCubeManCurve = new cCubeMan;
-	m_pCubeManCurve->Setup(m_pGrid->getVertex(), 2);
+	m_pCubeMan = new cCubeMan;
+	m_pCubeMan->Setup(m_pGrid->getVertex(),1);
 
 	cObjLoader loadObj;
 	loadObj.Load(m_vecGroup, "obj", "Map.obj");
 
 	m_pCamera = new cCamera;
-	m_pCamera->Setup(&m_pCubeManStraight->GetPosition());
+	m_pCamera->Setup(&m_pCubeMan->GetPosition());
 
 	Set_Light();
 }
@@ -59,8 +54,7 @@ void cMainGame::Update()
 	//if (m_pCubePC) m_pCubePC->Update();
 
 	if (m_pCamera) m_pCamera->Update();
-	if (m_pCubeManStraight) m_pCubeManStraight->Update();
-	if (m_pCubeManCurve) m_pCubeManCurve->Update();
+	if (m_pCubeMan) m_pCubeMan->Update();
 }
 
 void cMainGame::Render()
@@ -73,9 +67,7 @@ void cMainGame::Render()
 
 	Obj_Render();
 
-	if (m_pCubeManStraight) m_pCubeManStraight->Render();
-
-	if (m_pCubeManCurve) m_pCubeManCurve->Render();
+	if (m_pCubeMan) m_pCubeMan->Render();
 
 	g_pD3DDevice->EndScene();
 

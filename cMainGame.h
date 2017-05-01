@@ -13,11 +13,9 @@ public:
 	~cMainGame();
 
 private:
-	//cCubePC*				m_pCubePC;
 	cCamera*				m_pCamera;
 	cGrid*					m_pGrid;
-	cCubeMan*				m_pCubeManStraight;
-	cCubeMan*				m_pCubeManCurve;
+	cCubeMan*				m_pCubeMan;
 	std::vector<cGroup*>	m_vecGroup;
 public:
 	void Setup();
