@@ -8,6 +8,7 @@
 #include "cCamera.h"
 #include "cPyramid.h"
 #include "cCubeMan.h"
+#include "cGroup.h"
 
 #include "cObjLoader.h"
 #include "cObject.h"
@@ -44,10 +45,12 @@ void cMainGame::Setup()
 	m_pCubeManCurve = new cCubeMan;
 	m_pCubeManCurve->Setup(m_pGrid->getVertex(), 2);
 
-	m_pCamera = new cCamera;
-	m_pCamera->Setup(&m_pCubeManCurve->GetPosition());
+	cObjLoader loadObj;
+	loadObj.Load(m_vecGroup, "obj", "Map.obj");
 
-	//g_pD3DDevice->SetRenderState(D3DRS_LIGHTING, false);//ÇöÀç ºûÀ» »ç¿ëÇÏÁö ¾Ê±â ¶§¹®¿¡ ²¨ÁÜ
+	m_pCamera = new cCamera;
+	m_pCamera->Setup(&m_pCubeManStraight->GetPosition());
+
 	Set_Light();
 }
 
@@ -67,8 +70,11 @@ void cMainGame::Render()
 	g_pD3DDevice->BeginScene();
 
 	if (m_pGrid) m_pGrid->Render();
-	//if (m_pCubePC) m_pCubePC->Render();
-	//if (m_pCubeManStraight) m_pCubeManStraight->Render();
+
+	Obj_Render();
+
+	if (m_pCubeManStraight) m_pCubeManStraight->Render();
+
 	if (m_pCubeManCurve) m_pCubeManCurve->Render();
 
 	g_pD3DDevice->EndScene();
@@ -98,4 +104,17 @@ void cMainGame::Set_Light()
 	g_pD3DDevice->SetLight(2, &stLight3);
 	g_pD3DDevice->LightEnable(2, true);
 
+}
+
+void cMainGame::Obj_Render()
+{
+	D3DXMATRIXA16 matWorld, matS, matR;
+	D3DXMatrixScaling(&matS, 0.01f, 0.01f, 0.01f);
+	D3DXMatrixRotationX(&matR, -D3DX_PI / 2.0F);
+	matWorld = matS * matR;
+	g_pD3DDevice->SetTransform(D3DTS_WORLD, &matWorld);
+	for each(auto p in m_vecGroup)
+	{
+		p->Render();
+	}
 }
