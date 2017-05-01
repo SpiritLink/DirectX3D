@@ -13,6 +13,7 @@ protected:
 	std::vector<ST_PC_VERTEX>*	m_pVertex;
 	int							m_nType;
 	int							m_nCurrentPoint;
+	float						m_fT;
 public:
 	cCubeNode*	m_pRoot;
 	D3DMATERIAL9	m_stMaterial;

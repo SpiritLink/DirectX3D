@@ -16,6 +16,7 @@ private:
 	cCamera*				m_pCamera;
 	cGrid*					m_pGrid;
 	cCubeMan*				m_pCubeMan;
+	cCubeMan*				m_pCubeManCurve;
 	std::vector<cGroup*>	m_vecGroup;
 	std::vector<cGroup*>	m_vecMap;
 public:

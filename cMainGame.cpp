@@ -18,7 +18,8 @@ cMainGame::cMainGame()
 	: //m_pCubePC(NULL),
 	m_pGrid(NULL),
 	m_pCamera(NULL),
-	m_pCubeMan(NULL)
+	m_pCubeMan(NULL),
+	m_pCubeManCurve(NULL)
 {
 }
 
@@ -29,6 +30,7 @@ cMainGame::~cMainGame()
 	SAFE_DELETE(m_pGrid);
 	SAFE_DELETE(m_pCamera);
 	SAFE_DELETE(m_pCubeMan);
+	SAFE_DELETE(m_pCubeManCurve)
 	g_pDeviceManager->Destroy();	//¼Ò¸êÀÚ ¿ªÈ°À» ÇÏ°Ô²û ¸¸µë
 }
 
@@ -44,8 +46,11 @@ void cMainGame::Setup()
 	m_pCubeMan = new cCubeMan;
 	m_pCubeMan->Setup(m_pGrid->getVertex(), 1);
 
+	m_pCubeManCurve = new cCubeMan;
+	m_pCubeManCurve->Setup(m_pGrid->getVertex(), 2);
+
 	m_pCamera = new cCamera;
-	m_pCamera->Setup(&m_pCubeMan->GetPosition());
+	m_pCamera->Setup(&m_pCubeManCurve->GetPosition());
 
 	Set_Light();
 }
@@ -56,6 +61,7 @@ void cMainGame::Update()
 
 	if (m_pCamera) m_pCamera->Update();
 	if (m_pCubeMan) m_pCubeMan->Update();
+	if (m_pCubeManCurve) m_pCubeManCurve->Update();
 }
 
 void cMainGame::Render()
@@ -69,6 +75,7 @@ void cMainGame::Render()
 	Obj_Render();
 
 	if (m_pCubeMan) m_pCubeMan->Render();
+	if (m_pCubeManCurve) m_pCubeManCurve->Render();
 
 	g_pD3DDevice->EndScene();
 
