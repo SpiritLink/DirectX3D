@@ -1,6 +1,6 @@
 #pragma once
 class cGrid;
-
+class cGroup;
 class cCharacter
 {
 public:
@@ -8,13 +8,19 @@ public:
 
 protected:
 	float			m_fRotY;
+	float			m_pU;
+	float			m_pV;
+	float			m_pDist;
 	D3DXVECTOR3		m_vDirection;
 	D3DXVECTOR3		m_vPosition;
 	D3DXMATRIXA16	m_matWorld;
+
 	D3DXVECTOR3		m_vRayPosition;
 	D3DXVECTOR3		m_vRayDirection;
-	bool			m_pIsIdle;
-	
+	std::vector<cGroup*>* m_pVecGroup;
+
+	bool			m_bIsIdle;
+	void moveCheck();
 public:
 	virtual ~cCharacter();
 
@@ -23,5 +29,6 @@ public:
 	virtual void Render();
 
 	virtual D3DXVECTOR3 & GetPosition();
+	void SetGroup(std::vector<cGroup*>* vecGroup) { m_pVecGroup = vecGroup; }
 };
 

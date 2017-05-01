@@ -12,11 +12,7 @@
 cCubeMan::cCubeMan()
 	: m_pRoot(NULL),
 	m_pTexture(NULL),
-	m_pVertex(NULL),
-	m_pVecGroup(NULL),
-	m_pU(0.0f),
-	m_pV(0.0f),
-	m_pDist(0.0f)
+	m_pVertex(NULL)
 {
 }
 
@@ -40,7 +36,7 @@ void cCubeMan::Setup(std::vector<ST_PC_VERTEX>* vecVertex, int nType)
 	cBody* pBody = new cBody;
 	pBody->Setup();
 	pBody->SetParentWorldTransMatrix(&m_matWorld);
-	pBody->SetIdle(&m_pIsIdle);
+	pBody->SetIdle(&m_bIsIdle);
 	m_pRoot = pBody;
 
 	cHead* pHead = new cHead;
@@ -103,39 +99,33 @@ void cCubeMan::SetMaterial()
 
 void cCubeMan::CollisionCheck()
 {
-	D3DXVECTOR3 vTemp1, vTemp2, vTemp3;
+	D3DXVECTOR3 vPt1, vPt2, vPt3;
+
 	D3DXMATRIXA16 matWorld, matS, matR;
 	D3DXMatrixScaling(&matS, 0.01f, 0.01f, 0.01f);
 	D3DXMatrixRotationX(&matR, -D3DX_PI / 2.0F);
 	matWorld = matS * matR;
-	
-	D3DXVECTOR4 vTemp4, vTemp5, vTemp6;
-	
+		
 
 	for (int i = 0; i < (*m_pVecGroup).size(); ++i)
 	{
 		for (int j = 0; j < (*m_pVecGroup)[i]->GetVertex().size(); j += 3)	//점들을 3개씩 확인
 		{
-			vTemp1 = (*m_pVecGroup)[i]->GetVertex()[j + 0].p;
-			vTemp2 = (*m_pVecGroup)[i]->GetVertex()[j + 1].p;
-			vTemp3 = (*m_pVecGroup)[i]->GetVertex()[j + 2].p;
+			vPt1 = (*m_pVecGroup)[i]->GetVertex()[j + 0].p;
+			vPt2 = (*m_pVecGroup)[i]->GetVertex()[j + 1].p;
+			vPt3 = (*m_pVecGroup)[i]->GetVertex()[j + 2].p;
 
-			D3DXVec3TransformCoord(&vTemp1, &vTemp1, &matWorld);
-			D3DXVec3TransformCoord(&vTemp2, &vTemp2, &matWorld);
-			D3DXVec3TransformCoord(&vTemp3, &vTemp3, &matWorld);
+			D3DXVec3TransformCoord(&vPt1, &vPt1, &matWorld);
+			D3DXVec3TransformCoord(&vPt2, &vPt2, &matWorld);
+			D3DXVec3TransformCoord(&vPt3, &vPt3, &matWorld);
 
-			if (D3DXIntersectTri(&vTemp1, &vTemp2, &vTemp3, &m_vRayPosition, &m_vRayDirection, &m_pU, &m_pV,
+			if (D3DXIntersectTri(&vPt1, &vPt2, &vPt3, &m_vRayPosition, &m_vRayDirection, &m_pU, &m_pV,
 				&m_pDist))
 			{
 				float diffrence = 1000 - m_pDist + 1;
-				if (fabs(m_vPosition.y - diffrence) < 0.5f)
+				if (fabs(m_vPosition.y - diffrence) < 2.0f)
 				{
 					m_vPosition.y = diffrence;
-					return;
-				}
-				else
-				{
-					m_vPosition = m_vPosition + (m_vDirection * 0.1f);
 					return;
 				}
 			}
