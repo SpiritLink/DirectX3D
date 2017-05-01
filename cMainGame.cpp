@@ -43,7 +43,6 @@ void cMainGame::Setup()
 
 	m_pCubeMan = new cCubeMan;
 	m_pCubeMan->Setup(m_pGrid->getVertex(), 1);
-	m_pCubeMan->SetGroup(&m_vecMap);
 
 	m_pCamera = new cCamera;
 	m_pCamera->Setup(&m_pCubeMan->GetPosition());
@@ -113,6 +112,6 @@ void cMainGame::Obj_Render()
 	}
 	for each(auto p in m_vecMap)
 	{
-		p->Render();
+		//p->Render();
 	}
 }

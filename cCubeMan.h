@@ -11,6 +11,8 @@ public:
 protected:
 	LPDIRECT3DTEXTURE9			m_pTexture;
 	std::vector<ST_PC_VERTEX>*	m_pVertex;
+	int							m_nType;
+	int							m_nCurrentPoint;
 public:
 	cCubeNode*	m_pRoot;
 	D3DMATERIAL9	m_stMaterial;
@@ -20,5 +22,7 @@ public:
 	virtual void Render() override;
 	void SetMaterial();
 	void CollisionCheck();
+	void MoveStraight();
+	void MoveCurve();
 };
 

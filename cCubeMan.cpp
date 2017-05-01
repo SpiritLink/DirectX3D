@@ -12,7 +12,9 @@
 cCubeMan::cCubeMan()
 	: m_pRoot(NULL),
 	m_pTexture(NULL),
-	m_pVertex(NULL)
+	m_pVertex(NULL),
+	m_nType(0),
+	m_nCurrentPoint(0)
 {
 }
 
@@ -31,6 +33,18 @@ void cCubeMan::Setup(std::vector<ST_PC_VERTEX>* vecVertex, int nType)
 	m_pVertex = vecVertex;
 	D3DXCreateTextureFromFile(g_pD3DDevice, "CubeMan.png", &m_pTexture);
 
+	switch (nType)
+	{
+	case 1:
+		m_vPosition = (*vecVertex)[0].p;
+		m_nCurrentPoint = 0;
+		m_nType = nType;
+		break;
+	case 2:
+		m_vPosition = (*vecVertex)[0].p;
+		m_nCurrentPoint = 0;
+		break;
+	}
 	SetMaterial();
 
 	cBody* pBody = new cBody;
@@ -66,8 +80,10 @@ void cCubeMan::Update()
 	cCharacter::Update();
 	if (m_pRoot)
 		m_pRoot->Update();
-	if (m_pVecGroup)
-		CollisionCheck();
+	//if (m_pVecGroup)
+		//CollisionCheck();
+	if (m_nType == 1) MoveStraight();
+	if (m_nType == 2) MoveCurve();
 }
 
 void cCubeMan::Render()
@@ -132,4 +148,31 @@ void cCubeMan::CollisionCheck()
 		}
 	}
 	m_vPosition.y = 1;
+}
+
+void cCubeMan::MoveStraight()
+{
+	int nextPoint = m_nCurrentPoint + 2;
+	if (nextPoint > m_pVertex->size() - 1) nextPoint = 0;
+
+	if (fabs(m_vPosition.x - (*m_pVertex)[nextPoint].p.x) < EPSILON &&
+		fabs(m_vPosition.y - (*m_pVertex)[nextPoint].p.y) < EPSILON &&
+		fabs(m_vPosition.z - (*m_pVertex)[nextPoint].p.z) < EPSILON)
+	{
+		m_nCurrentPoint += 2;
+		nextPoint += 2;
+		if (nextPoint > m_pVertex->size() - 1) nextPoint = 0;
+		if (m_nCurrentPoint > m_pVertex->size() - 1) m_nCurrentPoint = 0;
+	}
+
+	D3DXVECTOR3 vDirection;
+
+	vDirection = (*m_pVertex)[nextPoint].p - m_vPosition;
+	D3DXVec3Normalize(&vDirection, &vDirection);
+
+	m_vPosition = m_vPosition + (vDirection * 0.1f);
+}
+void cCubeMan::MoveCurve()
+{
+
 }
