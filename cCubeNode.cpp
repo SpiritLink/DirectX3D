@@ -47,7 +47,7 @@ void cCubeNode::Setup()
 void cCubeNode::Update()
 {
 	cCubePNT::Update();
-	UpdateDeltaX();
+	//UpdateDeltaX();
 	D3DXMATRIXA16 matT;
 
 	D3DXMatrixIdentity(&matT);
