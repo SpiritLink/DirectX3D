@@ -2,7 +2,6 @@
 #include "cMainGame.h"
 #include "cDeviceManager.h"		/// << :
 
-// >> :
 #include "cCubePC.h"
 #include "cGrid.h"
 #include "cCamera.h"
@@ -14,7 +13,8 @@
 #include "cObject.h"
 #include "cObjMap.h"
 
-// << :
+#include "cAseLoader.h"
+
 cMainGame::cMainGame()
 	: //m_pCubePC(NULL),
 	m_pGrid(NULL),
@@ -41,9 +41,11 @@ void cMainGame::Setup()
 	m_pGrid->Setup();
 
 	cObjLoader loadObj;
-	loadObj.Load(m_vecGroup, "obj", "Map.obj");
+	//loadObj.Load(m_vecGroup, "obj", "Map.obj");
 	loadObj.Load(m_vecMap, "obj", "Map_surface.obj");
 
+	cAseLoader loadAse;
+	loadAse.Load(m_vecGroup, "woman", "woman_01_all.ASE");
 	Load_Surface();
 
 	m_pCubeMan = new cCubeMan;
