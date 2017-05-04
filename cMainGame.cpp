@@ -2,24 +2,26 @@
 #include "cMainGame.h"
 #include "cDeviceManager.h"		/// << :
 
-// >> :
 #include "cCubePC.h"
 #include "cGrid.h"
 #include "cCamera.h"
 #include "cPyramid.h"
 #include "cCubeMan.h"
-#include "cGroup.h"
 
+#include "cGroup.h"
 #include "cObjLoader.h"
 #include "cObject.h"
+#include "cObjMap.h"
 
-// << :
+#include "cAseLoader.h"
+
 cMainGame::cMainGame()
 	: //m_pCubePC(NULL),
 	m_pGrid(NULL),
 	m_pCamera(NULL),
 	m_pCubeMan(NULL),
-	m_pCubeManCurve(NULL)
+	m_pCubeManCurve(NULL),
+	m_pMap(NULL)
 {
 }
 
@@ -31,6 +33,7 @@ cMainGame::~cMainGame()
 	SAFE_DELETE(m_pCamera);
 	SAFE_DELETE(m_pCubeMan);
 	SAFE_DELETE(m_pCubeManCurve)
+	SAFE_DELETE(m_pMap);
 	g_pDeviceManager->Destroy();	//¼Ò¸êÀÚ ¿ªÈ°À» ÇÏ°Ô²û ¸¸µë
 }
 
@@ -42,6 +45,10 @@ void cMainGame::Setup()
 	cObjLoader loadObj;
 	loadObj.Load(m_vecGroup, "obj", "Map.obj");
 	loadObj.Load(m_vecMap, "obj", "Map_surface.obj");
+
+	cAseLoader loadAse;
+	loadAse.Load(m_vecGroup, "woman", "woman_01_all.ASE");
+	Load_Surface();
 
 	m_pCubeMan = new cCubeMan;
 	m_pCubeMan->Setup(m_pGrid->getVertex(), 1);
@@ -60,8 +67,8 @@ void cMainGame::Update()
 	//if (m_pCubePC) m_pCubePC->Update();
 
 	if (m_pCamera) m_pCamera->Update();
-	if (m_pCubeMan) m_pCubeMan->Update();
-	if (m_pCubeManCurve) m_pCubeManCurve->Update();
+	if (m_pCubeMan) m_pCubeMan->Update(m_pMap);
+	if (m_pCubeManCurve) m_pCubeManCurve->Update(m_pMap);
 }
 
 void cMainGame::Render()
@@ -115,10 +122,20 @@ void cMainGame::Obj_Render()
 	g_pD3DDevice->SetTransform(D3DTS_WORLD, &matWorld);
 	for each(auto p in m_vecGroup)
 	{
-		//p->Render();
+		p->Render();
 	}
 	for each(auto p in m_vecMap)
 	{
-		//p->Render();
+		p->Render();
 	}
+}
+
+void cMainGame::Load_Surface()
+{
+	D3DXMATRIXA16 matWorld, matS, matR;
+	D3DXMatrixScaling(&matS, 0.01f, 0.01f, 0.01f);
+	D3DXMatrixRotationX(&matR, -D3DX_PI / 2.0f);
+	matWorld = matS * matR;
+
+	m_pMap = new cObjMap("obj", "map_surface.obj", &matWorld);
 }

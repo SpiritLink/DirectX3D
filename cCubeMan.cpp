@@ -52,7 +52,6 @@ void cCubeMan::Setup(std::vector<ST_PC_VERTEX>* vecVertex, int nType)
 	cBody* pBody = new cBody;
 	pBody->Setup();
 	pBody->SetParentWorldTransMatrix(&m_matWorld);
-	pBody->SetIdle(&m_bIsIdle);
 	m_pRoot = pBody;
 
 	cHead* pHead = new cHead;
@@ -77,9 +76,9 @@ void cCubeMan::Setup(std::vector<ST_PC_VERTEX>* vecVertex, int nType)
 
 }
 
-void cCubeMan::Update()
+void cCubeMan::Update(iMap* pMap)
 {
-	cCharacter::Update();
+	cCharacter::Update(pMap);
 	if (m_pRoot)
 		m_pRoot->Update();
 	//if (m_pVecGroup)
@@ -113,43 +112,6 @@ void cCubeMan::SetMaterial()
 	m_stMaterial.Ambient = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	m_stMaterial.Specular = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);
 	m_stMaterial.Emissive = D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f);
-}
-
-void cCubeMan::CollisionCheck()
-{
-	D3DXVECTOR3 vPt1, vPt2, vPt3;
-
-	D3DXMATRIXA16 matWorld, matS, matR;
-	D3DXMatrixScaling(&matS, 0.01f, 0.01f, 0.01f);
-	D3DXMatrixRotationX(&matR, -D3DX_PI / 2.0F);
-	matWorld = matS * matR;
-		
-
-	for (int i = 0; i < (*m_pVecGroup).size(); ++i)
-	{
-		for (int j = 0; j < (*m_pVecGroup)[i]->GetVertex().size(); j += 3)	//점들을 3개씩 확인
-		{
-			vPt1 = (*m_pVecGroup)[i]->GetVertex()[j + 0].p;
-			vPt2 = (*m_pVecGroup)[i]->GetVertex()[j + 1].p;
-			vPt3 = (*m_pVecGroup)[i]->GetVertex()[j + 2].p;
-
-			D3DXVec3TransformCoord(&vPt1, &vPt1, &matWorld);
-			D3DXVec3TransformCoord(&vPt2, &vPt2, &matWorld);
-			D3DXVec3TransformCoord(&vPt3, &vPt3, &matWorld);
-
-			if (D3DXIntersectTri(&vPt1, &vPt2, &vPt3, &m_vRayPosition, &m_vRayDirection, &m_pU, &m_pV,
-				&m_pDist))
-			{
-				float diffrence = 1000 - m_pDist + 1;
-				if (fabs(m_vPosition.y - diffrence) < 2.0f)
-				{
-					m_vPosition.y = diffrence;
-					return;
-				}
-			}
-		}
-	}
-	m_vPosition.y = 1;
 }
 
 void cCubeMan::MoveStraight()
@@ -210,6 +172,4 @@ void cCubeMan::MoveCurve()
 
 	vDirection = EndPt - StartPt;
 	m_vPosition = StartPt + (vDirection * m_fT);
-
-	
 }

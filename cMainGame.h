@@ -5,6 +5,7 @@ class cGrid;
 class cPyramid;
 class cCubeMan;
 class cGroup;
+class iMap;
 
 class cMainGame
 {
@@ -19,6 +20,9 @@ private:
 	cCubeMan*				m_pCubeManCurve;
 	std::vector<cGroup*>	m_vecGroup;
 	std::vector<cGroup*>	m_vecMap;
+
+	iMap* m_pMap; // << :
+
 public:
 	void Setup();
 	void Update();
@@ -27,4 +31,5 @@ public:
 	void WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	void Set_Light();
 	void Obj_Render();
+	void Load_Surface();
 };
