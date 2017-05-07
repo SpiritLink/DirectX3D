@@ -8,7 +8,7 @@ class cGroup : public cObject
 public:
 	cGroup();
 	~cGroup();
-private:
+protected:
 	SYNTHESIZE_PASS_BY_REF(std::vector<ST_PNT_VERTEX>, m_vecVertex, Vertex);
 	SYNTHESIZE_ADD_REF(cMtlTex*, m_pMtlTex, MtlTex);
 

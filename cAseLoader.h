@@ -1,14 +1,15 @@
 #pragma once
 
-class cGroup;
+class cWoman;
 
 class cAseLoader
 {
 private:
 	std::vector<D3DMATERIAL9> m_vecMaterial;
+	std::map<std::string, cWoman*> m_vecWoman;
 public:
 	cAseLoader();
 	~cAseLoader();
-	void Load(OUT std::vector<cGroup*>& vecGroup, IN char* szFolder, IN char* szFile);
+	void Load(OUT std::vector<cWoman*>& vecWoman, IN char* szFolder, IN char* szFile);
 };
 

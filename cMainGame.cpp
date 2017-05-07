@@ -14,6 +14,7 @@
 #include "cObjMap.h"
 
 #include "cAseLoader.h"
+#include "cWoman.h"
 
 cMainGame::cMainGame()
 	: //m_pCubePC(NULL),
@@ -47,7 +48,7 @@ void cMainGame::Setup()
 	loadObj.Load(m_vecMap, "obj", "Map_surface.obj");
 
 	cAseLoader loadAse;
-	loadAse.Load(m_vecGroup, "woman", "woman_01_all.ASE");
+	loadAse.Load(m_vecWoman, "woman", "woman_01_all.ASE");
 	Load_Surface();
 
 	m_pCubeMan = new cCubeMan;
@@ -74,7 +75,6 @@ void cMainGame::Update()
 void cMainGame::Render()
 {
 	g_pD3DDevice->Clear(NULL, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(128, 128, 128), 1.0f, 0);
-
 	g_pD3DDevice->BeginScene();
 
 	if (m_pGrid) m_pGrid->Render();
@@ -85,7 +85,6 @@ void cMainGame::Render()
 	if (m_pCubeManCurve) m_pCubeManCurve->Render();
 
 	g_pD3DDevice->EndScene();
-
 	g_pD3DDevice->Present(NULL, NULL, NULL, NULL);
 }
 
@@ -120,7 +119,7 @@ void cMainGame::Obj_Render()
 	D3DXMatrixRotationX(&matR, -D3DX_PI / 2.0F);
 	matWorld = matS * matR;
 	g_pD3DDevice->SetTransform(D3DTS_WORLD, &matWorld);
-	for each(auto p in m_vecGroup)
+	for each(auto p in m_vecWoman)
 	{
 		p->Render();
 	}

@@ -5,6 +5,7 @@ class cGrid;
 class cPyramid;
 class cCubeMan;
 class cGroup;
+class cWoman;
 class iMap;
 
 class cMainGame
@@ -18,6 +19,7 @@ private:
 	cGrid*					m_pGrid;
 	cCubeMan*				m_pCubeMan;
 	cCubeMan*				m_pCubeManCurve;
+	std::vector<cWoman*>	m_vecWoman;
 	std::vector<cGroup*>	m_vecGroup;
 	std::vector<cGroup*>	m_vecMap;
 
