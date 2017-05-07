@@ -15,6 +15,8 @@ public:
 	cWoman();
 	~cWoman();
 	void addChild(cWoman* pWoman);
+	void SetWorldMatrix(D3DXMATRIXA16* matWorld) { m_matWorldTransMatrix = *matWorld; };
+	void update();
 	void Render();
 };
 

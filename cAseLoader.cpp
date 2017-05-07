@@ -147,26 +147,26 @@ void cAseLoader::Load(OUT cWoman** RootWoman, IN char * szFolder, IN char * szFi
 			float x, y, z;
 			sscanf_s(szTemp, "%*s %f %f %f", &x, &y, &z);
 			matRotate.m[0][0] = x;
-			matRotate.m[0][1] = y;
-			matRotate.m[0][2] = z;
+			matRotate.m[0][2] = y;
+			matRotate.m[0][1] = z;
 		}
 
 		if (keyWord == ID_TM_ROW1)
 		{
 			float x, y, z;
 			sscanf_s(szTemp, "%*s %f %f %f", &x, &y, &z);
-			matRotate.m[1][0] = x;
-			matRotate.m[1][1] = y;
-			matRotate.m[1][2] = z;
+			matRotate.m[2][0] = x;
+			matRotate.m[2][2] = y;
+			matRotate.m[2][1] = z;
 		}
 
 		if (keyWord == ID_TM_ROW2)
 		{
 			float x, y, z;
 			sscanf_s(szTemp, "%*s %f %f %f", &x, &y, &z);
-			matRotate.m[2][0] = x;
-			matRotate.m[2][1] = y;
-			matRotate.m[2][2] = z;
+			matRotate.m[1][0] = x;
+			matRotate.m[1][2] = y;
+			matRotate.m[1][1] = z;
 		}
 
 		if (keyWord == ID_TM_ROW3)
@@ -174,8 +174,9 @@ void cAseLoader::Load(OUT cWoman** RootWoman, IN char * szFolder, IN char * szFi
 			float x, y, z;
 			sscanf_s(szTemp, "%*s %f %f %f", &x, &y, &z);
 			matRotate.m[3][0] = x;
-			matRotate.m[3][1] = y;
-			matRotate.m[3][2] = z;
+			matRotate.m[3][2] = y;
+			matRotate.m[3][1] = z;
+			m_vecWoman[sCurrentName]->SetWorldMatrix(&matRotate);
 		}
 		
 		if (keyWord == ID_MESH_NUMVERTEX)
@@ -197,7 +198,7 @@ void cAseLoader::Load(OUT cWoman** RootWoman, IN char * szFolder, IN char * szFi
 			int idx;
 			float x, y, z;
 			sscanf_s(szTemp, "%*s %d %f %f %f", &idx, &x, &y, &z);
-			vecVertex[idx] = D3DXVECTOR3(x, y, z);
+			vecVertex[idx] = D3DXVECTOR3(x, z, y);
 		}
 
 		if (keyWord == ID_MESH_FACE)

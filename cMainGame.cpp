@@ -76,7 +76,7 @@ void cMainGame::Render()
 
 	if (m_pGrid) m_pGrid->Render();
 
-	Obj_Render();
+	//Obj_Render();
 
 	if (m_pCubeMan) m_pCubeMan->Render();
 	if (m_pWoman) m_pWoman->Render();
