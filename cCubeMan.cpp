@@ -35,17 +35,17 @@ void cCubeMan::Setup(std::vector<ST_PC_VERTEX>* vecVertex, int nType)
 	D3DXCreateTextureFromFile(g_pD3DDevice, "CubeMan.png", &m_pTexture);
 
 	m_nType = nType;
-	switch (nType)
-	{
-	case 1:
-		m_vPosition = (*vecVertex)[0].p;
-		m_nCurrentPoint = 0;
-		break;
-	case 2:
-		m_vPosition = (*vecVertex)[0].p;
-		m_nCurrentPoint = 1;
-		break;
-	}
+	//switch (nType)
+	//{
+	//case 1:
+	//	m_vPosition = (*vecVertex)[0].p;
+	//	m_nCurrentPoint = 0;
+	//	break;
+	//case 2:
+	//	m_vPosition = (*vecVertex)[0].p;
+	//	m_nCurrentPoint = 1;
+	//	break;
+	//}
 
 	SetMaterial();
 
@@ -81,10 +81,8 @@ void cCubeMan::Update(iMap* pMap)
 	cCharacter::Update(pMap);
 	if (m_pRoot)
 		m_pRoot->Update();
-	//if (m_pVecGroup)
-		//CollisionCheck();
-	if (m_nType == 1) MoveStraight();
-	if (m_nType == 2) MoveCurve();
+	//if (m_nType == 1) MoveStraight();
+	//if (m_nType == 2) MoveCurve();
 }
 
 void cCubeMan::Render()

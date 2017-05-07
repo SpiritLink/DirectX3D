@@ -12,14 +12,14 @@ cAseLoader::~cAseLoader()
 {
 }
 
-void cAseLoader::Load(OUT std::vector<cWoman*>& vecGroup, IN char * szFolder, IN char * szFile)
+void cAseLoader::Load(OUT cWoman** RootWoman, IN char * szFolder, IN char * szFile)
 {
 	std::string sFullPath(szFolder);
 	sFullPath += std::string("/") + std::string(szFile);
 	FILE* fp;
 	fopen_s(&fp, sFullPath.c_str(), "r");
 	
-	int nIdx;
+	int nIdx, nVertexNormal = 0;
 	std::string sCurrentName;
 	D3DXMATRIXA16 matRotate;
 	matRotate.m[0][3] = 0;
@@ -89,32 +89,45 @@ void cAseLoader::Load(OUT std::vector<cWoman*>& vecGroup, IN char * szFolder, IN
 
 		if (keyWord == ID_NODE_NAME)
 		{
-			char name1[1024]{ 0, }, name2[1024] = { 0, };
-			sscanf_s(szTemp, "%*s %s %s", &name1, 1024, &name2, 1024);
+			char name1[1024]{ 0, }, name2[1024] = { 0, }, name3[1024] = { 0, };
+			sscanf_s(szTemp, "%*s%s%s%s", &name1, 1024, &name2, 1024, &name3, 1024);
 			std::string sFirstName(name1);
-			std::string sLastName(name2);
+			std::string sMiddleName(name2);
+			std::string sLastName(name3);
 
+			sFirstName.erase(0, 1);
+			if (sMiddleName.size() <= 0)
+				if (sFirstName.size())sFirstName.pop_back();
 			if (sLastName.size() <= 0)
-			{
-				sFirstName.erase(0, 1);
-				sFirstName.pop_back();
-			}
-			else
-			{
-				sFirstName.erase(0, 0);
+				if (sMiddleName.size())sMiddleName.pop_back();
+			if (sLastName.size())
 				sLastName.pop_back();
-			}
-			std::string sFullName = sFirstName + sLastName;
+			std::string sFullName = sFirstName + sMiddleName + sLastName;
+
 			if (m_vecWoman[sFullName] == NULL)
 				m_vecWoman[sFullName] = new cWoman;
+			if (*RootWoman == NULL)
+				*RootWoman = m_vecWoman[sFullName];
 			sCurrentName = sFullName;
 		}
 
 		if (keyWord == ID_NODE_PARENT)
 		{
-			char name1[1024];
-			sscanf_s(szTemp, "%*s %s", &name1, 1024);
-			std::string sFullName(name1);
+			char name1[1024]{ 0, }, name2[1024] = { 0, }, name3[1024] = { 0, };
+			sscanf_s(szTemp, "%*s%s%s%s", &name1, 1024, &name2, 1024, &name3, 1024);
+			std::string sFirstName(name1);
+			std::string sMiddleName(name2);
+			std::string sLastName(name3);
+			
+			sFirstName.erase(0, 1);
+			if (sMiddleName.size() <= 0)
+				if (sFirstName.size())sFirstName.pop_back();
+			if (sLastName.size() <= 0)
+				if (sMiddleName.size())sMiddleName.pop_back();
+			if (sLastName.size())
+				sLastName.pop_back();
+
+			std::string sFullName = sFirstName + sMiddleName + sLastName;
 
 			m_vecWoman[sFullName]->addChild(m_vecWoman[sCurrentName]);
 		}
@@ -174,8 +187,7 @@ void cAseLoader::Load(OUT std::vector<cWoman*>& vecGroup, IN char * szFolder, IN
 		{
 			int size;
 			sscanf_s(szTemp, "%*s %d", &size);
-			vecPNT.clear();
-			vecPNT.resize(size * 3);
+			m_vecWoman[sCurrentName]->GetVertex().resize(size * 3);
 		}
 		if (keyWord == ID_MESH_VERTEX)
 		{
@@ -189,12 +201,23 @@ void cAseLoader::Load(OUT std::vector<cWoman*>& vecGroup, IN char * szFolder, IN
 		{
 			int idx,A, B, C;
 			sscanf_s(szTemp, "%*s %d: A: %d B: %d C: %d",&idx, &A, &B, &C);
-			vecPNT[(idx * 3) + 0].p = vecVertex[A];
-			vecPNT[(idx * 3) + 1].p = vecVertex[B];
-			vecPNT[(idx * 3) + 2].p = vecVertex[C];
+			m_vecWoman[sCurrentName]->GetVertex()[(idx * 3) + 0].p = vecVertex[A];
+			m_vecWoman[sCurrentName]->GetVertex()[(idx * 3) + 1].p = vecVertex[B];
+			m_vecWoman[sCurrentName]->GetVertex()[(idx * 3) + 2].p = vecVertex[C];
 		}
-		//MESH_FACENORMAL
-		//MESH_VERTEXNORMAL ¹¹¸¦ ³Ö¾îÁà¾ßµÇÁö ?
+		if (keyWord == ID_MESH_FACENORMAL)
+		{
+			sscanf_s(szTemp, "%*s %d", &nIdx);
+			nVertexNormal = 0;
+		}
+		if (keyWord == ID_MESH_VERTEXNORMAL)
+		{
+			int tempIdx, x, y, z;
+			sscanf_s(szTemp, "%*s %d %f %f %f", &tempIdx, &x, &y, &z);
+			m_vecWoman[sCurrentName]->GetVertex()[nIdx * 3 + nVertexNormal].n = D3DXVECTOR3(x, y, z);
+			++nVertexNormal;
+		}
 	}
-	
+
+	int D = 3;
 }

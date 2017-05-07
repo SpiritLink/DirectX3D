@@ -22,7 +22,8 @@ cMainGame::cMainGame()
 	m_pCamera(NULL),
 	m_pCubeMan(NULL),
 	m_pCubeManCurve(NULL),
-	m_pMap(NULL)
+	m_pMap(NULL),
+	m_pWoman(NULL)
 {
 }
 
@@ -48,17 +49,14 @@ void cMainGame::Setup()
 	loadObj.Load(m_vecMap, "obj", "Map_surface.obj");
 
 	cAseLoader loadAse;
-	loadAse.Load(m_vecWoman, "woman", "woman_01_all.ASE");
+	loadAse.Load(&m_pWoman, "woman", "woman_01_all.ASE");
 	Load_Surface();
 
 	m_pCubeMan = new cCubeMan;
 	m_pCubeMan->Setup(m_pGrid->getVertex(), 1);
 
-	m_pCubeManCurve = new cCubeMan;
-	m_pCubeManCurve->Setup(m_pGrid->getVertex(), 2);
-
 	m_pCamera = new cCamera;
-	m_pCamera->Setup(&m_pCubeManCurve->GetPosition());
+	m_pCamera->Setup(&m_pCubeMan->GetPosition());
 
 	Set_Light();
 }
@@ -69,7 +67,6 @@ void cMainGame::Update()
 
 	if (m_pCamera) m_pCamera->Update();
 	if (m_pCubeMan) m_pCubeMan->Update(m_pMap);
-	if (m_pCubeManCurve) m_pCubeManCurve->Update(m_pMap);
 }
 
 void cMainGame::Render()
@@ -82,7 +79,7 @@ void cMainGame::Render()
 	Obj_Render();
 
 	if (m_pCubeMan) m_pCubeMan->Render();
-	if (m_pCubeManCurve) m_pCubeManCurve->Render();
+	if (m_pWoman) m_pWoman->Render();
 
 	g_pD3DDevice->EndScene();
 	g_pD3DDevice->Present(NULL, NULL, NULL, NULL);
@@ -119,10 +116,6 @@ void cMainGame::Obj_Render()
 	D3DXMatrixRotationX(&matR, -D3DX_PI / 2.0F);
 	matWorld = matS * matR;
 	g_pD3DDevice->SetTransform(D3DTS_WORLD, &matWorld);
-	for each(auto p in m_vecWoman)
-	{
-		p->Render();
-	}
 	for each(auto p in m_vecMap)
 	{
 		p->Render();

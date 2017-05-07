@@ -10,6 +10,6 @@ private:
 public:
 	cAseLoader();
 	~cAseLoader();
-	void Load(OUT std::vector<cWoman*>& vecWoman, IN char* szFolder, IN char* szFile);
+	void Load(OUT cWoman** RootWoman, IN char* szFolder, IN char* szFile);
 };
 

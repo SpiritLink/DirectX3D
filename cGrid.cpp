@@ -16,50 +16,50 @@ void cGrid::Setup()
 {
 	ST_PC_VERTEX v;
 
-	//int nNumHalfTile = TILENUM;
-	//float fInterval = 1.0f;
-	//float fMax = nNumHalfTile * fInterval;
-	//float fMin = -nNumHalfTile * fInterval;
+	int nNumHalfTile = TILENUM;
+	float fInterval = 1.0f;
+	float fMax = nNumHalfTile * fInterval;
+	float fMin = -nNumHalfTile * fInterval;
 
-	//for (int i = 1; i <= nNumHalfTile; i++)
-	//{
-	//	v.c = D3DCOLOR_XRGB(0, 0, 0);
-	//	v.p = D3DXVECTOR3(fMin, 0, i * fInterval); m_vecVertex.push_back(v);
-	//	v.p = D3DXVECTOR3(fMax, 0, i * fInterval); m_vecVertex.push_back(v);
+	for (int i = 1; i <= nNumHalfTile; i++)
+	{
+		v.c = D3DCOLOR_XRGB(0, 0, 0);
+		v.p = D3DXVECTOR3(fMin, 0, i * fInterval); m_vecVertex.push_back(v);
+		v.p = D3DXVECTOR3(fMax, 0, i * fInterval); m_vecVertex.push_back(v);
 
-	//	v.p = D3DXVECTOR3(fMin, 0, -i * fInterval); m_vecVertex.push_back(v);
-	//	v.p = D3DXVECTOR3(fMax, 0, -i * fInterval); m_vecVertex.push_back(v);
+		v.p = D3DXVECTOR3(fMin, 0, -i * fInterval); m_vecVertex.push_back(v);
+		v.p = D3DXVECTOR3(fMax, 0, -i * fInterval); m_vecVertex.push_back(v);
 
-	//	v.p = D3DXVECTOR3(i * fInterval, 0, fMin); m_vecVertex.push_back(v);
-	//	v.p = D3DXVECTOR3(i * fInterval, 0, fMax); m_vecVertex.push_back(v);
+		v.p = D3DXVECTOR3(i * fInterval, 0, fMin); m_vecVertex.push_back(v);
+		v.p = D3DXVECTOR3(i * fInterval, 0, fMax); m_vecVertex.push_back(v);
 
-	//	v.p = D3DXVECTOR3(-i * fInterval, 0, fMin); m_vecVertex.push_back(v);
-	//	v.p = D3DXVECTOR3(-i * fInterval, 0, fMax); m_vecVertex.push_back(v);
-	//}
+		v.p = D3DXVECTOR3(-i * fInterval, 0, fMin); m_vecVertex.push_back(v);
+		v.p = D3DXVECTOR3(-i * fInterval, 0, fMax); m_vecVertex.push_back(v);
+	}
 
-	//v.p = D3DXVECTOR3(0, 0, fMin); m_vecVertex.push_back(v);
-	//v.p = D3DXVECTOR3(0, 0, fMax); m_vecVertex.push_back(v);
+	v.p = D3DXVECTOR3(0, 0, fMin); m_vecVertex.push_back(v);
+	v.p = D3DXVECTOR3(0, 0, fMax); m_vecVertex.push_back(v);
 
-	//v.p = D3DXVECTOR3(fMin, 0, 0); m_vecVertex.push_back(v);
-	//v.p = D3DXVECTOR3(fMax, 0, 0); m_vecVertex.push_back(v);
-	v.c - D3DCOLOR_XRGB(0, 0, 0);
-	v.p = D3DXVECTOR3(DISTANCE, 0, 0);															m_vecVertex.push_back(v);
-	v.p = D3DXVECTOR3(cosf(D3DX_PI / 3.0f) * DISTANCE, 0, sinf(D3DX_PI / 3.0f) * DISTANCE);		m_vecVertex.push_back(v);
+	v.p = D3DXVECTOR3(fMin, 0, 0); m_vecVertex.push_back(v);
+	v.p = D3DXVECTOR3(fMax, 0, 0); m_vecVertex.push_back(v);
+	//v.c - D3DCOLOR_XRGB(0, 0, 0);
+	//v.p = D3DXVECTOR3(DISTANCE, 0, 0);															m_vecVertex.push_back(v);
+	//v.p = D3DXVECTOR3(cosf(D3DX_PI / 3.0f) * DISTANCE, 0, sinf(D3DX_PI / 3.0f) * DISTANCE);		m_vecVertex.push_back(v);
 
-	v.p = D3DXVECTOR3(cosf(D3DX_PI / 3.0f) * DISTANCE, 0, sinf(D3DX_PI / 3.0f) * DISTANCE);		m_vecVertex.push_back(v);
-	v.p = D3DXVECTOR3(-cosf(D3DX_PI / 3.0f) * DISTANCE, 0, sinf(D3DX_PI / 3.0f) * DISTANCE);	m_vecVertex.push_back(v);
+	//v.p = D3DXVECTOR3(cosf(D3DX_PI / 3.0f) * DISTANCE, 0, sinf(D3DX_PI / 3.0f) * DISTANCE);		m_vecVertex.push_back(v);
+	//v.p = D3DXVECTOR3(-cosf(D3DX_PI / 3.0f) * DISTANCE, 0, sinf(D3DX_PI / 3.0f) * DISTANCE);	m_vecVertex.push_back(v);
 
-	v.p = D3DXVECTOR3(-cosf(D3DX_PI / 3.0f) * DISTANCE, 0, sinf(D3DX_PI / 3.0f) * DISTANCE);	m_vecVertex.push_back(v);
-	v.p = D3DXVECTOR3(-DISTANCE, 0, 0);															m_vecVertex.push_back(v);
+	//v.p = D3DXVECTOR3(-cosf(D3DX_PI / 3.0f) * DISTANCE, 0, sinf(D3DX_PI / 3.0f) * DISTANCE);	m_vecVertex.push_back(v);
+	//v.p = D3DXVECTOR3(-DISTANCE, 0, 0);															m_vecVertex.push_back(v);
 
-	v.p = D3DXVECTOR3(-DISTANCE, 0, 0);															m_vecVertex.push_back(v);
-	v.p = D3DXVECTOR3(-cosf(D3DX_PI / 3.0f) * DISTANCE, 0, -sinf(D3DX_PI / 3.0f) * DISTANCE);	m_vecVertex.push_back(v);
+	//v.p = D3DXVECTOR3(-DISTANCE, 0, 0);															m_vecVertex.push_back(v);
+	//v.p = D3DXVECTOR3(-cosf(D3DX_PI / 3.0f) * DISTANCE, 0, -sinf(D3DX_PI / 3.0f) * DISTANCE);	m_vecVertex.push_back(v);
 
-	v.p = D3DXVECTOR3(-cosf(D3DX_PI / 3.0f) * DISTANCE, 0, -sinf(D3DX_PI / 3.0f) * DISTANCE);	m_vecVertex.push_back(v);
-	v.p = D3DXVECTOR3(cosf(D3DX_PI / 3.0f) * DISTANCE, 0, -sinf(D3DX_PI / 3.0f) * DISTANCE);	m_vecVertex.push_back(v);
+	//v.p = D3DXVECTOR3(-cosf(D3DX_PI / 3.0f) * DISTANCE, 0, -sinf(D3DX_PI / 3.0f) * DISTANCE);	m_vecVertex.push_back(v);
+	//v.p = D3DXVECTOR3(cosf(D3DX_PI / 3.0f) * DISTANCE, 0, -sinf(D3DX_PI / 3.0f) * DISTANCE);	m_vecVertex.push_back(v);
 
-	v.p = D3DXVECTOR3(cosf(D3DX_PI / 3.0f) * DISTANCE, 0, -sinf(D3DX_PI / 3.0f) * DISTANCE);	m_vecVertex.push_back(v);
-	v.p = D3DXVECTOR3(DISTANCE, 0, 0);															m_vecVertex.push_back(v);
+	//v.p = D3DXVECTOR3(cosf(D3DX_PI / 3.0f) * DISTANCE, 0, -sinf(D3DX_PI / 3.0f) * DISTANCE);	m_vecVertex.push_back(v);
+	//v.p = D3DXVECTOR3(DISTANCE, 0, 0);															m_vecVertex.push_back(v);
 }
 
 void cGrid::Render()
