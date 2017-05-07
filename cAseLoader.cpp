@@ -223,6 +223,7 @@ void cAseLoader::Load(OUT cWoman** RootWoman, IN char * szFolder, IN char * szFi
 			++nVertexNormal;
 		}
 
+
 		if (keyWord == ID_MESH_NUMTVERTEX)
 		{
 			int size;
@@ -235,7 +236,7 @@ void cAseLoader::Load(OUT cWoman** RootWoman, IN char * szFolder, IN char * szFi
 			int tempIdx;
 			float x, y, z;
 			sscanf_s(szTemp, "%*s%d%f%f%f",&tempIdx, &x, &y, &z);
-			vecTVERT[tempIdx] = D3DXVECTOR2(x, y);
+			vecTVERT[tempIdx] = D3DXVECTOR2(x, 1.0f - y);
 		}
 		if (keyWord == ID_MESH_TFACE)
 		{

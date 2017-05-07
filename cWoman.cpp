@@ -31,8 +31,8 @@ void cWoman::update()
 
 	m_matLocalTransMatrix = m_matR * m_matLocalTransMatrix;
 
-	//if (m_pParentWorldTransMatrix)
-	//	m_matLocalTransMatrix *= *m_pParentWorldTransMatrix;
+	if (m_pParentWorldTransMatrix)
+		m_matWorldTransMatrix = *m_pParentWorldTransMatrix;
 	for each(auto p in m_vecChild)
 	{
 		p->update();
@@ -42,7 +42,8 @@ void cWoman::update()
 void cWoman::Render()
 {
 	g_pD3DDevice->SetTransform(D3DTS_WORLD, &m_matLocalTransMatrix);
-	cGroup::Render();
+	if(m_pMtlTex)
+		cGroup::Render();
 	for (int i = 0; i < m_vecChild.size(); ++i)
 	{
 		m_vecChild[i]->Render();
