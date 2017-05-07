@@ -28,7 +28,7 @@ void cAseLoader::Load(OUT cWoman** RootWoman, IN char * szFolder, IN char * szFi
 	matRotate.m[3][3] = 1;
 
 	std::vector<D3DXVECTOR3> vecVertex;
-	std::vector<D3DXVECTOR3> vecTVERT;
+	std::vector<D3DXVECTOR2> vecTVERT;
 	std::vector<ST_PNT_VERTEX> vecPNT;
 	while (true)
 	{
@@ -84,8 +84,10 @@ void cAseLoader::Load(OUT cWoman** RootWoman, IN char * szFolder, IN char * szFi
 			char path[1024];
 			sscanf_s(szTemp, "%*s %s", &path,1024);
 			std::string sFullPath(path);
+			sFullPath.erase(0, 1);
 			sFullPath.pop_back();
 			g_pTextureManager->GetTexture(sFullPath);
+			m_mapTexture.insert(make_pair(nIdx,sFullPath));
 		}
 
 		if (keyWord == ID_NODE_NAME)
@@ -232,15 +234,15 @@ void cAseLoader::Load(OUT cWoman** RootWoman, IN char * szFolder, IN char * szFi
 			int tempIdx;
 			float x, y, z;
 			sscanf_s(szTemp, "%*s%d%f%f%f",&tempIdx, &x, &y, &z);
-			vecTVERT[tempIdx] = D3DXVECTOR3(x, y, z);
+			vecTVERT[tempIdx] = D3DXVECTOR2(x, y);
 		}
 		if (keyWord == ID_MESH_TFACE)
 		{
 			int tempidx,x, y, z;
 			sscanf_s(szTemp, "%*s %d %d %d %d", &tempidx, &x, &y, &z);
-			m_vecWoman[sCurrentName]->GetVertex()[tempidx * 3 + 0].n = vecTVERT[x];
-			m_vecWoman[sCurrentName]->GetVertex()[tempidx * 3 + 1].n = vecTVERT[y];
-			m_vecWoman[sCurrentName]->GetVertex()[tempidx * 3 + 2].n = vecTVERT[z];
+			m_vecWoman[sCurrentName]->GetVertex()[tempidx * 3 + 0].t = vecTVERT[x];
+			m_vecWoman[sCurrentName]->GetVertex()[tempidx * 3 + 1].t = vecTVERT[y];
+			m_vecWoman[sCurrentName]->GetVertex()[tempidx * 3 + 2].t = vecTVERT[z];
 		}
 
 		if (keyWord == ID_MATERIAL_REF)
@@ -250,6 +252,7 @@ void cAseLoader::Load(OUT cWoman** RootWoman, IN char * szFolder, IN char * szFi
 			if (m_vecWoman[sCurrentName]->GetMtlTex() == NULL)
 				m_vecWoman[sCurrentName]->SetMtlTex(new cMtlTex);
 			m_vecWoman[sCurrentName]->GetMtlTex()->SetMaterial(m_vecMaterial[idx]);
+			m_vecWoman[sCurrentName]->GetMtlTex()->SetTexture(g_pTextureManager->GetTexture(m_mapTexture[idx]));
 		}
 	}
 
