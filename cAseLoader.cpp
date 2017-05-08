@@ -206,8 +206,8 @@ void cAseLoader::Load(OUT cWoman** RootWoman, IN char * szFolder, IN char * szFi
 			int idx,A, B, C;
 			sscanf_s(szTemp, "%*s %d: A: %d B: %d C: %d",&idx, &A, &B, &C);
 			m_vecWoman[sCurrentName]->GetVertex()[(idx * 3) + 0].p = vecVertex[A];
-			m_vecWoman[sCurrentName]->GetVertex()[(idx * 3) + 1].p = vecVertex[B];
-			m_vecWoman[sCurrentName]->GetVertex()[(idx * 3) + 2].p = vecVertex[C];
+			m_vecWoman[sCurrentName]->GetVertex()[(idx * 3) + 1].p = vecVertex[C];
+			m_vecWoman[sCurrentName]->GetVertex()[(idx * 3) + 2].p = vecVertex[B];
 		}
 		if (keyWord == ID_MESH_FACENORMAL)
 		{
@@ -243,8 +243,8 @@ void cAseLoader::Load(OUT cWoman** RootWoman, IN char * szFolder, IN char * szFi
 			int tempidx,x, y, z;
 			sscanf_s(szTemp, "%*s %d %d %d %d", &tempidx, &x, &y, &z);
 			m_vecWoman[sCurrentName]->GetVertex()[tempidx * 3 + 0].t = vecTVERT[x];
-			m_vecWoman[sCurrentName]->GetVertex()[tempidx * 3 + 1].t = vecTVERT[y];
-			m_vecWoman[sCurrentName]->GetVertex()[tempidx * 3 + 2].t = vecTVERT[z];
+			m_vecWoman[sCurrentName]->GetVertex()[tempidx * 3 + 1].t = vecTVERT[z];
+			m_vecWoman[sCurrentName]->GetVertex()[tempidx * 3 + 2].t = vecTVERT[y];
 		}
 
 		if (keyWord == ID_MATERIAL_REF)
