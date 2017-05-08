@@ -1,16 +1,49 @@
 #pragma once
 
-class cWoman;
+class cFrame;
+class cMtlTex;
 
 class cAseLoader
 {
-private:
-	std::vector<D3DMATERIAL9> m_vecMaterial;
-	std::map<std::string, cWoman*> m_vecWoman;
-	std::map<int, std::string>	m_mapTexture;
 public:
 	cAseLoader();
 	~cAseLoader();
-	void Load(OUT cWoman** RootWoman, IN char* szFolder, IN char* szFile);
+private:
+	FILE*		m_fp;
+	char		m_szToken[1024];
+	std::vector<cMtlTex*>	m_vecMtlTex;
+	std::map<std::string, cFrame*>	m_mapFrame;
+public:
+	cFrame*	Load(IN char* szFullPath);
+private:
+	char*	GetToken();
+	int		GetInteger();
+	float	GetFloat();
+	bool	IsWhite(IN char c);
+	bool	IsEqual(IN char* str1, IN char* str2);
+	void	SkipBlock();
+	void	ProcessMATERIAL_LIST();
+	void	ProcessMATERIAL(OUT cMtlTex* pMtlTex);
+	void	ProcessMAP_DIFFUSE(OUT cMtlTex* pMtlTex);
+	cFrame*	ProcessGEOMOBJECT();
+	void	ProcessMESH(OUT cFrame* pFrame);
+	void	ProcessMESH_VERTEX_LIST(OUT std::vector<D3DXVECTOR3>& vecV);
+	void	ProcessMESH_FACE_LIST(	OUT std::vector<ST_PNT_VERTEX>& vecVertex,
+									IN std::vector<D3DXVECTOR3> vecV);
+	void	ProcessMESH_TVERTLISE(OUT std::vector<D3DXVECTOR2>& vecT);
+	void	ProcessMESH_TFACELIST(	OUT std::vector<ST_PNT_VERTEX> vecVertex,
+									IN std::vector<D3DXVECTOR2>& vecVT);
+
+	void	ProcessMESH_NORMALS(OUT std::vector<ST_PNT_VERTEX>& vecVertex);
+	
+	void	ProcessNODE_TM(OUT cFrame* pFrame);
+
+	//void	ProcessScene();
+	void	Set_SceneFrame(OUT cFrame* pRoot);
+									
+
+
+
+
 };
 

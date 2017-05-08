@@ -1,9 +1,10 @@
 #include "stdafx.h"
 #include "cAseLoader.h"
-#include "cWoman.h"
 #include "Asciitok.h"
 #include "cMtlTex.h"
+#include "cFrame.h"
 cAseLoader::cAseLoader()
+	: m_fp(NULL)
 {
 }
 
@@ -12,251 +13,299 @@ cAseLoader::~cAseLoader()
 {
 }
 
-void cAseLoader::Load(OUT cWoman** RootWoman, IN char * szFolder, IN char * szFile)
+cFrame * cAseLoader::Load(IN char * szFullPath)
 {
-	std::string sFullPath(szFolder);
-	sFullPath += std::string("/") + std::string(szFile);
-	FILE* fp;
-	fopen_s(&fp, sFullPath.c_str(), "r");
-	
-	int nIdx, nVertexNormal = 0;
-	std::string sCurrentName;
-	D3DXMATRIXA16 matRotate;
-	matRotate.m[0][3] = 0;
-	matRotate.m[1][3] = 0;
-	matRotate.m[2][3] = 0;
-	matRotate.m[3][3] = 1;
+	fopen_s(&m_fp, szFullPath, "r");
 
-	std::vector<D3DXVECTOR3> vecVertex;
-	std::vector<D3DXVECTOR2> vecTVERT;
-	std::vector<ST_PNT_VERTEX> vecPNT;
-	while (true)
+	cFrame* pRoot = NULL;
+
+	while (char* szToken = GetToken())
 	{
-		if (feof(fp)) break;
-
-		char szTemp[1024], szTemp2[1024];
-		fgets(szTemp, 1024, fp);
-
-		sscanf_s(szTemp, "%s %*s", &szTemp2,1024);
-		std::string keyWord(szTemp2);
-
-		/// MATERIAL_COUNT만큼 Material Vector크기 변경
-		if (keyWord == ID_MATERIAL_COUNT)
+		if (IsEqual(szToken, ID_SCENE))
 		{
-			int nCnt;
-			sscanf_s(szTemp, "%*s %d", &nCnt);
-			m_vecMaterial.resize(nCnt);
+			SkipBlock();
 		}
-		if (keyWord == ID_MATERIAL)
+		else if (IsEqual(szToken, ID_MATERIAL_LIST))
 		{
-			sscanf_s(szTemp, "%*s %d", &nIdx);
+			ProcessMATERIAL_LIST();
 		}
-
-		if (keyWord == ID_AMBIENT)
+		else if (IsEqual(szToken, ID_GEOMETRY))
 		{
-			float r, g, b;
-			sscanf_s(szTemp, "%*s %f %f %f", &r, &g, &b);
-			m_vecMaterial[nIdx].Ambient.r = r;
-			m_vecMaterial[nIdx].Ambient.g = g;
-			m_vecMaterial[nIdx].Ambient.b = b;
-			m_vecMaterial[nIdx].Ambient.a = 1.0f;
-		}
-		if (keyWord == ID_DIFFUSE)
-		{
-			float r, g, b;
-			sscanf_s(szTemp, "%*s %f %f %f", &r, &g, &b);
-			m_vecMaterial[nIdx].Diffuse.r = r;
-			m_vecMaterial[nIdx].Diffuse.g = g;
-			m_vecMaterial[nIdx].Diffuse.b = b;
-			m_vecMaterial[nIdx].Diffuse.a = 1.0f;
-		}
-		if (keyWord == ID_SPECULAR)
-		{
-			float r, g, b;
-			sscanf_s(szTemp, "%*s %f %f %f", &r, &g, &b);
-			m_vecMaterial[nIdx].Specular.r = r;
-			m_vecMaterial[nIdx].Specular.g = g;
-			m_vecMaterial[nIdx].Specular.b = b;
-			m_vecMaterial[nIdx].Specular.a = 1.0f;
-		}
-		if (keyWord == ID_BITMAP)
-		{
-			char path[1024];
-			sscanf_s(szTemp, "%*s %s", &path,1024);
-			std::string sFullPath(path);
-			sFullPath.erase(0, 1);
-			sFullPath.pop_back();
-			g_pTextureManager->GetTexture(sFullPath);
-			m_mapTexture.insert(make_pair(nIdx,sFullPath));
-		}
-
-		if (keyWord == ID_NODE_NAME)
-		{
-			char name1[1024]{ 0, }, name2[1024] = { 0, }, name3[1024] = { 0, };
-			sscanf_s(szTemp, "%*s%s%s%s", &name1, 1024, &name2, 1024, &name3, 1024);
-			std::string sFirstName(name1);
-			std::string sMiddleName(name2);
-			std::string sLastName(name3);
-
-			sFirstName.erase(0, 1);
-			if (sMiddleName.size() <= 0)
-				if (sFirstName.size())sFirstName.pop_back();
-			if (sLastName.size() <= 0)
-				if (sMiddleName.size())sMiddleName.pop_back();
-			if (sLastName.size())
-				sLastName.pop_back();
-			std::string sFullName = sFirstName + sMiddleName + sLastName;
-
-			if (m_vecWoman[sFullName] == NULL)
-				m_vecWoman[sFullName] = new cWoman;
-			if (*RootWoman == NULL)
-				*RootWoman = m_vecWoman[sFullName];
-			sCurrentName = sFullName;
-		}
-
-		if (keyWord == ID_NODE_PARENT)
-		{
-			char name1[1024]{ 0, }, name2[1024] = { 0, }, name3[1024] = { 0, };
-			sscanf_s(szTemp, "%*s%s%s%s", &name1, 1024, &name2, 1024, &name3, 1024);
-			std::string sFirstName(name1);
-			std::string sMiddleName(name2);
-			std::string sLastName(name3);
-			
-			sFirstName.erase(0, 1);
-			if (sMiddleName.size() <= 0)
-				if (sFirstName.size())sFirstName.pop_back();
-			if (sLastName.size() <= 0)
-				if (sMiddleName.size())sMiddleName.pop_back();
-			if (sLastName.size())
-				sLastName.pop_back();
-
-			std::string sFullName = sFirstName + sMiddleName + sLastName;
-
-			m_vecWoman[sFullName]->addChild(m_vecWoman[sCurrentName]);
-		}
-
-		if (keyWord == ID_INHERIT_POS)
-		{
-			int x, y, z;
-			sscanf_s(szTemp, "%*s %d %d %d", &x, &y, &z);
-			m_vecWoman[sCurrentName]->SetLocalPosition(D3DXVECTOR3(x, y, z));
-		}
-
-		if (keyWord == ID_TM_ROW0)
-		{
-			float x, y, z;
-			sscanf_s(szTemp, "%*s %f %f %f", &x, &y, &z);
-			matRotate.m[0][0] = x;
-			matRotate.m[0][2] = y;
-			matRotate.m[0][1] = z;
-		}
-
-		if (keyWord == ID_TM_ROW1)
-		{
-			float x, y, z;
-			sscanf_s(szTemp, "%*s %f %f %f", &x, &y, &z);
-			matRotate.m[2][0] = x;
-			matRotate.m[2][2] = y;
-			matRotate.m[2][1] = z;
-		}
-
-		if (keyWord == ID_TM_ROW2)
-		{
-			float x, y, z;
-			sscanf_s(szTemp, "%*s %f %f %f", &x, &y, &z);
-			matRotate.m[1][0] = x;
-			matRotate.m[1][2] = y;
-			matRotate.m[1][1] = z;
-		}
-
-		if (keyWord == ID_TM_ROW3)
-		{
-			float x, y, z;
-			sscanf_s(szTemp, "%*s %f %f %f", &x, &y, &z);
-			matRotate.m[3][0] = x;
-			matRotate.m[3][2] = y;
-			matRotate.m[3][1] = z;
-			m_vecWoman[sCurrentName]->SetWorldMatrix(&matRotate);
-		}
-		
-		if (keyWord == ID_MESH_NUMVERTEX)
-		{
-			int size;
-			sscanf_s(szTemp, "%*s %d", &size);
-			vecVertex.clear();
-			vecVertex.resize(size);
-		}
-
-		if (keyWord == ID_MESH_NUMFACES)
-		{
-			int size;
-			sscanf_s(szTemp, "%*s %d", &size);
-			m_vecWoman[sCurrentName]->GetVertex().resize(size * 3);
-		}
-		if (keyWord == ID_MESH_VERTEX)
-		{
-			int idx;
-			float x, y, z;
-			sscanf_s(szTemp, "%*s %d %f %f %f", &idx, &x, &y, &z);
-			vecVertex[idx] = D3DXVECTOR3(x, z, y);
-		}
-
-		if (keyWord == ID_MESH_FACE)
-		{
-			int idx,A, B, C;
-			sscanf_s(szTemp, "%*s %d: A: %d B: %d C: %d",&idx, &A, &B, &C);
-			m_vecWoman[sCurrentName]->GetVertex()[(idx * 3) + 0].p = vecVertex[A];
-			m_vecWoman[sCurrentName]->GetVertex()[(idx * 3) + 1].p = vecVertex[C];
-			m_vecWoman[sCurrentName]->GetVertex()[(idx * 3) + 2].p = vecVertex[B];
-		}
-		if (keyWord == ID_MESH_FACENORMAL)
-		{
-			sscanf_s(szTemp, "%*s %d", &nIdx);
-			nVertexNormal = 0;
-		}
-		if (keyWord == ID_MESH_VERTEXNORMAL)
-		{
-			int tempIdx;
-			float x, y, z;
-			sscanf_s(szTemp, "%*s %d %f %f %f", &tempIdx, &x, &y, &z);
-			m_vecWoman[sCurrentName]->GetVertex()[nIdx * 3 + nVertexNormal].n = D3DXVECTOR3(x, y, z);
-			++nVertexNormal;
-		}
-
-
-		if (keyWord == ID_MESH_NUMTVERTEX)
-		{
-			int size;
-			sscanf_s(szTemp, "%*s %d", &size);
-			vecTVERT.clear();
-			vecTVERT.resize(size);
-		}
-		if (keyWord == ID_MESH_TVERT)
-		{
-			int tempIdx;
-			float x, y, z;
-			sscanf_s(szTemp, "%*s%d%f%f%f",&tempIdx, &x, &y, &z);
-			vecTVERT[tempIdx] = D3DXVECTOR2(x, 1.0f - y);
-		}
-		if (keyWord == ID_MESH_TFACE)
-		{
-			int tempidx,x, y, z;
-			sscanf_s(szTemp, "%*s %d %d %d %d", &tempidx, &x, &y, &z);
-			m_vecWoman[sCurrentName]->GetVertex()[tempidx * 3 + 0].t = vecTVERT[x];
-			m_vecWoman[sCurrentName]->GetVertex()[tempidx * 3 + 1].t = vecTVERT[z];
-			m_vecWoman[sCurrentName]->GetVertex()[tempidx * 3 + 2].t = vecTVERT[y];
-		}
-
-		if (keyWord == ID_MATERIAL_REF)
-		{
-			int idx = 0;
-			sscanf_s(szTemp, "%*s %d", &idx);
-			if (m_vecWoman[sCurrentName]->GetMtlTex() == NULL)
-				m_vecWoman[sCurrentName]->SetMtlTex(new cMtlTex);
-			m_vecWoman[sCurrentName]->GetMtlTex()->SetMaterial(m_vecMaterial[idx]);
-			m_vecWoman[sCurrentName]->GetMtlTex()->SetTexture(g_pTextureManager->GetTexture(m_mapTexture[idx]));
+			cFrame*	pFrame = ProcessGEOMOBJECT();
+			if (pRoot == NULL)
+			{
+				pRoot = pFrame;
+				Set_SceneFrame(pRoot);
+			}
 		}
 	}
+	fclose(m_fp);
 
-	int D = 3;
+	for each(auto p in m_vecMtlTex)
+	{
+		SAFE_RELEASE(p);
+	}
+
+	pRoot->CalcOriginalLocalTM(NULL);
+	return pRoot;
+}
+
+char * cAseLoader::GetToken()
+{
+	int nReadCnt = 0;
+	bool isQuote = false;
+
+	while (true)
+	{
+		char c = fgetc(m_fp);
+		if (feof(m_fp)) break;
+
+		if (c == '\"')
+		{
+			if (isQuote) break;
+			isQuote = true;
+			continue;
+		}
+
+		if (!isQuote && IsWhite(c))
+		{
+			if (nReadCnt == 0)
+				continue;
+			else
+				break;
+		}
+
+		m_szToken[nReadCnt++] = c;
+	}
+	if (nReadCnt == 0)
+		return NULL;
+
+	m_szToken[nReadCnt] = '\0';
+
+	return m_szToken;
+}
+
+int cAseLoader::GetInteger()
+{
+	return atoi(GetToken());
+}
+
+float cAseLoader::GetFloat()
+{
+	return (float)atof(GetToken());
+}
+
+bool cAseLoader::IsWhite(IN char c)
+{
+	return c < 33;
+}
+
+bool cAseLoader::IsEqual(IN char * str1, IN char * str2)
+{
+	return strcmp(str1, str2) == 0;
+}
+
+void cAseLoader::SkipBlock()
+{
+	int nLevel = 0;
+	do
+	{
+		char * szToken = GetToken();
+		if (IsEqual(szToken, "{"))
+		{
+			++nLevel;
+		}
+		else if (IsEqual(szToken, "}"))
+		{
+			--nLevel;
+		}
+	} while (nLevel > 0);
+}
+
+void cAseLoader::ProcessMATERIAL_LIST()
+{
+	int nLevel = 0;
+	do
+	{
+		char * szToken = GetToken();
+		if (IsEqual(szToken, "{"))
+		{
+			++nLevel;
+		}
+		else if (IsEqual(szToken, "}"))
+		{
+			--nLevel;
+		}
+		else if (IsEqual(szToken, ID_MATERIAL_COUNT))
+		{
+			for each(auto p in m_vecMtlTex)
+			{
+				SAFE_RELEASE(p);
+			}
+			m_vecMtlTex.resize(GetInteger());
+		}
+		else if (IsEqual(szToken, ID_MATERIAL))
+		{
+			int nIndex = GetInteger();
+			m_vecMtlTex[nIndex] = new cMtlTex;
+			ProcessMATERIAL(m_vecMtlTex[nIndex]);
+		}
+	} while (nLevel > 0);
+
+}
+
+void cAseLoader::ProcessMATERIAL(OUT cMtlTex * pMtlTex)
+{
+	D3DMATERIAL9 stMtl;
+	ZeroMemory(&stMtl, sizeof(D3DMATERIAL9));
+
+	int nLevel = 0;
+	do
+	{
+		char * szToken = GetToken();
+		if (IsEqual(szToken, "{"))
+		{
+			++nLevel;
+		}
+		else if (IsEqual(szToken, "}"))
+		{
+			--nLevel;
+		}
+		else if (IsEqual(szToken, ID_AMBIENT))
+		{
+			stMtl.Ambient.r = GetFloat();
+			stMtl.Ambient.g = GetFloat();
+			stMtl.Ambient.b = GetFloat();
+			stMtl.Ambient.a = 1.0f;
+		}
+		else if (IsEqual(szToken, ID_DIFFUSE))
+		{
+			stMtl.Diffuse.r = GetFloat();
+			stMtl.Diffuse.g = GetFloat();
+			stMtl.Diffuse.b = GetFloat();
+			stMtl.Diffuse.a = 1.0f;
+		}
+		else if (IsEqual(szToken, ID_SPECULAR))
+		{
+			stMtl.Specular.r = GetFloat();
+			stMtl.Specular.g = GetFloat();
+			stMtl.Specular.b = GetFloat();
+			stMtl.Specular.a = 1.0f;
+		}
+		else if (IsEqual(szToken, ID_MAP_DIFFUSE))
+		{
+			ProcessMAP_DIFFUSE(pMtlTex);
+		}
+	} while (nLevel > 0);
+
+	pMtlTex->SetMaterial(stMtl);
+}
+
+void cAseLoader::ProcessMAP_DIFFUSE(OUT cMtlTex * pMtlTex)
+{
+	int nLevel = 0;
+	do
+	{
+		char * szToken = GetToken();
+		if (IsEqual(szToken, "{"))
+		{
+			++nLevel;
+		}
+		else if (IsEqual(szToken, "}"))
+		{
+			--nLevel;
+		}
+		else if (IsEqual(szToken, ID_BITMAP))
+		{
+			szToken = GetToken();
+			pMtlTex->SetTexture(g_pTextureManager->GetTexture(szToken));
+		}
+	} while (nLevel > 0);
+}
+
+cFrame * cAseLoader::ProcessGEOMOBJECT()
+{
+	cFrame* pFrame = new cFrame;
+
+	int nLevel = 0;
+	do
+	{
+		char * szToken = GetToken();
+		if (IsEqual(szToken, "{"))
+		{
+			++nLevel;
+		}
+		else if (IsEqual(szToken, "}"))
+		{
+			--nLevel;
+		}
+		else if (IsEqual(szToken, ID_NODE_NAME))
+		{
+			m_mapFrame[GetToken()] = pFrame;
+		}
+		else if (IsEqual(szToken, ID_NODE_PARENT))
+		{
+			m_mapFrame[GetToken()]->AddChild(pFrame);
+		}
+		else if (IsEqual(szToken, ID_NODE_TM))
+		{
+			ProcessNODE_TM(pFrame);
+		}
+		else if (IsEqual(szToken, ID_MESH))
+		{
+			ProcessMESH(pFrame);
+		}
+		else if (IsEqual(szToken, ID_MATERIAL_REF))
+		{
+			int nMtlIndex = GetInteger();
+			pFrame->SetMtlTex(m_vecMtlTex[nMtlIndex]);
+		}
+	} while (nLevel > 0);
+
+	return pFrame;
+}
+
+void cAseLoader::ProcessMESH(OUT cFrame * pFrame)
+{
+	int nLevel = 0;
+	do
+	{
+		char * szToken = GetToken();
+		if (IsEqual(szToken, "{"))
+		{
+			++nLevel;
+		}
+		else if (IsEqual(szToken, "}"))
+		{
+			--nLevel;
+		}
+	} while (nLevel > 0);
+}
+
+void cAseLoader::ProcessMESH_VERTEX_LIST(OUT std::vector<D3DXVECTOR3>& vecV)
+{
+}
+
+void cAseLoader::ProcessMESH_FACE_LIST(OUT std::vector<ST_PNT_VERTEX>& vecVertex, IN std::vector<D3DXVECTOR3> vecV)
+{
+}
+
+void cAseLoader::ProcessMESH_TVERTLISE(OUT std::vector<D3DXVECTOR2>& vecT)
+{
+}
+
+void cAseLoader::ProcessMESH_TFACELIST(OUT std::vector<ST_PNT_VERTEX> vecVertex, IN std::vector<D3DXVECTOR2>& vecVT)
+{
+}
+
+void cAseLoader::ProcessMESH_NORMALS(OUT std::vector<ST_PNT_VERTEX>& vecVertex)
+{
+}
+
+void cAseLoader::ProcessNODE_TM(OUT cFrame * pFrame)
+{
+}
+
+void cAseLoader::Set_SceneFrame(OUT cFrame * pRoot)
+{
 }
