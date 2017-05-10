@@ -95,3 +95,16 @@ void cFrame::CalcOriginalLocalTM(D3DXMATRIXA16 * pMatParent)
 		c->CalcOriginalLocalTM(&m_matWorldTM);
 	}
 }
+
+int cFrame::GetKeyFrame()
+{
+	return 0;
+}
+
+void cFrame::CalcLocalT(IN int nKeyFrame, OUT D3DXMATRIXA16 & matT)
+{
+}
+
+void cFrame::CalcLocalR(IN int nKeyFrame, OUT D3DXMATRIXA16 & matR)
+{
+}

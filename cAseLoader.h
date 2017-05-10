@@ -38,12 +38,18 @@ private:
 	
 	void	ProcessNODE_TM(OUT cFrame* pFrame);
 
-	//void	ProcessScene();
 	void	Set_SceneFrame(OUT cFrame* pRoot);
-									
 
+	DWORD	m_dwFirstFrame;
+	DWORD	m_dwLastFrame;
+	DWORD	m_dwFrameSpeed;
+	DWORD	m_dwTicksPerFrame;
 
-
+	void	ProcessScene();
+	void	ProcessTM_ANIMATION(OUT cFrame* pFrame);
+	void	ProcessCONTROL_POS_TRACK(OUT cFrame* pFrame);
+	void	ProcessCONTROL_ROT_TRACK(OUT cFrame* pFrame);
 
 };
+
 
