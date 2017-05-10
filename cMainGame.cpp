@@ -15,6 +15,7 @@
 
 #include "cAseLoader.h"
 #include "cWoman.h"
+#include "cFrame.h"
 
 cMainGame::cMainGame()
 	: //m_pCubePC(NULL),
@@ -23,7 +24,8 @@ cMainGame::cMainGame()
 	m_pCubeMan(NULL),
 	m_pCubeManCurve(NULL),
 	m_pMap(NULL),
-	m_pWoman(NULL)
+	m_pWoman(NULL),
+	m_pRootFrame(NULL)
 {
 }
 
@@ -36,7 +38,8 @@ cMainGame::~cMainGame()
 	SAFE_DELETE(m_pCubeMan);
 	SAFE_DELETE(m_pCubeManCurve)
 	SAFE_DELETE(m_pMap);
-	g_pDeviceManager->Destroy();	//¼Ò¸êÀÚ ¿ªÈ°À» ÇÏ°Ô²û ¸¸µë
+	g_pDeviceManager->Destroy();
+	m_pRootFrame->Destroy();
 }
 
 void cMainGame::Setup()
@@ -44,19 +47,19 @@ void cMainGame::Setup()
 	m_pGrid = new cGrid;
 	m_pGrid->Setup();
 
-	cObjLoader loadObj;
-	loadObj.Load(m_vecGroup, "obj", "Map.obj");
-	loadObj.Load(m_vecMap, "obj", "Map_surface.obj");
+	//cObjLoader loadObj;
+	//loadObj.Load(m_vecGroup, "obj", "Map.obj");
+	//loadObj.Load(m_vecMap, "obj", "Map_surface.obj");
 
 	cAseLoader loadAse;
-	loadAse.Load(&m_pWoman, "woman", "woman_01_all.ASE");
+	m_pRootFrame = loadAse.Load("woman/woman_01_all.ASE");
 	Load_Surface();
 
-	m_pCubeMan = new cCubeMan;
-	m_pCubeMan->Setup(m_pGrid->getVertex(), 1);
+	//m_pCubeMan = new cCubeMan;
+	//m_pCubeMan->Setup(m_pGrid->getVertex(), 1);
 
 	m_pCamera = new cCamera;
-	m_pCamera->Setup(&m_pCubeMan->GetPosition());
+	m_pCamera->Setup(NULL);
 
 	Set_Light();
 }
@@ -78,9 +81,11 @@ void cMainGame::Render()
 
 	//Obj_Render();
 
-	if (m_pCubeMan) m_pCubeMan->Render();
-	if (m_pWoman) m_pWoman->Render();
+	//if (m_pCubeMan) m_pCubeMan->Render();
+	//if (m_pWoman) m_pWoman->Render();
 
+	if (m_pRootFrame) 
+		m_pRootFrame->Render();
 	g_pD3DDevice->EndScene();
 	g_pD3DDevice->Present(NULL, NULL, NULL, NULL);
 }

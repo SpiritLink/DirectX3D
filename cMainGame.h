@@ -7,6 +7,7 @@ class cCubeMan;
 class cGroup;
 class cWoman;
 class iMap;
+class cFrame;
 
 class cMainGame
 {
@@ -24,7 +25,8 @@ private:
 	std::vector<cGroup*>	m_vecMap;
 
 	iMap* m_pMap; // << :
-
+	
+	cFrame*					m_pRootFrame;
 public:
 	void Setup();
 	void Update();
