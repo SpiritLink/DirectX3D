@@ -4,7 +4,8 @@
 
 cFrame::cFrame()
 	: m_pMtlTex(NULL),
-	m_dwStartTick(0)
+	m_dwStartTick(0),
+	m_pPosition(NULL)
 {
 	D3DXMatrixIdentity(&m_matLocalTM);
 	D3DXMatrixIdentity(&m_matWorldTM);
@@ -18,21 +19,9 @@ cFrame::~cFrame()
 
 void cFrame::Update(int nKeyFrame, D3DXMATRIXA16 * pMatParent)
 {
-	D3DXMATRIXA16 matR, matT;
-	/*
-	{
-		D3DXMatrixIdentity(&matR);
-		matR = m_matLocalTM;
-		matR._41 = 0.0f;
-		matR._42 = 0.0f;
-		matR._43 = 0.0f;
 
-		D3DXMatrixIdentity(&matT);
-		matT._41 = m_matLocalTM._41;
-		matT._42 = m_matLocalTM._42;
-		matT._43 = m_matLocalTM._43;
-	}
-	*/
+	D3DXMATRIXA16 matR, matT;
+
 	m_dwStartTick = GetTickCount() - m_dwKeyPressTick;
 	CalcLocalR(nKeyFrame, matR);
 	CalcLocalT(nKeyFrame, matT);

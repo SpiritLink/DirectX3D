@@ -35,17 +35,6 @@ void cCubeMan::Setup(std::vector<ST_PC_VERTEX>* vecVertex, int nType)
 	D3DXCreateTextureFromFile(g_pD3DDevice, "CubeMan.png", &m_pTexture);
 
 	m_nType = nType;
-	//switch (nType)
-	//{
-	//case 1:
-	//	m_vPosition = (*vecVertex)[0].p;
-	//	m_nCurrentPoint = 0;
-	//	break;
-	//case 2:
-	//	m_vPosition = (*vecVertex)[0].p;
-	//	m_nCurrentPoint = 1;
-	//	break;
-	//}
 
 	SetMaterial();
 

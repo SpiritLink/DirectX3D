@@ -24,9 +24,7 @@ cMainGame::cMainGame()
 	m_pCubeMan(NULL),
 	m_pCubeManCurve(NULL),
 	m_pMap(NULL),
-	m_pWoman(NULL),
-	m_pRootFrame(NULL),
-	m_pRootStand(NULL)
+	m_pWoman(NULL)
 {
 }
 
@@ -40,8 +38,6 @@ cMainGame::~cMainGame()
 	SAFE_DELETE(m_pCubeManCurve)
 	SAFE_DELETE(m_pMap);
 	g_pDeviceManager->Destroy();
-	m_pRootFrame->Destroy();
-	m_pRootStand->Destroy();
 }
 
 void cMainGame::Setup()
@@ -49,21 +45,12 @@ void cMainGame::Setup()
 	m_pGrid = new cGrid;
 	m_pGrid->Setup();
 
-	//cObjLoader loadObj;
-	//loadObj.Load(m_vecGroup, "obj", "Map.obj");
-	//loadObj.Load(m_vecMap, "obj", "Map_surface.obj");
-
-	cAseLoader loadAse;
-	m_pRootFrame = loadAse.Load("woman/woman_01_all.ASE");
-	cAseLoader loadAse2;
-	m_pRootStand = loadAse2.Load("woman/woman_01_all_stand.ASE");
+	m_pWoman = new cWoman;
+	m_pWoman->Setup();
 	Load_Surface();
 
-	//m_pCubeMan = new cCubeMan;
-	//m_pCubeMan->Setup(m_pGrid->getVertex(), 1);
-
 	m_pCamera = new cCamera;
-	m_pCamera->Setup(NULL);
+	m_pCamera->Setup(&m_pWoman->GetPosition());
 
 	Set_Light();
 }
@@ -76,15 +63,8 @@ void cMainGame::Update()
 		m_pCamera->Update();
 	if (m_pCubeMan) 
 		m_pCubeMan->Update(m_pMap);
-	if (GetKeyState('W') & 0x8000)
-	{
-		m_pRootFrame->Update(m_pRootFrame->GetKeyFrame(), NULL);
-	}
-	if (!(GetKeyState('W') & 0x8000))
-	{
-		m_pRootFrame->SetKeyPressTick(GetTickCount());
-		m_pRootFrame->Update(m_pRootFrame->GetMiddleKeyFrame(), NULL);
-	}
+	if (m_pWoman)
+		m_pWoman->update();
 }
 
 void cMainGame::Render()
@@ -93,16 +73,8 @@ void cMainGame::Render()
 	g_pD3DDevice->BeginScene();
 
 	if (m_pGrid) m_pGrid->Render();
+	if (m_pWoman) m_pWoman->Render();
 
-	//Obj_Render();
-
-	//if (m_pCubeMan) m_pCubeMan->Render();
-	//if (m_pWoman) m_pWoman->Render();
-
-	if (m_pRootFrame && (GetKeyState('W') & 0x8000)) 
-		m_pRootFrame->Render();
-	if (m_pRootStand && !(GetKeyState('W') & 0x8000))
-		m_pRootStand->Render();
 	g_pD3DDevice->EndScene();
 	g_pD3DDevice->Present(NULL, NULL, NULL, NULL);
 }

@@ -1,51 +1,62 @@
 #include "stdafx.h"
 #include "cWoman.h"
-
-
+#include "cFrame.h"
+#include "cAseLoader.h"
 cWoman::cWoman()
-	: m_vLocalPosition(0,0,0),
-	m_pParentWorldTransMatrix(NULL)
+	: m_pRootFrame(NULL),
+	m_pStandFrame(NULL)
 {
-	D3DXMatrixIdentity(&m_matLocalTransMatrix);
-	D3DXMatrixIdentity(&m_matWorldTransMatrix);
-	D3DXMatrixIdentity(&m_matR);
 }
 
 
 cWoman::~cWoman()
 {
+	m_pRootFrame->Destroy();
+	SAFE_DELETE(m_pRootFrame);
+	m_pStandFrame->Destroy();
+	SAFE_DELETE(m_pStandFrame);
 }
 
-void cWoman::addChild(cWoman * pWoman)
+void cWoman::Setup()
 {
-	pWoman->SetParentWorldTransMatrix(&m_matWorldTransMatrix);
-	m_vecChild.push_back(pWoman);
+	cCharacter::Setup(NULL,0);
+
+	cAseLoader loadAse;
+	m_pRootFrame = loadAse.Load("woman/woman_01_all.ASE");
+	m_pRootFrame->SetPosition(&m_vPosition);
+	cAseLoader loadAse2;
+	m_pStandFrame = loadAse2.Load("woman/woman_01_all_stand.ASE");
+	m_pStandFrame->SetPosition(&m_vPosition);
 }
 
 void cWoman::update()
 {
-	D3DXMatrixTranslation(&m_matLocalTransMatrix,
-		m_vLocalPosition.x,
-		m_vLocalPosition.y,
-		m_vLocalPosition.z);
-
-	m_matLocalTransMatrix = m_matR * m_matLocalTransMatrix;
-
-	if (m_pParentWorldTransMatrix)
-		m_matWorldTransMatrix = *m_pParentWorldTransMatrix;
-	for each(auto p in m_vecChild)
+	cCharacter::Update(NULL);
+	if (m_pRootFrame)
 	{
-		p->update();
+		if (GetKeyState('W') & 0x8000)
+		{
+			m_pRootFrame->Update(m_pRootFrame->GetKeyFrame(), &m_matWorld);
+		}
+
+		if (!(GetKeyState('W') & 0x8000))
+		{
+			m_pStandFrame->Update(m_pStandFrame->GetKeyFrame(), &m_matWorld);
+		}
 	}
 }
 
 void cWoman::Render()
 {
-	g_pD3DDevice->SetTransform(D3DTS_WORLD, &m_matLocalTransMatrix);
-	if(m_pMtlTex)
-		cGroup::Render();
-	for (int i = 0; i < m_vecChild.size(); ++i)
+	if (m_pRootFrame)
 	{
-		m_vecChild[i]->Render();
+		if (GetKeyState('W') & 0x8000)
+		{
+			m_pRootFrame->Render();
+		}
+		if (!(GetKeyState('W') & 0x8000))
+		{
+			m_pStandFrame->Render();
+		}
 	}
 }

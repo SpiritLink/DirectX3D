@@ -14,6 +14,7 @@ private:
 	SYNTHESIZE_PASS_BY_REF(std::vector<ST_POS_SAMPLE>, m_vecPosTrack, PosTrack);
 	SYNTHESIZE_PASS_BY_REF(std::vector<ST_ROT_SAMPLE>, m_vecRotTrack, RotTrack);
 	SYNTHESIZE_ADD_REF(cMtlTex*, m_pMtlTex, MtlTex);
+	D3DXVECTOR3*	m_pPosition;
 	std::vector<cFrame*> m_vecChild;
 public:
 	void Update(int nKeyFrame, D3DXMATRIXA16* pMatParent);
@@ -33,5 +34,6 @@ public:
 	void	SetKeyPressTick(DWORD value) { m_dwKeyPressTick = value; }
 	void	CalcLocalT(IN int nKeyFrame, OUT D3DXMATRIXA16& matT);
 	void	CalcLocalR(IN int nKeyFrame, OUT D3DXMATRIXA16& matR);
+	void	SetPosition(D3DXVECTOR3* m_vPosition) { m_pPosition = m_vPosition; }
 };
 

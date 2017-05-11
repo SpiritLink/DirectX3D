@@ -25,9 +25,6 @@ private:
 	std::vector<cGroup*>	m_vecMap;
 
 	iMap* m_pMap; // << :
-	
-	cFrame*					m_pRootFrame;
-	cFrame*					m_pRootStand;
 public:
 	void Setup();
 	void Update();
