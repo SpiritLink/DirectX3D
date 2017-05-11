@@ -27,6 +27,7 @@ private:
 	iMap* m_pMap; // << :
 	
 	cFrame*					m_pRootFrame;
+	cFrame*					m_pRootStand;
 public:
 	void Setup();
 	void Update();

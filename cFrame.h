@@ -26,7 +26,11 @@ public:
 	DWORD	m_dwLastFrame;
 	DWORD	m_dwFrameSpeed;
 	DWORD	m_dwTicksPerFrame;
+	DWORD	m_dwStartTick;
+	DWORD	m_dwKeyPressTick;
 	int		GetKeyFrame();
+	int		GetMiddleKeyFrame() { return (m_dwFirstFrame + m_dwLastFrame) / 2; }
+	void	SetKeyPressTick(DWORD value) { m_dwKeyPressTick = value; }
 	void	CalcLocalT(IN int nKeyFrame, OUT D3DXMATRIXA16& matT);
 	void	CalcLocalR(IN int nKeyFrame, OUT D3DXMATRIXA16& matR);
 };

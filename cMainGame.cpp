@@ -25,7 +25,8 @@ cMainGame::cMainGame()
 	m_pCubeManCurve(NULL),
 	m_pMap(NULL),
 	m_pWoman(NULL),
-	m_pRootFrame(NULL)
+	m_pRootFrame(NULL),
+	m_pRootStand(NULL)
 {
 }
 
@@ -40,6 +41,7 @@ cMainGame::~cMainGame()
 	SAFE_DELETE(m_pMap);
 	g_pDeviceManager->Destroy();
 	m_pRootFrame->Destroy();
+	m_pRootStand->Destroy();
 }
 
 void cMainGame::Setup()
@@ -53,6 +55,8 @@ void cMainGame::Setup()
 
 	cAseLoader loadAse;
 	m_pRootFrame = loadAse.Load("woman/woman_01_all.ASE");
+	cAseLoader loadAse2;
+	m_pRootStand = loadAse2.Load("woman/woman_01_all_stand.ASE");
 	Load_Surface();
 
 	//m_pCubeMan = new cCubeMan;
@@ -72,8 +76,15 @@ void cMainGame::Update()
 		m_pCamera->Update();
 	if (m_pCubeMan) 
 		m_pCubeMan->Update(m_pMap);
-	if (m_pRootFrame) 
+	if (GetKeyState('W') & 0x8000)
+	{
 		m_pRootFrame->Update(m_pRootFrame->GetKeyFrame(), NULL);
+	}
+	if (!(GetKeyState('W') & 0x8000))
+	{
+		m_pRootFrame->SetKeyPressTick(GetTickCount());
+		m_pRootFrame->Update(m_pRootFrame->GetMiddleKeyFrame(), NULL);
+	}
 }
 
 void cMainGame::Render()
@@ -88,8 +99,10 @@ void cMainGame::Render()
 	//if (m_pCubeMan) m_pCubeMan->Render();
 	//if (m_pWoman) m_pWoman->Render();
 
-	if (m_pRootFrame) 
+	if (m_pRootFrame && (GetKeyState('W') & 0x8000)) 
 		m_pRootFrame->Render();
+	if (m_pRootStand && !(GetKeyState('W') & 0x8000))
+		m_pRootStand->Render();
 	g_pD3DDevice->EndScene();
 	g_pD3DDevice->Present(NULL, NULL, NULL, NULL);
 }
