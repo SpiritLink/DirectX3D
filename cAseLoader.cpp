@@ -266,11 +266,6 @@ cFrame * cAseLoader::ProcessGEOMOBJECT()
 		}
 	} while (nLevel > 0);
 
-	pFrame->m_dwFirstFrame = m_dwFirstFrame;
-	pFrame->m_dwLastFrame = m_dwLastFrame;
-	pFrame->m_dwFrameSpeed = m_dwFrameSpeed;
-	pFrame->m_dwTicksPerFrame = m_dwTicksPerFrame;
-
 	return pFrame;
 }
 
@@ -529,6 +524,10 @@ void cAseLoader::ProcessNODE_TM(OUT cFrame * pFrame)
 
 void cAseLoader::Set_SceneFrame(OUT cFrame * pRoot)
 {
+	pRoot->m_dwFirstFrame = m_dwFirstFrame;
+	pRoot->m_dwLastFrame = m_dwLastFrame;
+	pRoot->m_dwFrameSpeed = m_dwFrameSpeed;
+	pRoot->m_dwTicksPerFrame = m_dwTicksPerFrame;
 }
 
 void cAseLoader::ProcessScene()
@@ -591,7 +590,7 @@ void cAseLoader::ProcessTM_ANIMATION(OUT cFrame * pFrame)
 
 void cAseLoader::ProcessCONTROL_POS_TRACK(OUT cFrame * pFrame)
 {
-	std::vector<ST_POS_SAMPLE> vecPosition;
+	std::vector<ST_POS_SAMPLE> vecPosTrack;
 	int nLevel = 0;
 	do
 	{
@@ -611,16 +610,16 @@ void cAseLoader::ProcessCONTROL_POS_TRACK(OUT cFrame * pFrame)
 			stSample.v.x = GetFloat();
 			stSample.v.z = GetFloat();
 			stSample.v.y = GetFloat();
-			vecPosition.push_back(stSample);
+			vecPosTrack.push_back(stSample);
 		}
 	} while (nLevel > 0);
 
-	pFrame->SetPosTrack(vecPosition);
+	pFrame->SetPosTrack(vecPosTrack);
 }
 
 void cAseLoader::ProcessCONTROL_ROT_TRACK(OUT cFrame * pFrame)
 {
-	std::vector<ST_ROT_SAMPLE> vecRotate;
+	std::vector<ST_ROT_SAMPLE> vecRotTrack;
 	int nLevel = 0;
 	do
 	{
@@ -647,19 +646,12 @@ void cAseLoader::ProcessCONTROL_ROT_TRACK(OUT cFrame * pFrame)
 			stSample.q.z = sinf(stSample.q.w / 2.0f) * stSample.q.z;
 			stSample.q.w = cosf(stSample.q.w / 2.0f);
 
-			if (vecRotate.size() == 0)
+			if (!vecRotTrack.empty())
 			{
-				vecRotate.push_back(stSample);
+				stSample.q = vecRotTrack.back().q * stSample.q;
 			}
-			else
-			{
-				D3DXQUATERNION	q2 = vecRotate[vecRotate.size() - 1].q;
-				D3DXQUATERNION	q3;
-				D3DXQuaternionMultiply(&q3, &q2, &stSample.q);
-				stSample.q = q3;
-				vecRotate.push_back(stSample);
-			}
+			vecRotTrack.push_back(stSample);
 		}
 	} while (nLevel > 0);
-	pFrame->SetRotTrack(vecRotate);
+	pFrame->SetRotTrack(vecRotTrack);
 }

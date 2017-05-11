@@ -68,8 +68,12 @@ void cMainGame::Update()
 {
 	//if (m_pCubePC) m_pCubePC->Update();
 
-	if (m_pCamera) m_pCamera->Update();
-	if (m_pCubeMan) m_pCubeMan->Update(m_pMap);
+	if (m_pCamera) 
+		m_pCamera->Update();
+	if (m_pCubeMan) 
+		m_pCubeMan->Update(m_pMap);
+	if (m_pRootFrame) 
+		m_pRootFrame->Update(m_pRootFrame->GetKeyFrame(), NULL);
 }
 
 void cMainGame::Render()
