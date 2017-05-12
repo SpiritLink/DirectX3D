@@ -55,19 +55,24 @@ void cFrame::Render()
 		g_pD3DDevice->SetMaterial(&m_pMtlTex->GetMaterial());
 		g_pD3DDevice->SetFVF(ST_PNT_VERTEX::FVF);
 		/// >> :
+		//for (int i = 0; i < 1000; ++i)
+		//{
+		//	g_pD3DDevice->SetStreamSource(0,
+		//		m_pVB,
+		//		0,
+		//		sizeof(ST_PNT_VERTEX));
+		//	g_pD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST,
+		//		0,
+		//		m_nNumTri);
+		//}
 		
-		g_pD3DDevice->SetStreamSource(0,
-		m_pVB,
-		0,
-		sizeof(ST_PNT_VERTEX));
-		g_pD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST,
-		0,
-		m_nNumTri);
-		
-		//g_pD3DDevice->DrawPrimitiveUP(D3DPT_TRIANGLELIST,
-		//	m_vecVertex.size() / 3,
-		//	&m_vecVertex[0],
-		//	sizeof(ST_PNT_VERTEX));
+		for (int i = 0; i < 1000; ++i)
+		{
+			g_pD3DDevice->DrawPrimitiveUP(D3DPT_TRIANGLELIST,
+				m_vecVertex.size() / 3,
+				&m_vecVertex[0],
+				sizeof(ST_PNT_VERTEX));
+		}
 
 		/// << :
 	}

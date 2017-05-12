@@ -36,6 +36,7 @@ cMainGame::~cMainGame()
 	SAFE_DELETE(m_pMap);
 	SAFE_RELEASE(m_p3DText);
 	SAFE_RELEASE(m_pFont);
+	g_pTextureManager->Destroy();
 	g_pDeviceManager->Destroy();
 }
 
@@ -65,7 +66,6 @@ void cMainGame::Update()
 
 void cMainGame::Render()
 {
-	g_nCurrentFrameCount++;
 	g_pD3DDevice->Clear(NULL, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(128, 128, 128), 1.0f, 0);
 	g_pD3DDevice->BeginScene();
 
@@ -133,14 +133,14 @@ void cMainGame::Create_Font()
 		D3DXFONT_DESC	fd;
 		ZeroMemory(&fd, sizeof(D3DXFONT_DESC));
 		fd.Height = 50;
-		fd.Width = 25;
+		fd.Width = 40;
 		fd.Weight = FW_MEDIUM;
 		fd.Italic = false;
 		fd.CharSet = DEFAULT_CHARSET;
 		fd.OutputPrecision = OUT_DEFAULT_PRECIS;
 		fd.PitchAndFamily = FF_DONTCARE;
-		AddFontResource("font/umberto.ttf");
-		strcpy_s(fd.FaceName, "umberto");
+		AddFontResource("font/NanumBarunGothic.ttf");
+		strcpy_s(fd.FaceName, "NanumBarunGothic");
 
 		D3DXCreateFontIndirect(g_pD3DDevice, &fd, &m_pFont);
 	}
