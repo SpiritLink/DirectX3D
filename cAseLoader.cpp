@@ -334,7 +334,7 @@ void cAseLoader::ProcessMESH(OUT cFrame * pFrame)
 			&matInvWorld);
 	}
 
-	//pFrame->SetVertex(vecVertex);
+	pFrame->SetVertex(vecVertex);
 	pFrame->BuildVB(vecVertex);
 }
 

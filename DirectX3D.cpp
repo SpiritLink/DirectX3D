@@ -8,9 +8,11 @@
 #define MAX_LOADSTRING 100
 
 // 전역 변수:
-HINSTANCE hInst;                                // 현재 인스턴스입니다.
-WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
-WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
+HINSTANCE	hInst;                                // 현재 인스턴스입니다.
+WCHAR		szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
+WCHAR		szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
+int			g_nFrameCount;
+int			g_nCurrentFrameCount;
 
 // 이 코드 모듈에 들어 있는 함수의 정방향 선언입니다.
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -46,8 +48,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// >> :
 	g_pMainGame = new cMainGame;
 	g_pMainGame->Setup();
+	g_nFrameCount = 0;
+	g_nCurrentFrameCount = 0;
 	// << :
-
+	SetTimer(g_hWnd, 0, 1000, NULL);
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_DIRECTX3D));
 
     MSG msg;
@@ -71,6 +75,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		{
 			g_pMainGame->Update();
 			g_pMainGame->Render();
+			g_nCurrentFrameCount++;
 		}
     }
 
@@ -182,6 +187,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_DESTROY:
         PostQuitMessage(0);
         break;
+	case WM_TIMER:
+		g_nFrameCount = g_nCurrentFrameCount;
+		g_nCurrentFrameCount = 0;
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
     }

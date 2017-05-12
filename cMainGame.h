@@ -23,6 +23,7 @@ private:
 	std::vector<cGroup*>	m_vecMap;
 	iMap* m_pMap; // << :
 	LPD3DXFONT				m_pFont;
+	ID3DXMesh*				m_p3DText;
 public:
 	void Setup();
 	void Update();

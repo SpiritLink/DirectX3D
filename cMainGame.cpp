@@ -23,7 +23,8 @@ cMainGame::cMainGame()
 	m_pCamera(NULL),
 	m_pMap(NULL),
 	m_pWoman(NULL),
-	m_pFont(NULL)
+	m_pFont(NULL),
+	m_p3DText(NULL)
 {
 }
 
@@ -33,6 +34,7 @@ cMainGame::~cMainGame()
 	SAFE_DELETE(m_pGrid);
 	SAFE_DELETE(m_pCamera);
 	SAFE_DELETE(m_pMap);
+	SAFE_RELEASE(m_p3DText);
 	SAFE_RELEASE(m_pFont);
 	g_pDeviceManager->Destroy();
 }
@@ -63,11 +65,14 @@ void cMainGame::Update()
 
 void cMainGame::Render()
 {
+	g_nCurrentFrameCount++;
 	g_pD3DDevice->Clear(NULL, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(128, 128, 128), 1.0f, 0);
 	g_pD3DDevice->BeginScene();
 
+
 	if (m_pGrid) m_pGrid->Render();
 	if (m_pWoman) m_pWoman->Render();
+
 
 	Text_Render();
 	g_pD3DDevice->EndScene();
@@ -139,18 +144,61 @@ void cMainGame::Create_Font()
 
 		D3DXCreateFontIndirect(g_pD3DDevice, &fd, &m_pFont);
 	}
+
+	{
+		HDC hdc = CreateCompatibleDC(0);
+		LOGFONT lf;
+		ZeroMemory(&lf, sizeof(LOGFONT));
+		lf.lfHeight = 25;
+		lf.lfWidth = 12;
+		lf.lfWeight = 500;
+		lf.lfItalic = false;
+		lf.lfUnderline = false;
+		lf.lfStrikeOut = false;
+		lf.lfCharSet - DEFAULT_CHARSET;
+		strcpy_s(lf.lfFaceName, "굴림체");
+
+		HFONT hFont;
+		HFONT hFontOld;
+		hFont = CreateFontIndirect(&lf);
+		hFontOld = (HFONT)SelectObject(hdc, hFont);
+		///숫자가 작을수록 곡선이 부드럽다.
+		D3DXCreateText(g_pD3DDevice, hdc, "Direct3D", 0.001f, 0.01f,
+			&m_p3DText,
+			0, 0);
+		SelectObject(hdc, hFontOld);
+		DeleteObject(hFont);
+		DeleteDC(hdc);
+	}
 	// << :
 }
 
 void cMainGame::Text_Render()
 {
-	std::string sText("ABC 123 #@#* 가나다라");
-	RECT rc;
-	SetRect(&rc, 100, 100, 101, 100);
-	m_pFont->DrawTextA(NULL,
-		sText.c_str(),
-		sText.length(),
-		&rc,
-		DT_LEFT | DT_TOP | DT_NOCLIP,
-		D3DCOLOR_XRGB(255,255,0));
+	{
+		std::string sText = std::to_string(g_nFrameCount);
+		RECT rc;
+		SetRect(&rc, 100, 100, 101, 100);
+		m_pFont->DrawTextA(NULL,
+			sText.c_str(),
+			sText.length(),
+			&rc,
+			DT_LEFT | DT_TOP | DT_NOCLIP,
+			D3DCOLOR_XRGB(255, 255, 0));
+	}
+
+	{
+		D3DXMATRIXA16 matWorld, matS, matR, matT;
+		D3DXMatrixIdentity(&matS);
+		D3DXMatrixIdentity(&matR);
+		D3DXMatrixIdentity(&matT);
+
+		D3DXMatrixScaling(&matS, 1.0f, 1.0f, 100.0f);
+		D3DXMatrixRotationX(&matR, -D3DX_PI / 4.0F);
+		D3DXMatrixTranslation(&matT, -2.0f, 2.0f, 0.0f);
+		matWorld = matS * matR * matT;
+
+		g_pD3DDevice->SetTransform(D3DTS_WORLD, &matWorld);
+		m_p3DText->DrawSubset(0);
+	}
 }

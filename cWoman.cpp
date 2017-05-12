@@ -48,15 +48,18 @@ void cWoman::update()
 
 void cWoman::Render()
 {
-	if (m_pRootFrame)
+	for (int i = 0; i < 1000; ++i)
 	{
-		if (GetKeyState('W') & 0x8000)
+		if (m_pRootFrame)
 		{
-			m_pRootFrame->Render();
-		}
-		if (!(GetKeyState('W') & 0x8000))
-		{
-			m_pStandFrame->Render();
+			if (GetKeyState('W') & 0x8000)
+			{
+				m_pRootFrame->Render();
+			}
+			if (!(GetKeyState('W') & 0x8000))
+			{
+				m_pStandFrame->Render();
+			}
 		}
 	}
 }
