@@ -28,10 +28,9 @@ private:
 	cFrame*	ProcessGEOMOBJECT();
 	void	ProcessMESH(OUT cFrame* pFrame);
 	void	ProcessMESH_VERTEX_LIST(OUT std::vector<D3DXVECTOR3>& vecV);
-	void	ProcessMESH_FACE_LIST(	OUT std::vector<ST_PNT_VERTEX>& vecVertex,
-									IN std::vector<D3DXVECTOR3>& vecV);
-	void	ProcessMESH_TVERTLIST(OUT std::vector<D3DXVECTOR2>& vecT);
-	void	ProcessMESH_TFACELIST(	OUT std::vector<ST_PNT_VERTEX>& vecVertex,
+	void	ProcessMESH_FACE_LIST(	OUT std::vector<ST_PNT_VERTEX>& vecVertex, IN std::vector<D3DXVECTOR3> vecV);
+	void	ProcessMESH_TVERT_LIST(OUT std::vector<D3DXVECTOR2>& vecT);
+	void	ProcessMESH_TFACE_LIST(	OUT std::vector<ST_PNT_VERTEX>& vecVertex,
 									IN std::vector<D3DXVECTOR2>& vecVT);
 
 	void	ProcessMESH_NORMALS(OUT std::vector<ST_PNT_VERTEX>& vecVertex);

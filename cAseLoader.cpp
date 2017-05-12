@@ -1,8 +1,10 @@
 #include "stdafx.h"
 #include "cAseLoader.h"
+
 #include "Asciitok.h"
 #include "cMtlTex.h"
 #include "cFrame.h"
+
 cAseLoader::cAseLoader()
 	: m_fp(NULL)
 {
@@ -16,7 +18,6 @@ cAseLoader::~cAseLoader()
 cFrame * cAseLoader::Load(IN char * szFullPath)
 {
 	fopen_s(&m_fp, szFullPath, "r");
-
 	cFrame* pRoot = NULL;
 
 	while (char* szToken = GetToken())
@@ -31,7 +32,7 @@ cFrame * cAseLoader::Load(IN char * szFullPath)
 		}
 		else if (IsEqual(szToken, ID_GEOMETRY))
 		{
-			cFrame*	pFrame = ProcessGEOMOBJECT();
+			cFrame* pFrame = ProcessGEOMOBJECT();
 			if (pRoot == NULL)
 			{
 				pRoot = pFrame;
@@ -69,16 +70,14 @@ char * cAseLoader::GetToken()
 
 		if (!isQuote && IsWhite(c))
 		{
-			if (nReadCnt == 0)
-				continue;
-			else
-				break;
+			if (nReadCnt == 0) continue;
+			else break;
 		}
 
 		m_szToken[nReadCnt++] = c;
 	}
-	if (nReadCnt == 0)
-		return NULL;
+
+	if (nReadCnt == 0) return NULL;
 
 	m_szToken[nReadCnt] = '\0';
 
@@ -110,7 +109,7 @@ void cAseLoader::SkipBlock()
 	int nLevel = 0;
 	do
 	{
-		char * szToken = GetToken();
+		char* szToken = GetToken();
 		if (IsEqual(szToken, "{"))
 		{
 			++nLevel;
@@ -122,12 +121,47 @@ void cAseLoader::SkipBlock()
 	} while (nLevel > 0);
 }
 
+
+void cAseLoader::ProcessScene()
+{
+	int nLevel = 0;
+	do
+	{
+		char* szToken = GetToken();
+		if (IsEqual(szToken, "{"))
+		{
+			++nLevel;
+		}
+		else if (IsEqual(szToken, "}"))
+		{
+			--nLevel;
+		}
+		else if (IsEqual(szToken, ID_FIRSTFRAME))
+		{
+			m_dwFirstFrame = GetInteger();
+		}
+		else if (IsEqual(szToken, ID_LASTFRAME))
+		{
+			m_dwLastFrame = GetInteger();
+		}
+		else if (IsEqual(szToken, ID_FRAMESPEED))
+		{
+			m_dwFrameSpeed = GetInteger();
+		}
+		else if (IsEqual(szToken, ID_TICKSPERFRAME))
+		{
+			m_dwTicksPerFrame = GetInteger();
+		}
+
+	} while (nLevel > 0);
+}
+
 void cAseLoader::ProcessMATERIAL_LIST()
 {
 	int nLevel = 0;
 	do
 	{
-		char * szToken = GetToken();
+		char* szToken = GetToken();
 		if (IsEqual(szToken, "{"))
 		{
 			++nLevel;
@@ -151,7 +185,6 @@ void cAseLoader::ProcessMATERIAL_LIST()
 			ProcessMATERIAL(m_vecMtlTex[nIndex]);
 		}
 	} while (nLevel > 0);
-
 }
 
 void cAseLoader::ProcessMATERIAL(OUT cMtlTex * pMtlTex)
@@ -162,7 +195,7 @@ void cAseLoader::ProcessMATERIAL(OUT cMtlTex * pMtlTex)
 	int nLevel = 0;
 	do
 	{
-		char * szToken = GetToken();
+		char* szToken = GetToken();
 		if (IsEqual(szToken, "{"))
 		{
 			++nLevel;
@@ -206,7 +239,7 @@ void cAseLoader::ProcessMAP_DIFFUSE(OUT cMtlTex * pMtlTex)
 	int nLevel = 0;
 	do
 	{
-		char * szToken = GetToken();
+		char* szToken = GetToken();
 		if (IsEqual(szToken, "{"))
 		{
 			++nLevel;
@@ -223,14 +256,14 @@ void cAseLoader::ProcessMAP_DIFFUSE(OUT cMtlTex * pMtlTex)
 	} while (nLevel > 0);
 }
 
+
 cFrame * cAseLoader::ProcessGEOMOBJECT()
 {
 	cFrame* pFrame = new cFrame;
-
 	int nLevel = 0;
 	do
 	{
-		char * szToken = GetToken();
+		char* szToken = GetToken();
 		if (IsEqual(szToken, "{"))
 		{
 			++nLevel;
@@ -255,222 +288,18 @@ cFrame * cAseLoader::ProcessGEOMOBJECT()
 		{
 			ProcessMESH(pFrame);
 		}
+		else if (IsEqual(szToken, ID_TM_ANIMATION))
+		{
+			ProcessTM_ANIMATION(pFrame);
+		}
 		else if (IsEqual(szToken, ID_MATERIAL_REF))
 		{
 			int nMtlIndex = GetInteger();
 			pFrame->SetMtlTex(m_vecMtlTex[nMtlIndex]);
 		}
-		else if (IsEqual(szToken, ID_TM_ANIMATION))
-		{
-			ProcessTM_ANIMATION(pFrame);
-		}
 	} while (nLevel > 0);
 
 	return pFrame;
-}
-
-void cAseLoader::ProcessMESH(OUT cFrame * pFrame)
-{
-	std::vector<D3DXVECTOR3>	vecV;
-	std::vector<D3DXVECTOR2>	vecVT;
-	std::vector<ST_PNT_VERTEX>	vecVertex;
-
-	int nLevel = 0;
-	do
-	{
-		char * szToken = GetToken();
-		if (IsEqual(szToken, "{"))
-		{
-			++nLevel;
-		}
-		else if (IsEqual(szToken, "}"))
-		{
-			--nLevel;
-		}
-		else if (IsEqual(szToken, ID_MESH_NUMVERTEX))
-		{
-			vecV.resize(GetInteger());
-		}
-		else if (IsEqual(szToken, ID_MESH_NUMFACES))
-		{
-			vecVertex.resize(GetInteger() * 3);
-		}
-		else if (IsEqual(szToken, ID_MESH_VERTEX_LIST))
-		{
-			ProcessMESH_VERTEX_LIST(vecV);
-		}
-		else if (IsEqual(szToken, ID_MESH_FACE_LIST))
-		{
-			ProcessMESH_FACE_LIST(vecVertex, vecV);
-		}
-		else if (IsEqual(szToken, ID_MESH_NUMTVERTEX))
-		{
-			vecVT.resize(GetInteger());
-		}
-		else if (IsEqual(szToken, ID_MESH_TVERTLIST))
-		{
-			ProcessMESH_TVERTLIST(vecVT);
-		}
-		else if (IsEqual(szToken, ID_MESH_TFACELIST))
-		{
-			ProcessMESH_TFACELIST(vecVertex, vecVT);
-		}
-		else if (IsEqual(szToken, ID_MESH_NORMALS))
-		{
-			ProcessMESH_NORMALS(vecVertex);
-		}
-
-	} while (nLevel > 0);
-
-	D3DXMATRIXA16 matInvWorld;
-	D3DXMatrixInverse(&matInvWorld, 0, &pFrame->GetWorldTM());
-	for (size_t i = 0; i < vecVertex.size(); i++)
-	{
-		D3DXVec3TransformCoord(&vecVertex[i].p, 
-			&vecVertex[i].p, 
-			&matInvWorld);
-		D3DXVec3TransformNormal(&vecVertex[i].n,
-			&vecVertex[i].n,
-			&matInvWorld);
-	}
-
-	pFrame->SetVertex(vecVertex);
-	pFrame->BuildVB(vecVertex);
-}
-
-void cAseLoader::ProcessMESH_VERTEX_LIST(OUT std::vector<D3DXVECTOR3>& vecV)
-{
-	int nLevel = 0;
-	do
-	{
-		char * szToken = GetToken();
-		if (IsEqual(szToken, "{"))
-		{
-			++nLevel;
-		}
-		else if (IsEqual(szToken, "}"))
-		{
-			--nLevel;
-		}
-		else if (IsEqual(szToken, ID_MESH_VERTEX))
-		{
-			int nIndex = GetInteger();
-			vecV[nIndex].x = GetFloat();
-			vecV[nIndex].z = GetFloat();
-			vecV[nIndex].y = GetFloat();
-		}
-	} while (nLevel > 0);
-}
-
-void cAseLoader::ProcessMESH_FACE_LIST(OUT std::vector<ST_PNT_VERTEX>& vecVertex, IN std::vector<D3DXVECTOR3>& vecV)
-{
-	int nLevel = 0;
-	do
-	{
-		char * szToken = GetToken();
-		if (IsEqual(szToken, "{"))
-		{
-			++nLevel;
-		}
-		else if (IsEqual(szToken, "}"))
-		{
-			--nLevel;
-		}
-		else if (IsEqual(szToken, ID_MESH_FACE))
-		{
-			int nFaceIndex = GetInteger();
-			GetToken();
-			vecVertex[nFaceIndex * 3 + 0].p = vecV[GetInteger()];
-			GetToken();
-			vecVertex[nFaceIndex * 3 + 2].p = vecV[GetInteger()];
-			GetToken();
-			vecVertex[nFaceIndex * 3 + 1].p = vecV[GetInteger()];
-
-		}
-	} while (nLevel > 0);
-}
-
-void cAseLoader::ProcessMESH_TVERTLIST(OUT std::vector<D3DXVECTOR2>& vecVT)
-{
-	int nLevel = 0;
-	do
-	{
-		char * szToken = GetToken();
-		if (IsEqual(szToken, "{"))
-		{
-			++nLevel;
-		}
-		else if (IsEqual(szToken, "}"))
-		{
-			--nLevel;
-		}
-		else if (IsEqual(szToken, ID_MESH_TVERT))
-		{
-			int nIndex = GetInteger();
-			vecVT[nIndex].x = GetFloat();
-			vecVT[nIndex].y = 1.0f - GetFloat();
-		}
-	} while (nLevel > 0);
-}
-
-void cAseLoader::ProcessMESH_TFACELIST(OUT std::vector<ST_PNT_VERTEX>& vecVertex, IN std::vector<D3DXVECTOR2>& vecVT)
-{
-	int nLevel = 0;
-	do
-	{
-		char * szToken = GetToken();
-		if (IsEqual(szToken, "{"))
-		{
-			++nLevel;
-		}
-		else if (IsEqual(szToken, "}"))
-		{
-			--nLevel;
-		}
-		else if (IsEqual(szToken, ID_MESH_TFACE))
-		{
-			int nFaceIndex = GetInteger();
-			vecVertex[nFaceIndex * 3 + 0].t = vecVT[GetInteger()];
-			vecVertex[nFaceIndex * 3 + 2].t = vecVT[GetInteger()];
-			vecVertex[nFaceIndex * 3 + 1].t = vecVT[GetInteger()];
-
-		}
-	} while (nLevel > 0);
-}
-
-void cAseLoader::ProcessMESH_NORMALS(OUT std::vector<ST_PNT_VERTEX>& vecVertex)
-{
-	int nFaceIndex = 0;
-	int aModIndex[3] = { 0, 2, 1 };
-	int nModCount = 0;
-
-	int nLevel = 0;
-	do
-	{
-		char * szToken = GetToken();
-		if (IsEqual(szToken, "{"))
-		{
-			++nLevel;
-		}
-		else if (IsEqual(szToken, "}"))
-		{
-			--nLevel;
-		}
-		else if (IsEqual(szToken, ID_MESH_FACENORMAL))
-		{
-			nFaceIndex = GetInteger();
-			nModCount = 0;
-		}
-		else if (IsEqual(szToken, ID_MESH_VERTEXNORMAL))
-		{
-			GetToken();
-			D3DXVECTOR3 n;
-			n.x = GetFloat();
-			n.z = GetFloat();
-			n.y = GetFloat();
-			vecVertex[nFaceIndex * 3 + aModIndex[nModCount++]].n = n;
-		}
-	} while (nLevel > 0);
 }
 
 void cAseLoader::ProcessNODE_TM(OUT cFrame * pFrame)
@@ -481,7 +310,7 @@ void cAseLoader::ProcessNODE_TM(OUT cFrame * pFrame)
 	int nLevel = 0;
 	do
 	{
-		char * szToken = GetToken();
+		char* szToken = GetToken();
 		if (IsEqual(szToken, "{"))
 		{
 			++nLevel;
@@ -518,25 +347,23 @@ void cAseLoader::ProcessNODE_TM(OUT cFrame * pFrame)
 			matWorld._42 = GetFloat();
 			matWorld._44 = 1.0f;
 		}
+
 	} while (nLevel > 0);
 
 	pFrame->SetWorldTM(matWorld);
 }
 
-void cAseLoader::Set_SceneFrame(OUT cFrame * pRoot)
-{
-	pRoot->m_dwFirstFrame = m_dwFirstFrame;
-	pRoot->m_dwLastFrame = m_dwLastFrame;
-	pRoot->m_dwFrameSpeed = m_dwFrameSpeed;
-	pRoot->m_dwTicksPerFrame = m_dwTicksPerFrame;
-}
 
-void cAseLoader::ProcessScene()
+void cAseLoader::ProcessMESH(OUT cFrame * pFrame)
 {
+	std::vector<D3DXVECTOR3> vecV;
+	std::vector<D3DXVECTOR2> vecVT;
+	std::vector<ST_PNT_VERTEX> vecVertex;
+
 	int nLevel = 0;
 	do
 	{
-		char * szToken = GetToken();
+		char* szToken = GetToken();
 		if (IsEqual(szToken, "{"))
 		{
 			++nLevel;
@@ -545,31 +372,199 @@ void cAseLoader::ProcessScene()
 		{
 			--nLevel;
 		}
-		else if (IsEqual(szToken, ID_FIRSTFRAME))
+		else if (IsEqual(szToken, ID_MESH_NUMVERTEX))
 		{
-			m_dwFirstFrame = GetInteger();
+			vecV.resize(GetInteger());
 		}
-		else if (IsEqual(szToken, ID_LASTFRAME))
+		else if (IsEqual(szToken, ID_MESH_NUMFACES))
 		{
-			m_dwLastFrame = GetInteger();
+			vecVertex.resize(GetInteger() * 3);
 		}
-		else if (IsEqual(szToken, ID_FRAMESPEED))
+		else if (IsEqual(szToken, ID_MESH_VERTEX_LIST))
 		{
-			m_dwFrameSpeed = GetInteger();
+			ProcessMESH_VERTEX_LIST(vecV);
 		}
-		else if (IsEqual(szToken, ID_TICKSPERFRAME))
+		else if (IsEqual(szToken, ID_MESH_FACE_LIST))
 		{
-			m_dwTicksPerFrame = GetInteger();
+			ProcessMESH_FACE_LIST(vecVertex, vecV);
+		}
+		else if (IsEqual(szToken, ID_MESH_NUMTVERTEX))
+		{
+			vecVT.resize(GetInteger());
+		}
+		else if (IsEqual(szToken, ID_MESH_TVERTLIST))
+		{
+			ProcessMESH_TVERT_LIST(vecVT);
+		}
+		else if (IsEqual(szToken, ID_MESH_TFACELIST))
+		{
+			ProcessMESH_TFACE_LIST(vecVertex, vecVT);
+		}
+		else if (IsEqual(szToken, ID_MESH_NORMALS))
+		{
+			ProcessMESH_NORMALS(vecVertex);
 		}
 	} while (nLevel > 0);
+
+	D3DXMATRIXA16 matInvWorld;
+	D3DXMatrixInverse(&matInvWorld, 0, &pFrame->GetWorldTM());
+	for (size_t i = 0; i < vecVertex.size(); i++)
+	{
+		D3DXVec3TransformCoord(&vecVertex[i].p, &vecVertex[i].p, &matInvWorld);
+		D3DXVec3TransformNormal(&vecVertex[i].n, &vecVertex[i].n, &matInvWorld);
+	}
+
+	pFrame->SetVertex(vecVertex);
+
+	//Using VertexBuffer
+	pFrame->BuildVertexBuffer(vecVertex);
 }
+
+void cAseLoader::ProcessMESH_VERTEX_LIST(OUT std::vector<D3DXVECTOR3>& vecV)
+{
+	int nLevel = 0;
+	do
+	{
+		char* szToken = GetToken();
+		if (IsEqual(szToken, "{"))
+		{
+			++nLevel;
+		}
+		else if (IsEqual(szToken, "}"))
+		{
+			--nLevel;
+		}
+		else if (IsEqual(szToken, ID_MESH_VERTEX))
+		{
+			int nIndex = GetInteger();
+			vecV[nIndex].x = GetFloat();
+			vecV[nIndex].z = GetFloat();
+			vecV[nIndex].y = GetFloat();
+		}
+
+	} while (nLevel > 0);
+}
+
+void cAseLoader::ProcessMESH_FACE_LIST(OUT std::vector<ST_PNT_VERTEX>& vecVertex, IN std::vector<D3DXVECTOR3> vecV)
+{
+	int nLevel = 0;
+	do
+	{
+		char* szToken = GetToken();
+		if (IsEqual(szToken, "{"))
+		{
+			++nLevel;
+		}
+		else if (IsEqual(szToken, "}"))
+		{
+			--nLevel;
+		}
+		else if (IsEqual(szToken, ID_MESH_FACE))
+		{
+			int nFaceIndex = GetInteger();
+			GetToken();
+			vecVertex[nFaceIndex * 3 + 0].p = vecV[GetInteger()];
+			GetToken();
+			vecVertex[nFaceIndex * 3 + 2].p = vecV[GetInteger()];
+			GetToken();
+			vecVertex[nFaceIndex * 3 + 1].p = vecV[GetInteger()];
+		}
+
+	} while (nLevel > 0);
+}
+
+void cAseLoader::ProcessMESH_TVERT_LIST(OUT std::vector<D3DXVECTOR2>& vecVT)
+{
+	int nLevel = 0;
+	do
+	{
+		char* szToken = GetToken();
+		if (IsEqual(szToken, "{"))
+		{
+			++nLevel;
+		}
+		else if (IsEqual(szToken, "}"))
+		{
+			--nLevel;
+		}
+		else if (IsEqual(szToken, ID_MESH_TVERT))
+		{
+			int nIndex = GetInteger();
+			vecVT[nIndex].x = GetFloat();
+			vecVT[nIndex].y = 1.0f - GetFloat();
+		}
+
+	} while (nLevel > 0);
+}
+
+void cAseLoader::ProcessMESH_TFACE_LIST(OUT std::vector<ST_PNT_VERTEX>& vecVertex, IN std::vector<D3DXVECTOR2>& vecVT)
+{
+	int nLevel = 0;
+	do
+	{
+		char* szToken = GetToken();
+		if (IsEqual(szToken, "{"))
+		{
+			++nLevel;
+		}
+		else if (IsEqual(szToken, "}"))
+		{
+			--nLevel;
+		}
+		else if (IsEqual(szToken, ID_MESH_TFACE))
+		{
+			int nFaceIndex = GetInteger();
+			vecVertex[nFaceIndex * 3 + 0].t = vecVT[GetInteger()];
+			vecVertex[nFaceIndex * 3 + 2].t = vecVT[GetInteger()];
+			vecVertex[nFaceIndex * 3 + 1].t = vecVT[GetInteger()];
+		}
+
+	} while (nLevel > 0);
+}
+
+void cAseLoader::ProcessMESH_NORMALS(OUT std::vector<ST_PNT_VERTEX>& vecVertex)
+{
+	int nFaceIndex = 0;
+	int aModIndex[3] = { 0, 2, 1 };
+	int nModCount = 0;
+
+	int nLevel = 0;
+	do
+	{
+		char* szToken = GetToken();
+		if (IsEqual(szToken, "{"))
+		{
+			++nLevel;
+		}
+		else if (IsEqual(szToken, "}"))
+		{
+			--nLevel;
+		}
+		else if (IsEqual(szToken, ID_MESH_FACENORMAL))
+		{
+			nFaceIndex = GetInteger();
+			nModCount = 0;
+		}
+		else if (IsEqual(szToken, ID_MESH_VERTEXNORMAL))
+		{
+			GetToken();
+			D3DXVECTOR3 n;
+			n.x = GetFloat();
+			n.z = GetFloat();
+			n.y = GetFloat();
+			vecVertex[nFaceIndex * 3 + aModIndex[nModCount++]].n = n;
+		}
+
+	} while (nLevel > 0);
+}
+
 
 void cAseLoader::ProcessTM_ANIMATION(OUT cFrame * pFrame)
 {
 	int nLevel = 0;
 	do
 	{
-		char * szToken = GetToken();
+		char* szToken = GetToken();
 		if (IsEqual(szToken, "{"))
 		{
 			++nLevel;
@@ -586,16 +581,18 @@ void cAseLoader::ProcessTM_ANIMATION(OUT cFrame * pFrame)
 		{
 			ProcessCONTROL_ROT_TRACK(pFrame);
 		}
+
 	} while (nLevel > 0);
 }
 
 void cAseLoader::ProcessCONTROL_POS_TRACK(OUT cFrame * pFrame)
 {
 	std::vector<ST_POS_SAMPLE> vecPosTrack;
+
 	int nLevel = 0;
 	do
 	{
-		char * szToken = GetToken();
+		char* szToken = GetToken();
 		if (IsEqual(szToken, "{"))
 		{
 			++nLevel;
@@ -606,13 +603,17 @@ void cAseLoader::ProcessCONTROL_POS_TRACK(OUT cFrame * pFrame)
 		}
 		else if (IsEqual(szToken, ID_POS_SAMPLE))
 		{
-			ST_POS_SAMPLE stSample;
-			stSample.n = GetInteger();
-			stSample.v.x = GetFloat();
-			stSample.v.z = GetFloat();
-			stSample.v.y = GetFloat();
-			vecPosTrack.push_back(stSample);
+			ST_POS_SAMPLE stPosSample;
+			ZeroMemory(&stPosSample, sizeof(ST_POS_SAMPLE));
+
+			stPosSample.n = GetInteger();
+			stPosSample.v.x = GetFloat();
+			stPosSample.v.z = GetFloat();
+			stPosSample.v.y = GetFloat();
+
+			vecPosTrack.push_back(stPosSample);
 		}
+
 	} while (nLevel > 0);
 
 	pFrame->SetPosTrack(vecPosTrack);
@@ -621,10 +622,11 @@ void cAseLoader::ProcessCONTROL_POS_TRACK(OUT cFrame * pFrame)
 void cAseLoader::ProcessCONTROL_ROT_TRACK(OUT cFrame * pFrame)
 {
 	std::vector<ST_ROT_SAMPLE> vecRotTrack;
+
 	int nLevel = 0;
 	do
 	{
-		char * szToken = GetToken();
+		char* szToken = GetToken();
 		if (IsEqual(szToken, "{"))
 		{
 			++nLevel;
@@ -635,24 +637,44 @@ void cAseLoader::ProcessCONTROL_ROT_TRACK(OUT cFrame * pFrame)
 		}
 		else if (IsEqual(szToken, ID_ROT_SAMPLE))
 		{
-			ST_ROT_SAMPLE stSample;
-			stSample.n = GetInteger();
-			stSample.q.x = GetFloat();
-			stSample.q.z = GetFloat();
-			stSample.q.y = GetFloat();
-			stSample.q.w = GetFloat();
+			ST_ROT_SAMPLE stRotSample;
+			ZeroMemory(&stRotSample, sizeof(ST_ROT_SAMPLE));
 
-			stSample.q.x = sinf(stSample.q.w / 2.0f) * stSample.q.x;
-			stSample.q.y = sinf(stSample.q.w / 2.0f) * stSample.q.y;
-			stSample.q.z = sinf(stSample.q.w / 2.0f) * stSample.q.z;
-			stSample.q.w = cosf(stSample.q.w / 2.0f);
+			D3DXVECTOR3 v;
+			float w;
 
-			if (!vecRotTrack.empty())
+			stRotSample.n = GetInteger();
+			v.x = GetFloat();
+			v.z = GetFloat();
+			v.y = GetFloat();
+			w = GetFloat();
+
+			D3DXQuaternionRotationAxis(&stRotSample.q, &v, w);
+			/*=
+			x *= sinf(w/2.0f);
+			y *= sinf(w/2.0f);
+			z *= sinf(w/2.0f);
+			w = cosf(w/2.0f);
+			*/
+
+			if (vecRotTrack.size() > 0)
 			{
-				stSample.q = vecRotTrack.back().q * stSample.q;
+				D3DXQuaternionMultiply(&stRotSample.q, &vecRotTrack.back().q, &stRotSample.q);
+				//= stRotSample.q = vecRotTrack.back().q * stRotSample.q;
 			}
-			vecRotTrack.push_back(stSample);
+
+			vecRotTrack.push_back(stRotSample);
 		}
+
 	} while (nLevel > 0);
+
 	pFrame->SetRotTrack(vecRotTrack);
+}
+
+void cAseLoader::Set_SceneFrame(OUT cFrame * pRoot)
+{
+	pRoot->m_dwFirstFrame = m_dwFirstFrame;
+	pRoot->m_dwLastFrame = m_dwLastFrame;
+	pRoot->m_dwFrameSpeed = m_dwFrameSpeed;
+	pRoot->m_dwTicksPerFrame = m_dwTicksPerFrame;
 }

@@ -218,7 +218,7 @@ void cFrame::CalcLocalR(IN int nKeyFrame, OUT D3DXMATRIXA16 & matR)
 	D3DXMatrixRotationQuaternion(&matR, &q);
 }
 
-void cFrame::BuildVB(std::vector<ST_PNT_VERTEX>& vecVertex)
+void cFrame::BuildVertexBuffer(std::vector<ST_PNT_VERTEX>& vecVertex)
 {
 	m_nNumTri = vecVertex.size() / 3;
 	g_pD3DDevice->CreateVertexBuffer(

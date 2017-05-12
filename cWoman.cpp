@@ -20,8 +20,8 @@ void cWoman::Setup()
 	cCharacter::Setup(NULL,0);
 
 	cAseLoader loadAse;
-	//m_pRootFrame = loadAse.Load("woman/woman_01_all.ASE");
-	//m_pRootFrame->SetPosition(&m_vPosition);
+	m_pRootFrame = loadAse.Load("woman/woman_01_all.ASE");
+	m_pRootFrame->SetPosition(&m_vPosition);
 	cAseLoader loadAse2;
 	//m_pStandFrame = loadAse2.Load("woman/woman_01_all_stand.ASE");
 	//m_pStandFrame->SetPosition(&m_vPosition);
