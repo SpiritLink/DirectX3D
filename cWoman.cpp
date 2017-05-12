@@ -23,8 +23,8 @@ void cWoman::Setup()
 	m_pRootFrame = loadAse.Load("woman/woman_01_all.ASE");
 	m_pRootFrame->SetPosition(&m_vPosition);
 	cAseLoader loadAse2;
-	//m_pStandFrame = loadAse2.Load("woman/woman_01_all_stand.ASE");
-	//m_pStandFrame->SetPosition(&m_vPosition);
+	m_pStandFrame = loadAse2.Load("woman/woman_01_all_stand.ASE");
+	m_pStandFrame->SetPosition(&m_vPosition);
 }
 
 void cWoman::update()
@@ -34,12 +34,12 @@ void cWoman::update()
 	{
 		if (GetKeyState('W') & 0x8000)
 		{
-			//m_pRootFrame->Update(m_pRootFrame->GetKeyFrame(), &m_matWorld);
+			m_pRootFrame->Update(m_pRootFrame->GetKeyFrame(), &m_matWorld);
 		}
 
 		if (!(GetKeyState('W') & 0x8000))
 		{
-			//m_pStandFrame->Update(m_pStandFrame->GetKeyFrame(), &m_matWorld);
+			m_pStandFrame->Update(m_pStandFrame->GetKeyFrame(), &m_matWorld);
 		}
 	}
 }
@@ -50,11 +50,11 @@ void cWoman::Render()
 	{
 		if (GetKeyState('W') & 0x8000)
 		{
-			//m_pRootFrame->Render();
+			m_pRootFrame->Render();
 		}
 		if (!(GetKeyState('W') & 0x8000))
 		{
-			//m_pStandFrame->Render();
+			m_pStandFrame->Render();
 		}
 	}
 }

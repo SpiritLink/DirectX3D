@@ -44,37 +44,19 @@ void cFrame::Update(int nKeyFrame, D3DXMATRIXA16 * pMatParent)
 
 void cFrame::Render()
 {
-	/*
-		D3DXQuaternionSlerp();
-	D3DXMatrixRotationQuaternion();	
-	*/
 	if (m_pMtlTex)
 	{
 		g_pD3DDevice->SetTransform(D3DTS_WORLD, &m_matWorldTM);
 		g_pD3DDevice->SetTexture(0,m_pMtlTex->GetTexture());
 		g_pD3DDevice->SetMaterial(&m_pMtlTex->GetMaterial());
 		g_pD3DDevice->SetFVF(ST_PNT_VERTEX::FVF);
-		/// >> :
-		//for (int i = 0; i < 1000; ++i)
-		//{
-		//	g_pD3DDevice->SetStreamSource(0,
-		//		m_pVB,
-		//		0,
-		//		sizeof(ST_PNT_VERTEX));
-		//	g_pD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST,
-		//		0,
-		//		m_nNumTri);
-		//}
-		
-		for (int i = 0; i < 1000; ++i)
-		{
-			g_pD3DDevice->DrawPrimitiveUP(D3DPT_TRIANGLELIST,
-				m_vecVertex.size() / 3,
-				&m_vecVertex[0],
-				sizeof(ST_PNT_VERTEX));
-		}
-
-		/// << :
+		g_pD3DDevice->SetStreamSource(0,
+			m_pVB,
+			0,
+			sizeof(ST_PNT_VERTEX));
+		g_pD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST,
+			0,
+			m_nNumTri);
 	}
 
 	for each(auto c in m_vecChild)
