@@ -5,16 +5,18 @@
 cFrame::cFrame()
 	: m_pMtlTex(NULL),
 	m_dwStartTick(0),
-	m_pPosition(NULL)
+	m_pPosition(NULL),
+	m_nNumTri(0),
+	m_pVB(NULL)
 {
 	D3DXMatrixIdentity(&m_matLocalTM);
 	D3DXMatrixIdentity(&m_matWorldTM);
 }
 
-
 cFrame::~cFrame()
 {
 	SAFE_RELEASE(m_pMtlTex);
+	SAFE_RELEASE(m_pVB);
 }
 
 void cFrame::Update(int nKeyFrame, D3DXMATRIXA16 * pMatParent)
@@ -52,10 +54,16 @@ void cFrame::Render()
 		g_pD3DDevice->SetTexture(0,m_pMtlTex->GetTexture());
 		g_pD3DDevice->SetMaterial(&m_pMtlTex->GetMaterial());
 		g_pD3DDevice->SetFVF(ST_PNT_VERTEX::FVF);
-		g_pD3DDevice->DrawPrimitiveUP(D3DPT_TRIANGLELIST,
-			m_vecVertex.size() / 3,
-			&m_vecVertex[0],
+		/// >> :
+		g_pD3DDevice->SetStreamSource(0,
+			m_pVB,
+			0,
 			sizeof(ST_PNT_VERTEX));
+		g_pD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST,
+			0,
+			m_nNumTri);
+
+		/// << :
 	}
 
 	for each(auto c in m_vecChild)
@@ -197,4 +205,23 @@ void cFrame::CalcLocalR(IN int nKeyFrame, OUT D3DXMATRIXA16 & matR)
 		&m_vecRotTrack[nNextIndex].q,
 		t);
 	D3DXMatrixRotationQuaternion(&matR, &q);
+}
+
+void cFrame::BuildVB(std::vector<ST_PNT_VERTEX>& vecVertex)
+{
+	m_nNumTri = vecVertex.size() / 3;
+	g_pD3DDevice->CreateVertexBuffer(
+		vecVertex.size() * sizeof(ST_PNT_VERTEX),
+		0,
+		ST_PNT_VERTEX::FVF,	///FVF 값
+		D3DPOOL_MANAGED,	///풀링 옵션 디폴트는 MANAGED로
+		&m_pVB,				///메모리 버텍스 멤버변수
+		NULL);
+	ST_PNT_VERTEX* pv = NULL;
+	m_pVB->Lock(0,		///시작버퍼 위치
+		0,				///잠글 바이트 수
+		(LPVOID*)&pv,	///포인터
+		0);
+	memcpy(pv, &vecVertex[0], vecVertex.size() * sizeof(ST_PNT_VERTEX));
+	m_pVB->Unlock();
 }

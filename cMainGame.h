@@ -18,13 +18,11 @@ public:
 private:
 	cCamera*				m_pCamera;
 	cGrid*					m_pGrid;
-	cCubeMan*				m_pCubeMan;
-	cCubeMan*				m_pCubeManCurve;
 	cWoman*					m_pWoman;
 	std::vector<cGroup*>	m_vecGroup;
 	std::vector<cGroup*>	m_vecMap;
-
 	iMap* m_pMap; // << :
+	LPD3DXFONT				m_pFont;
 public:
 	void Setup();
 	void Update();
@@ -34,4 +32,7 @@ public:
 	void Set_Light();
 	void Obj_Render();
 	void Load_Surface();
+
+	void Create_Font();
+	void Text_Render();
 };

@@ -35,5 +35,11 @@ public:
 	void	CalcLocalT(IN int nKeyFrame, OUT D3DXMATRIXA16& matT);
 	void	CalcLocalR(IN int nKeyFrame, OUT D3DXMATRIXA16& matR);
 	void	SetPosition(D3DXVECTOR3* m_vPosition) { m_pPosition = m_vPosition; }
+
+private:
+	int						m_nNumTri;
+	LPDIRECT3DVERTEXBUFFER9	m_pVB;
+public:
+	void BuildVB(std::vector<ST_PNT_VERTEX>& vertex);
 };
 

@@ -334,7 +334,8 @@ void cAseLoader::ProcessMESH(OUT cFrame * pFrame)
 			&matInvWorld);
 	}
 
-	pFrame->SetVertex(vecVertex);
+	//pFrame->SetVertex(vecVertex);
+	pFrame->BuildVB(vecVertex);
 }
 
 void cAseLoader::ProcessMESH_VERTEX_LIST(OUT std::vector<D3DXVECTOR3>& vecV)

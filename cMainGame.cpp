@@ -21,22 +21,19 @@ cMainGame::cMainGame()
 	: //m_pCubePC(NULL),
 	m_pGrid(NULL),
 	m_pCamera(NULL),
-	m_pCubeMan(NULL),
-	m_pCubeManCurve(NULL),
 	m_pMap(NULL),
-	m_pWoman(NULL)
+	m_pWoman(NULL),
+	m_pFont(NULL)
 {
 }
 
 
 cMainGame::~cMainGame()
 {
-	//SAFE_DELETE(m_pCubePC);
 	SAFE_DELETE(m_pGrid);
 	SAFE_DELETE(m_pCamera);
-	SAFE_DELETE(m_pCubeMan);
-	SAFE_DELETE(m_pCubeManCurve)
 	SAFE_DELETE(m_pMap);
+	SAFE_RELEASE(m_pFont);
 	g_pDeviceManager->Destroy();
 }
 
@@ -53,16 +50,13 @@ void cMainGame::Setup()
 	m_pCamera->Setup(&m_pWoman->GetPosition());
 
 	Set_Light();
+	Create_Font();
 }
 
 void cMainGame::Update()
 {
-	//if (m_pCubePC) m_pCubePC->Update();
-
 	if (m_pCamera) 
 		m_pCamera->Update();
-	if (m_pCubeMan) 
-		m_pCubeMan->Update(m_pMap);
 	if (m_pWoman)
 		m_pWoman->update();
 }
@@ -75,6 +69,7 @@ void cMainGame::Render()
 	if (m_pGrid) m_pGrid->Render();
 	if (m_pWoman) m_pWoman->Render();
 
+	Text_Render();
 	g_pD3DDevice->EndScene();
 	g_pD3DDevice->Present(NULL, NULL, NULL, NULL);
 }
@@ -124,4 +119,38 @@ void cMainGame::Load_Surface()
 	matWorld = matS * matR;
 
 	m_pMap = new cObjMap("obj", "map_surface.obj", &matWorld);
+}
+
+void cMainGame::Create_Font()
+{
+	// >> :
+	{
+		D3DXFONT_DESC	fd;
+		ZeroMemory(&fd, sizeof(D3DXFONT_DESC));
+		fd.Height = 50;
+		fd.Width = 25;
+		fd.Weight = FW_MEDIUM;
+		fd.Italic = false;
+		fd.CharSet = DEFAULT_CHARSET;
+		fd.OutputPrecision = OUT_DEFAULT_PRECIS;
+		fd.PitchAndFamily = FF_DONTCARE;
+		AddFontResource("font/umberto.ttf");
+		strcpy_s(fd.FaceName, "umberto");
+
+		D3DXCreateFontIndirect(g_pD3DDevice, &fd, &m_pFont);
+	}
+	// << :
+}
+
+void cMainGame::Text_Render()
+{
+	std::string sText("ABC 123 #@#* 가나다라");
+	RECT rc;
+	SetRect(&rc, 100, 100, 101, 100);
+	m_pFont->DrawTextA(NULL,
+		sText.c_str(),
+		sText.length(),
+		&rc,
+		DT_LEFT | DT_TOP | DT_NOCLIP,
+		D3DCOLOR_XRGB(255,255,0));
 }
