@@ -31,6 +31,7 @@ cMainGame::cMainGame()
 
 cMainGame::~cMainGame()
 {
+	SAFE_DELETE(m_pWoman);
 	SAFE_DELETE(m_pGrid);
 	SAFE_DELETE(m_pCamera);
 	SAFE_DELETE(m_pMap);

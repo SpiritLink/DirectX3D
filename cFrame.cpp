@@ -91,7 +91,9 @@ void cFrame::AddChild(cFrame * pChild)
 void cFrame::Destroy()
 {
 	for each (auto c in m_vecChild)
+	{
 		c->Destroy();
+	}
 	this->Release();
 }
 
