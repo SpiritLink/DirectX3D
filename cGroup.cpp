@@ -3,13 +3,16 @@
 
 
 cGroup::cGroup()
-	: m_pMtlTex(NULL)
+	: m_pMtlTex(NULL),
+	m_nNumTri(0),
+	m_pVB(NULL)
 {
 }
 
 cGroup::~cGroup()
 {
 	SAFE_RELEASE(m_pMtlTex);
+	SAFE_RELEASE(m_pVB);
 }
 
 void cGroup::Render()
@@ -21,8 +24,32 @@ void cGroup::Render()
 	}
 
 	g_pD3DDevice->SetFVF(ST_PNT_VERTEX::FVF);
-	g_pD3DDevice->DrawPrimitiveUP(D3DPT_TRIANGLELIST,
-		m_vecVertex.size() / 3,
-		&m_vecVertex[0],
+	g_pD3DDevice->SetStreamSource(0,
+		m_pVB,
+		0,
 		sizeof(ST_PNT_VERTEX));
+	g_pD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST,
+		0,
+		m_nNumTri);
+	//g_pD3DDevice->DrawPrimitiveUP(D3DPT_TRIANGLELIST,
+	//	m_vecVertex.size() / 3,
+	//	&m_vecVertex[0],
+	//	sizeof(ST_PNT_VERTEX));
+}
+
+void cGroup::BuildVertexBuffer()
+{
+	m_nNumTri = m_vecVertex.size() / 3;
+	g_pD3DDevice->CreateVertexBuffer(
+		m_vecVertex.size() * sizeof(ST_PNT_VERTEX),
+		0,
+		ST_PNT_VERTEX::FVF,
+		D3DPOOL_MANAGED,
+		&m_pVB,
+		NULL);
+
+	ST_PNT_VERTEX* pv = NULL;
+	m_pVB->Lock(0, 0, (LPVOID*)&pv, 0);
+	memcpy(pv, &m_vecVertex[0], m_vecVertex.size() * sizeof(ST_PNT_VERTEX));
+	m_pVB->Unlock();
 }

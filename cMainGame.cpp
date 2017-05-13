@@ -37,6 +37,8 @@ cMainGame::~cMainGame()
 	SAFE_DELETE(m_pMap);
 	SAFE_RELEASE(m_p3DText);
 	SAFE_RELEASE(m_pFont);
+	for (int i = 0; i < m_vecMap.size(); ++i)
+		SAFE_DELETE(m_vecMap[i]);
 	g_pTextureManager->Destroy();
 	g_pDeviceManager->Destroy();
 }
@@ -55,6 +57,9 @@ void cMainGame::Setup()
 
 	Set_Light();
 	Create_Font();
+
+	cObjLoader loadObj;
+	loadObj.Load(m_vecMap, "obj", "Map.obj");
 }
 
 void cMainGame::Update()
@@ -74,8 +79,9 @@ void cMainGame::Render()
 	if (m_pGrid) m_pGrid->Render();
 	if (m_pWoman) m_pWoman->Render();
 
-
+	Obj_Render();
 	Text_Render();
+
 	g_pD3DDevice->EndScene();
 	g_pD3DDevice->Present(NULL, NULL, NULL, NULL);
 }
@@ -179,13 +185,13 @@ void cMainGame::Text_Render()
 	{
 		std::string sText = std::to_string(g_nFrameCount);
 		RECT rc;
-		SetRect(&rc, 100, 100, 101, 100);
+		SetRect(&rc, 0, 0, 1, 0);
 		m_pFont->DrawTextA(NULL,
 			sText.c_str(),
 			sText.length(),
 			&rc,
 			DT_LEFT | DT_TOP | DT_NOCLIP,
-			D3DCOLOR_XRGB(255, 255, 0));
+			D3DCOLOR_XRGB(0, 255, 0));
 	}
 
 	{

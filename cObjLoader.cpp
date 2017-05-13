@@ -106,6 +106,10 @@ void cObjLoader::Load(OUT std::vector<cGroup*>& vecGroup, IN char * szFolder, IN
 		SAFE_RELEASE(it.second);
 	}
 	m_mapMtlTex.clear();
+	for (size_t i = 0; i < vecGroup.size(); ++i)
+	{
+		vecGroup[i]->BuildVertexBuffer();
+	}
 }
 
 void cObjLoader::LoadMtlLib(char * szFolder, char * szFile)
