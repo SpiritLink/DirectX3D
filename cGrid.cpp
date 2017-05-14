@@ -4,12 +4,15 @@
 #define DISTANCE 10.0f
 #define TILENUM 50
 cGrid::cGrid()
+	:m_pVertexBuffer(NULL),
+	m_nLineNum(0)
 {
 }
 
 
 cGrid::~cGrid()
 {
+	SAFE_RELEASE(m_pVertexBuffer);
 }
 
 void cGrid::Setup()
@@ -60,6 +63,7 @@ void cGrid::Setup()
 
 	//v.p = D3DXVECTOR3(cosf(D3DX_PI / 3.0f) * DISTANCE, 0, -sinf(D3DX_PI / 3.0f) * DISTANCE);	m_vecVertex.push_back(v);
 	//v.p = D3DXVECTOR3(DISTANCE, 0, 0);															m_vecVertex.push_back(v);
+	BuildVertexBuffer();
 }
 
 void cGrid::Render()
@@ -69,8 +73,27 @@ void cGrid::Render()
 	g_pD3DDevice->SetTransform(D3DTS_WORLD, &mat);
 	g_pD3DDevice->SetFVF(ST_PC_VERTEX::FVF);
 
-	g_pD3DDevice->DrawPrimitiveUP(D3DPT_LINELIST,
-		m_vecVertex.size() / 2,
-		&m_vecVertex[0],
+	g_pD3DDevice->SetStreamSource(0,
+		m_pVertexBuffer,
+		0,
 		sizeof(ST_PC_VERTEX));
+	g_pD3DDevice->DrawPrimitive(D3DPT_LINELIST,
+		0,
+		m_nLineNum);
+}
+
+void cGrid::BuildVertexBuffer()
+{
+	m_nLineNum = m_vecVertex.size() / 2;
+	g_pD3DDevice->CreateVertexBuffer(
+		m_vecVertex.size() * sizeof(ST_PC_VERTEX),
+		0,
+		ST_PC_VERTEX::FVF,
+		D3DPOOL_MANAGED,
+		&m_pVertexBuffer,
+		NULL);
+	ST_PNT_VERTEX* pv = NULL;
+	m_pVertexBuffer->Lock(0, 0, (LPVOID*)&pv, 0);
+	memcpy(pv, &m_vecVertex[0], m_vecVertex.size() * sizeof(ST_PC_VERTEX));
+	m_pVertexBuffer->Unlock();
 }
