@@ -17,6 +17,8 @@
 #include "cWoman.h"
 #include "cFrame.h"
 
+#include "cMtlTex.h"
+
 cMainGame::cMainGame()
 	: //m_pCubePC(NULL),
 	m_pGrid(NULL),
@@ -26,7 +28,8 @@ cMainGame::cMainGame()
 	m_pFont(NULL),
 	m_p3DText(NULL),
 	m_pMeshTeapot(NULL),
-	m_pMeshSphere(NULL)
+	m_pMeshSphere(NULL),
+	m_pMeshMap(NULL)
 {
 }
 
@@ -43,6 +46,7 @@ cMainGame::~cMainGame()
 		SAFE_DELETE(m_vecMap[i]);
 	SAFE_RELEASE(m_pMeshSphere);
 	SAFE_RELEASE(m_pMeshTeapot);
+	SAFE_RELEASE(m_pMeshMap);
 
 	g_pTextureManager->Destroy();
 	g_pDeviceManager->Destroy();
@@ -64,8 +68,8 @@ void cMainGame::Setup()
 	Create_Font();
 
 	cObjLoader loadObj;
-	loadObj.Load(m_vecMap, "obj", "Map.obj");
-
+	//loadObj.Load(m_vecMap, "obj", "Map.obj");
+	m_pMeshMap = loadObj.LoadMesh(m_vecSubset, "obj", "Map.obj");
 	Setup_MeshObject();
 }
 
@@ -86,10 +90,11 @@ void cMainGame::Render()
 	if (m_pGrid) m_pGrid->Render();
 	if (m_pWoman) m_pWoman->Render();
 
-	Obj_Render();
-	Text_Render();
+	//Obj_Render();
+	//Text_Render();
 
-	Mesh_Render();
+	//Mesh_Render();
+	Mesh_MapRender();
 	g_pD3DDevice->EndScene();
 	g_pD3DDevice->Present(NULL, NULL, NULL, NULL);
 }
@@ -261,5 +266,15 @@ void cMainGame::Mesh_Render()
 		g_pD3DDevice->SetTransform(D3DTS_WORLD, &matWorld);
 		g_pD3DDevice->SetMaterial(&m_stMtlSphere);
 		m_pMeshSphere->DrawSubset(0);
+	}
+}
+
+void cMainGame::Mesh_MapRender()
+{
+	for (int i = 0; i < m_vecSubset.size(); ++i)
+	{
+		g_pD3DDevice->SetMaterial(&m_vecSubset[i]->GetMaterial());
+		g_pD3DDevice->SetTexture(0,m_vecSubset[i]->GetTexture());
+		m_pMeshMap->DrawSubset(i);
 	}
 }

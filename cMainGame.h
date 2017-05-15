@@ -8,6 +8,7 @@ class cGroup;
 class cWoman;
 class iMap;
 class cFrame;
+class cMtlTex;
 
 class cMainGame
 {
@@ -29,6 +30,9 @@ private:
 	LPD3DXMESH				m_pMeshSphere;
 	D3DMATERIAL9			m_stMtlTeapot;
 	D3DMATERIAL9			m_stMtlSphere;
+
+	LPD3DXMESH				m_pMeshMap;
+	std::vector<cMtlTex*>	m_vecSubset;
 public:
 	void Setup();
 	void Update();
@@ -42,4 +46,5 @@ public:
 
 	void Setup_MeshObject();
 	void Mesh_Render();
+	void Mesh_MapRender();
 };
