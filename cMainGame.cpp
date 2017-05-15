@@ -24,7 +24,9 @@ cMainGame::cMainGame()
 	m_pMap(NULL),
 	m_pWoman(NULL),
 	m_pFont(NULL),
-	m_p3DText(NULL)
+	m_p3DText(NULL),
+	m_pMeshTeapot(NULL),
+	m_pMeshSphere(NULL)
 {
 }
 
@@ -39,6 +41,9 @@ cMainGame::~cMainGame()
 	SAFE_RELEASE(m_pFont);
 	for (int i = 0; i < m_vecMap.size(); ++i)
 		SAFE_DELETE(m_vecMap[i]);
+	SAFE_RELEASE(m_pMeshSphere);
+	SAFE_RELEASE(m_pMeshTeapot);
+
 	g_pTextureManager->Destroy();
 	g_pDeviceManager->Destroy();
 }
@@ -60,6 +65,8 @@ void cMainGame::Setup()
 
 	cObjLoader loadObj;
 	loadObj.Load(m_vecMap, "obj", "Map.obj");
+
+	Setup_MeshObject();
 }
 
 void cMainGame::Update()
@@ -82,6 +89,7 @@ void cMainGame::Render()
 	Obj_Render();
 	Text_Render();
 
+	Mesh_Render();
 	g_pD3DDevice->EndScene();
 	g_pD3DDevice->Present(NULL, NULL, NULL, NULL);
 }
@@ -207,5 +215,51 @@ void cMainGame::Text_Render()
 
 		g_pD3DDevice->SetTransform(D3DTS_WORLD, &matWorld);
 		m_p3DText->DrawSubset(0);
+	}
+}
+
+void cMainGame::Setup_MeshObject()
+{
+	D3DXCreateTeapot(g_pD3DDevice, &m_pMeshTeapot, NULL);
+	D3DXCreateSphere(g_pD3DDevice, 0.5f, 10, 10, &m_pMeshSphere, NULL);
+
+	ZeroMemory(&m_stMtlTeapot, sizeof(D3DMATERIAL9));
+	m_stMtlTeapot.Ambient = D3DXCOLOR(0.0f, 0.7F, 0.7F, 1.0F);
+	m_stMtlTeapot.Specular = D3DXCOLOR(0.0f, 0.7F, 0.7F, 1.0F);
+	m_stMtlTeapot.Diffuse = D3DXCOLOR(0.0f, 0.7F, 0.7F, 1.0F);
+
+	ZeroMemory(&m_stMtlSphere, sizeof(D3DMATERIAL9));
+	m_stMtlSphere.Ambient = D3DXCOLOR(0.0f, 0.7F, 0.7F, 1.0F);
+	m_stMtlSphere.Specular = D3DXCOLOR(0.0f, 0.7F, 0.7F, 1.0F);
+	m_stMtlSphere.Diffuse = D3DXCOLOR(0.0f, 0.7F, 0.7F, 1.0F);
+
+}
+
+void cMainGame::Mesh_Render()
+{
+	D3DXMATRIXA16 matWorld, matS, matR;
+	{
+		D3DXMatrixIdentity(&matS);
+		D3DXMatrixIdentity(&matR);
+		D3DXMatrixScaling(&matS, 1.0f, 1.0f, 1.0f);
+		matWorld = matS * matR;
+		D3DXMatrixTranslation(&matWorld,
+			0, 0, 10);
+		g_pD3DDevice->SetTransform(D3DTS_WORLD, &matWorld);
+		g_pD3DDevice->SetMaterial(&m_stMtlTeapot);
+		m_pMeshTeapot->DrawSubset(0);
+	}
+
+	{
+		D3DXMatrixIdentity(&matWorld);
+		D3DXMatrixIdentity(&matS);
+		D3DXMatrixIdentity(&matR);
+		D3DXMatrixScaling(&matS, 1.0f, 1.0f, 1.0f);
+		matWorld = matS * matR;
+		D3DXMatrixTranslation(&matWorld,
+			0, 0, 0);
+		g_pD3DDevice->SetTransform(D3DTS_WORLD, &matWorld);
+		g_pD3DDevice->SetMaterial(&m_stMtlSphere);
+		m_pMeshSphere->DrawSubset(0);
 	}
 }
