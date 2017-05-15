@@ -69,7 +69,7 @@ void cMainGame::Setup()
 	Create_Font();
 
 	cObjLoader loadObj;
-	//loadObj.Load(m_vecMap, "obj", "Map.obj");
+	loadObj.Load(m_vecMap, "obj", "Map.obj");
 	m_pMeshMap = loadObj.LoadMesh(m_vecSubset, "obj", "Map.obj");
 	Setup_MeshObject();
 }
@@ -91,11 +91,14 @@ void cMainGame::Render()
 	if (m_pGrid) m_pGrid->Render();
 	if (m_pWoman) m_pWoman->Render();
 
-	//Obj_Render();
-	//Text_Render();
+	Text_Render();
 
 	//Mesh_Render();
-	Mesh_MapRender();
+	for (int i = 0; i < 500; ++i)
+	{
+		Obj_Render();
+		//Mesh_MapRender();
+	}
 	g_pD3DDevice->EndScene();
 	g_pD3DDevice->Present(NULL, NULL, NULL, NULL);
 }
