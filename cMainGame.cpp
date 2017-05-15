@@ -47,7 +47,8 @@ cMainGame::~cMainGame()
 	SAFE_RELEASE(m_pMeshSphere);
 	SAFE_RELEASE(m_pMeshTeapot);
 	SAFE_RELEASE(m_pMeshMap);
-
+	for (int i = 0; i < m_vecSubset.size(); ++i)
+		SAFE_DELETE(m_vecSubset[i]);
 	g_pTextureManager->Destroy();
 	g_pDeviceManager->Destroy();
 }
@@ -271,6 +272,15 @@ void cMainGame::Mesh_Render()
 
 void cMainGame::Mesh_MapRender()
 {
+	D3DXMATRIXA16 matWorld, matS, matR;
+	D3DXMatrixIdentity(&matS);
+	D3DXMatrixIdentity(&matR);
+	D3DXMatrixIdentity(&matWorld);
+	D3DXMatrixScaling(&matS, 0.01f, 0.01f, 0.01f);
+	D3DXMatrixRotationX(&matR, -D3DX_PI / 2.0F);
+	matWorld = matS * matR;
+	g_pD3DDevice->SetTransform(D3DTS_WORLD, &matWorld);
+
 	for (int i = 0; i < m_vecSubset.size(); ++i)
 	{
 		g_pD3DDevice->SetMaterial(&m_vecSubset[i]->GetMaterial());

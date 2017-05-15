@@ -250,14 +250,10 @@ LPD3DXMESH cObjLoader::LoadMesh(OUT std::vector<cMtlTex*>& vecMtlTex, IN char * 
 	std::vector<D3DXVECTOR3> vecV;
 	std::vector<D3DXVECTOR2> vecVT;
 	std::vector<D3DXVECTOR3> vecVN;
+	std::vector<ST_PNT_VERTEX> vecVertex;
 
-	LPD3DXMESH stMesh;
-	stMesh = NULL;
-
-	int nSubsetIndex = 0;
-	int nCurrentSubset = 0;
-	std::map<std::string, int> mapMtlTexIndex;
-	std::vector<std::vector<ST_PNT_VERTEX>> VecInVecVertex;
+	std::vector<ST_PNT_VERTEX> vecTotalVertex;
+	std::vector<DWORD> vecAttribute;
 
 	std::string sFullPath(szFolder);
 	sFullPath += (std::string("/") + std::string(szFile));
@@ -279,25 +275,46 @@ LPD3DXMESH cObjLoader::LoadMesh(OUT std::vector<cMtlTex*>& vecMtlTex, IN char * 
 
 		if (szTemp[0] == 'm')
 		{
-			for each(auto it in m_mapMtlTex)
-			{
-				SAFE_RELEASE(it.second);
-			}
-			m_mapMtlTex.clear();
-
 			char szMtlFile[1024];
 			sscanf_s(szTemp, "%*s %s", szMtlFile, 1024);
 			LoadMtlLib(szFolder, szMtlFile);
+
 			for each(auto it in m_mapMtlTex)
 			{
-				vecMtlTex.push_back(it.second);
-				mapMtlTexIndex.insert(make_pair(it.first, nSubsetIndex));
-				++nSubsetIndex;
+				cMtlTex* mtlTex = new cMtlTex;
+				mtlTex->SetMaterial(it.second->GetMaterial());
+				mtlTex->SetTexture(it.second->GetTexture());
+				vecMtlTex.push_back(mtlTex);
 			}
-			VecInVecVertex.resize(nSubsetIndex);
 		}
 		else if (szTemp[0] == 'g')
 		{
+			if (!vecVertex.empty())
+			{
+				for (int i = 0; i < vecVertex.size(); ++i)
+				{
+					vecTotalVertex.push_back(vecVertex[i]);
+				}
+
+				int attributeNum = -1;
+				int mapCountNum = 0;
+				for each(auto it in m_mapMtlTex)
+				{
+					if (it.first == sMtlName)
+					{
+						attributeNum = mapCountNum;
+						break;
+					}
+					else mapCountNum++;
+				}
+
+				for (int i = 0; i < vecVertex.size() / 3; i++)
+				{
+					vecAttribute.push_back(attributeNum);
+				}
+
+				vecVertex.clear();
+			}
 		}
 		else if (szTemp[0] == 'v')
 		{
@@ -325,7 +342,6 @@ LPD3DXMESH cObjLoader::LoadMesh(OUT std::vector<cMtlTex*>& vecMtlTex, IN char * 
 			char szMtlName[1024];
 			sscanf_s(szTemp, "%*s %s", szMtlName, 1024);
 			sMtlName = std::string(szMtlName);
-			nCurrentSubset = mapMtlTexIndex[szMtlName];
 		}
 		else if (szTemp[0] == 'f')
 		{
@@ -341,52 +357,48 @@ LPD3DXMESH cObjLoader::LoadMesh(OUT std::vector<cMtlTex*>& vecMtlTex, IN char * 
 				v.p = vecV[nIndex[i][0] - 1];
 				v.t = vecVT[nIndex[i][1] - 1];
 				v.n = vecVN[nIndex[i][2] - 1];
-				VecInVecVertex[nCurrentSubset].push_back(v);
+				vecVertex.push_back(v);
 			}
 		}
 	}
 
 	fclose(fp);
 
-	int nNumFaces = 0;
-	for (int i = 0; i < VecInVecVertex.size(); ++i)
+	LPD3DXMESH pMesh = NULL;
 	{
-		nNumFaces += VecInVecVertex[i].size() / 3;
-	}
+		D3DXCreateMeshFVF(vecTotalVertex.size() / 3, vecTotalVertex.size(), D3DXMESH_MANAGED, ST_PNT_VERTEX::FVF, g_pD3DDevice, &pMesh);
 
-	D3DXCreateMeshFVF(nNumFaces, vecV.size(), D3DXMESH_MANAGED, ST_PNT_VERTEX::FVF, g_pD3DDevice, &stMesh);
+		ST_PNT_VERTEX* vertex;
+		pMesh->LockVertexBuffer(0, (void**)&vertex);
+		memcpy(vertex, &vecTotalVertex[0], vecTotalVertex.size() * sizeof(ST_PNT_VERTEX));
+		pMesh->UnlockVertexBuffer();
 
-	for (size_t i = 0; i < VecInVecVertex.size(); ++i)
-	{
-		ST_PNT_VERTEX* pVertex = 0;
-		stMesh->LockVertexBuffer(i, (void**)pVertex);
-		memcpy(pVertex, &VecInVecVertex[i][0], VecInVecVertex[i].size() * sizeof(ST_PNT_VERTEX));
-		stMesh->UnlockVertexBuffer();
-
-		std::vector<WORD*> vecDword;
-		vecDword.resize(VecInVecVertex[i].size());
-		for (size_t j = 0; j < VecInVecVertex[i].size(); ++j)
-			*vecDword[j] = (WORD)j;
-		LPVOID* pIndex = 0;
-		stMesh->LockIndexBuffer(i, pIndex);
-		memcpy(pIndex, &vecDword[0], vecDword.size() * sizeof(WORD));
-		stMesh->UnlockIndexBuffer();
-
-		DWORD* pAttribute = 0;
-		stMesh->LockAttributeBuffer(i, &pAttribute);
-		for (size_t k = 0; k < VecInVecVertex[i].size(); ++k)
+		WORD* index = 0;
+		pMesh->LockIndexBuffer(0, (void**)&index);
+		for (int i = 0; i < vecTotalVertex.size(); ++i)
 		{
-			pAttribute[k] = i;
+			index[i] = i;
 		}
-		stMesh->UnlockAttributeBuffer();
-		
-	}
+		pMesh->UnlockIndexBuffer();
 
+		DWORD* attributeBuffer = 0;
+		pMesh->LockAttributeBuffer(0, &attributeBuffer);
+		memcpy(attributeBuffer, &vecAttribute[0], vecAttribute.size() * sizeof(DWORD));
+		pMesh->UnlockAttributeBuffer();
+
+		//optimize
+		std::vector<DWORD> adjacencyBuffer(pMesh->GetNumFaces() * 3);
+		pMesh->GenerateAdjacency(0.0f, &adjacencyBuffer[0]);
+
+		pMesh->OptimizeInplace(
+			D3DXMESHOPT_ATTRSORT | D3DXMESHOPT_COMPACT | D3DXMESHOPT_VERTEXCACHE,
+			&adjacencyBuffer[0], 0, 0, 0);
+	}
 	for each(auto it in m_mapMtlTex)
 	{
 		SAFE_RELEASE(it.second);
 	}
 	m_mapMtlTex.clear();
-
-	return stMesh;
+	
+	return pMesh;
 }
