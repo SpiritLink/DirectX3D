@@ -252,6 +252,10 @@ LPD3DXMESH cObjLoader::LoadMesh(OUT std::vector<cMtlTex*>& vecMtlTex, IN char * 
 	std::vector<D3DXVECTOR3> vecVN;
 	std::vector<ST_PNT_VERTEX> vecVertex;
 
+	int nCurrentSubsetIndex = 0;
+	int nSubsetIndex = 0;
+	std::map<std::string, int> mapMtlTexIndex;
+
 	std::vector<ST_PNT_VERTEX> vecTotalVertex;
 	std::vector<DWORD> vecAttribute;
 
@@ -281,10 +285,9 @@ LPD3DXMESH cObjLoader::LoadMesh(OUT std::vector<cMtlTex*>& vecMtlTex, IN char * 
 
 			for each(auto it in m_mapMtlTex)
 			{
-				cMtlTex* mtlTex = new cMtlTex;
-				mtlTex->SetMaterial(it.second->GetMaterial());
-				mtlTex->SetTexture(it.second->GetTexture());
-				vecMtlTex.push_back(mtlTex);
+				vecMtlTex.push_back(it.second);
+				mapMtlTexIndex.insert(make_pair(it.first, nSubsetIndex));
+				nSubsetIndex++;
 			}
 		}
 		else if (szTemp[0] == 'g')
@@ -292,26 +295,12 @@ LPD3DXMESH cObjLoader::LoadMesh(OUT std::vector<cMtlTex*>& vecMtlTex, IN char * 
 			if (!vecVertex.empty())
 			{
 				for (int i = 0; i < vecVertex.size(); ++i)
-				{
 					vecTotalVertex.push_back(vecVertex[i]);
-				}
 
-				int attributeNum = -1;
-				int mapCountNum = 0;
-				for each(auto it in m_mapMtlTex)
-				{
-					if (it.first == sMtlName)
-					{
-						attributeNum = mapCountNum;
-						break;
-					}
-					else mapCountNum++;
-				}
+				nCurrentSubsetIndex = mapMtlTexIndex[sMtlName];
 
 				for (int i = 0; i < vecVertex.size() / 3; i++)
-				{
-					vecAttribute.push_back(attributeNum);
-				}
+					vecAttribute.push_back(nCurrentSubsetIndex);
 
 				vecVertex.clear();
 			}
@@ -393,10 +382,6 @@ LPD3DXMESH cObjLoader::LoadMesh(OUT std::vector<cMtlTex*>& vecMtlTex, IN char * 
 		pMesh->OptimizeInplace(
 			D3DXMESHOPT_ATTRSORT | D3DXMESHOPT_COMPACT | D3DXMESHOPT_VERTEXCACHE,
 			&adjacencyBuffer[0], 0, 0, 0);
-	}
-	for each(auto it in m_mapMtlTex)
-	{
-		SAFE_RELEASE(it.second);
 	}
 	m_mapMtlTex.clear();
 	
