@@ -2,7 +2,8 @@
 #include "cMtlTex.h"
 
 cMtlTex::cMtlTex()
-	: m_pTexture(NULL)
+	: m_pTexture(NULL),
+	m_nAttributeID(0)
 {
 	ZeroMemory(&m_stMtl, sizeof(D3DMATERIAL9));
 }

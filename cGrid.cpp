@@ -94,6 +94,6 @@ void cGrid::BuildVertexBuffer()
 		NULL);
 	ST_PNT_VERTEX* pv = NULL;
 	m_pVertexBuffer->Lock(0, 0, (LPVOID*)&pv, 0);
-	memcpy(pv, &m_vecVertex[0], m_vecVertex.size() * sizeof(ST_PC_VERTEX));
+	memcpy_s(pv, m_vecVertex.size() * sizeof(ST_PC_VERTEX),&m_vecVertex[0], m_vecVertex.size() * sizeof(ST_PC_VERTEX));
 	m_pVertexBuffer->Unlock();
 }

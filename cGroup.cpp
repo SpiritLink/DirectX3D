@@ -43,6 +43,6 @@ void cGroup::BuildVertexBuffer()
 
 	ST_PNT_VERTEX* pv = NULL;
 	m_pVB->Lock(0, 0, (LPVOID*)&pv, 0);
-	memcpy(pv, &m_vecVertex[0], m_vecVertex.size() * sizeof(ST_PNT_VERTEX));
+	memcpy_s(pv, m_vecVertex.size() * sizeof(ST_PNT_VERTEX),&m_vecVertex[0], m_vecVertex.size() * sizeof(ST_PNT_VERTEX));
 	m_pVB->Unlock();
 }

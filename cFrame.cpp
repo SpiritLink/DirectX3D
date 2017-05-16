@@ -217,6 +217,6 @@ void cFrame::BuildVertexBuffer(std::vector<ST_PNT_VERTEX>& vecVertex)
 		0,				///잠글 바이트 수
 		(LPVOID*)&pv,	///포인터
 		0);
-	memcpy(pv, &vecVertex[0], vecVertex.size() * sizeof(ST_PNT_VERTEX));
+	memcpy_s(pv, vecVertex.size() * sizeof(ST_PNT_VERTEX),&vecVertex[0], vecVertex.size() * sizeof(ST_PNT_VERTEX));
 	m_pVB->Unlock();
 }

@@ -31,8 +31,8 @@ private:
 	D3DMATERIAL9			m_stMtlTeapot;
 	D3DMATERIAL9			m_stMtlSphere;
 
-	LPD3DXMESH				m_pMeshMap;
-	std::vector<cMtlTex*>	m_vecSubset;
+	LPD3DXMESH				m_pObjMesh;
+	std::vector<cMtlTex*>	m_vecObjMtlTex;
 public:
 	void Setup();
 	void Update();
@@ -46,5 +46,4 @@ public:
 
 	void Setup_MeshObject();
 	void Mesh_Render();
-	void Mesh_MapRender();
 };
