@@ -413,11 +413,12 @@ void cAseLoader::ProcessMESH(OUT cFrame * pFrame)
 		D3DXVec3TransformCoord(&vecVertex[i].p, &vecVertex[i].p, &matInvWorld);
 		D3DXVec3TransformNormal(&vecVertex[i].n, &vecVertex[i].n, &matInvWorld);
 	}
-	pFrame->SetVertex(vecVertex);
+	///기존 VertexVector를 이용한 방식
+	///pFrame->SetVertex(vecVertex);
+	///pFrame->BuildVertexBuffer(vecVertex);
 
 	//Mesh 초기화 및 최적화
 	BuildMESH(vecVertex, pFrame);
-	pFrame->BuildVertexBuffer(vecVertex);
 }
 
 void cAseLoader::ProcessMESH_VERTEX_LIST(OUT std::vector<D3DXVECTOR3>& vecV)

@@ -45,24 +45,12 @@ void cFrame::Update(int nKeyFrame, D3DXMATRIXA16 * pMatParent)
 
 void cFrame::Render()
 {
-	for (int i = 0; i < 2000; ++i)
+	if (m_pMtlTex)
 	{
-		if (m_pMtlTex)
-		{
-			g_pD3DDevice->SetTransform(D3DTS_WORLD, &m_matWorldTM);
-			g_pD3DDevice->SetTexture(0, m_pMtlTex->GetTexture());
-			g_pD3DDevice->SetMaterial(&m_pMtlTex->GetMaterial());
-			m_pMesh->DrawSubset(0);
-
-			//g_pD3DDevice->SetFVF(ST_PNT_VERTEX::FVF);
-			//g_pD3DDevice->SetStreamSource(0,
-			//	m_pVB,
-			//	0,
-			//	sizeof(ST_PNT_VERTEX));
-			//g_pD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST,
-			//	0,
-			//	m_nNumTri);
-		}
+		g_pD3DDevice->SetTransform(D3DTS_WORLD, &m_matWorldTM);
+		g_pD3DDevice->SetTexture(0, m_pMtlTex->GetTexture());
+		g_pD3DDevice->SetMaterial(&m_pMtlTex->GetMaterial());
+		m_pMesh->DrawSubset(0);
 	}
 
 	for each(auto c in m_vecChild)
