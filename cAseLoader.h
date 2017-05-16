@@ -49,6 +49,7 @@ private:
 	void	ProcessCONTROL_POS_TRACK(OUT cFrame* pFrame);
 	void	ProcessCONTROL_ROT_TRACK(OUT cFrame* pFrame);
 
+	void	BuildMESH(IN std::vector<ST_PNT_VERTEX> vecVertex,OUT cFrame* pFrame);
 };
 
 

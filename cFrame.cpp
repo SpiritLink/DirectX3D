@@ -7,7 +7,8 @@ cFrame::cFrame()
 	m_dwStartTick(0),
 	m_pPosition(NULL),
 	m_nNumTri(0),
-	m_pVB(NULL)
+	m_pVB(NULL),
+	m_pMesh(NULL)
 {
 	D3DXMatrixIdentity(&m_matLocalTM);
 	D3DXMatrixIdentity(&m_matWorldTM);
@@ -17,11 +18,11 @@ cFrame::~cFrame()
 {
 	SAFE_RELEASE(m_pMtlTex);
 	SAFE_RELEASE(m_pVB);
+	SAFE_RELEASE(m_pMesh);
 }
 
 void cFrame::Update(int nKeyFrame, D3DXMATRIXA16 * pMatParent)
 {
-
 	D3DXMATRIXA16 matR, matT;
 
 	m_dwStartTick = GetTickCount() - m_dwKeyPressTick;
@@ -44,19 +45,24 @@ void cFrame::Update(int nKeyFrame, D3DXMATRIXA16 * pMatParent)
 
 void cFrame::Render()
 {
-	if (m_pMtlTex)
+	for (int i = 0; i < 2000; ++i)
 	{
-		g_pD3DDevice->SetTransform(D3DTS_WORLD, &m_matWorldTM);
-		g_pD3DDevice->SetTexture(0,m_pMtlTex->GetTexture());
-		g_pD3DDevice->SetMaterial(&m_pMtlTex->GetMaterial());
-		g_pD3DDevice->SetFVF(ST_PNT_VERTEX::FVF);
-		g_pD3DDevice->SetStreamSource(0,
-			m_pVB,
-			0,
-			sizeof(ST_PNT_VERTEX));
-		g_pD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST,
-			0,
-			m_nNumTri);
+		if (m_pMtlTex)
+		{
+			g_pD3DDevice->SetTransform(D3DTS_WORLD, &m_matWorldTM);
+			g_pD3DDevice->SetTexture(0, m_pMtlTex->GetTexture());
+			g_pD3DDevice->SetMaterial(&m_pMtlTex->GetMaterial());
+			m_pMesh->DrawSubset(0);
+
+			//g_pD3DDevice->SetFVF(ST_PNT_VERTEX::FVF);
+			//g_pD3DDevice->SetStreamSource(0,
+			//	m_pVB,
+			//	0,
+			//	sizeof(ST_PNT_VERTEX));
+			//g_pD3DDevice->DrawPrimitive(D3DPT_TRIANGLELIST,
+			//	0,
+			//	m_nNumTri);
+		}
 	}
 
 	for each(auto c in m_vecChild)

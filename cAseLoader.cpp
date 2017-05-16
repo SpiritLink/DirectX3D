@@ -353,13 +353,13 @@ void cAseLoader::ProcessNODE_TM(OUT cFrame * pFrame)
 	pFrame->SetWorldTM(matWorld);
 }
 
-
 void cAseLoader::ProcessMESH(OUT cFrame * pFrame)
 {
 	std::vector<D3DXVECTOR3> vecV;
 	std::vector<D3DXVECTOR2> vecVT;
 	std::vector<ST_PNT_VERTEX> vecVertex;
 
+	int nCnt = 0;
 	int nLevel = 0;
 	do
 	{
@@ -413,10 +413,10 @@ void cAseLoader::ProcessMESH(OUT cFrame * pFrame)
 		D3DXVec3TransformCoord(&vecVertex[i].p, &vecVertex[i].p, &matInvWorld);
 		D3DXVec3TransformNormal(&vecVertex[i].n, &vecVertex[i].n, &matInvWorld);
 	}
-
 	pFrame->SetVertex(vecVertex);
 
-	//Using VertexBuffer
+	//Mesh 초기화 및 최적화
+	BuildMESH(vecVertex, pFrame);
 	pFrame->BuildVertexBuffer(vecVertex);
 }
 
@@ -558,7 +558,6 @@ void cAseLoader::ProcessMESH_NORMALS(OUT std::vector<ST_PNT_VERTEX>& vecVertex)
 	} while (nLevel > 0);
 }
 
-
 void cAseLoader::ProcessTM_ANIMATION(OUT cFrame * pFrame)
 {
 	int nLevel = 0;
@@ -650,17 +649,10 @@ void cAseLoader::ProcessCONTROL_ROT_TRACK(OUT cFrame * pFrame)
 			w = GetFloat();
 
 			D3DXQuaternionRotationAxis(&stRotSample.q, &v, w);
-			/*=
-			x *= sinf(w/2.0f);
-			y *= sinf(w/2.0f);
-			z *= sinf(w/2.0f);
-			w = cosf(w/2.0f);
-			*/
 
 			if (vecRotTrack.size() > 0)
 			{
 				D3DXQuaternionMultiply(&stRotSample.q, &vecRotTrack.back().q, &stRotSample.q);
-				//= stRotSample.q = vecRotTrack.back().q * stRotSample.q;
 			}
 
 			vecRotTrack.push_back(stRotSample);
@@ -677,4 +669,44 @@ void cAseLoader::Set_SceneFrame(OUT cFrame * pRoot)
 	pRoot->m_dwLastFrame = m_dwLastFrame;
 	pRoot->m_dwFrameSpeed = m_dwFrameSpeed;
 	pRoot->m_dwTicksPerFrame = m_dwTicksPerFrame;
+}
+
+void cAseLoader::BuildMESH(IN std::vector<ST_PNT_VERTEX> vecVertex, OUT cFrame* pFrame)
+{
+	std::vector<DWORD>		vecAttributeBuffer;
+
+	vecAttributeBuffer.resize(vecVertex.size() / 3);
+	for (size_t i = 0; i < vecAttributeBuffer.size(); ++i)
+		vecAttributeBuffer[i] = DWORD(0);
+
+	D3DXCreateMeshFVF(vecAttributeBuffer.size(),
+		vecVertex.size(),
+		D3DXMESH_MANAGED,
+		ST_PNT_VERTEX::FVF,
+		g_pD3DDevice,
+		pFrame->getMesh());
+
+	ST_PNT_VERTEX * pv = NULL;
+	(*pFrame->getMesh())->LockVertexBuffer(0, (LPVOID*)&pv);
+	memcpy_s(pv, vecVertex.size() * sizeof(ST_PNT_VERTEX), &vecVertex[0], vecVertex.size() * sizeof(ST_PNT_VERTEX));
+	(*pFrame->getMesh())->UnlockVertexBuffer();
+
+	WORD* pl = NULL;
+	(*pFrame->getMesh())->LockIndexBuffer(0, (LPVOID*)&pl);
+	for (size_t i = 0; i < vecVertex.size(); ++i)
+		pl[i] = (WORD)i;
+	(*pFrame->getMesh())->UnlockIndexBuffer();
+
+	DWORD* pA = NULL;
+	(*pFrame->getMesh())->LockAttributeBuffer(0, &pA);
+	memcpy_s(pA, vecAttributeBuffer.size() * sizeof(DWORD), &vecAttributeBuffer[0], vecAttributeBuffer.size() * sizeof(DWORD));
+	(*pFrame->getMesh())->UnlockAttributeBuffer();
+
+	std::vector<DWORD> vecAdj(vecVertex.size());
+	(*pFrame->getMesh())->GenerateAdjacency(0.0f, &vecAdj[0]);
+	(*pFrame->getMesh())->OptimizeInplace(
+		D3DXMESHOPT_ATTRSORT |
+		D3DXMESHOPT_COMPACT |
+		D3DXMESHOPT_VERTEXCACHE,
+		&vecAdj[0], 0, 0, 0);
 }

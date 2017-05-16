@@ -16,6 +16,10 @@ private:
 	SYNTHESIZE_ADD_REF(cMtlTex*, m_pMtlTex, MtlTex);
 	D3DXVECTOR3*	m_pPosition;
 	std::vector<cFrame*> m_vecChild;
+	int						m_nNumTri;
+	LPDIRECT3DVERTEXBUFFER9	m_pVB;
+
+	LPD3DXMESH m_pMesh;
 public:
 	void Update(int nKeyFrame, D3DXMATRIXA16* pMatParent);
 	void Render();
@@ -36,10 +40,7 @@ public:
 	void	CalcLocalR(IN int nKeyFrame, OUT D3DXMATRIXA16& matR);
 	void	SetPosition(D3DXVECTOR3* m_vPosition) { m_pPosition = m_vPosition; }
 
-private:
-	int						m_nNumTri;
-	LPDIRECT3DVERTEXBUFFER9	m_pVB;
-public:
 	void BuildVertexBuffer(std::vector<ST_PNT_VERTEX>& vertex);
+	LPD3DXMESH* getMesh() { return &m_pMesh; }
 };
 
