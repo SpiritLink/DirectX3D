@@ -100,3 +100,8 @@ void cCamera::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	}
 }
+
+D3DXVECTOR3 cCamera::GetCamPosition()
+{
+	return m_vEye;
+}

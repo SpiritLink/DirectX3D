@@ -99,16 +99,20 @@ void cMainGame::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	if (m_pCamera) m_pCamera->WndProc(hWnd, message, wParam, lParam);
 	UINT nMessage = message;
+
+	D3DXVECTOR3 vRayPosition;
+	D3DXVECTOR3 vRayDirection;
+	D3DXVECTOR3 vDestination;
 	switch (message)
 	{
-		// 왼쪽 마우스 클릭시 구와 충돌하는지 검사한다.
 	case WM_LBUTTONDOWN:
-	{
-		int a = 3;
-	}
+		CalcTransPickingRay(m_pCamera->GetCamPosition(),&vRayPosition, &vRayDirection);
+		/// 구와 충돌을 검사하는 함수 실행
 		break;
-		// 오른쪽 마우스 클릭시 맵과 충돌하는지 검사한다.
 	case WM_RBUTTONDOWN:
+		CalcTransPickingRay(m_pCamera->GetCamPosition(), &vRayPosition, &vRayDirection);
+		if (GridCollision(m_pGrid, vRayPosition, vRayDirection, &vDestination))
+			m_pWoman->SetDestination(vDestination);
 		break;
 	case WM_MOUSEMOVE:
 		g_ptMouse.y = HIWORD(lParam);
@@ -260,6 +264,44 @@ void cMainGame::Text_Render()
 	}
 }
 
+float cMainGame::CalcScreenX()
+{
+	D3DVIEWPORT9 stViewport;						//뷰포트 얻어오기
+	ZeroMemory(&stViewport, sizeof(D3DVIEWPORT9));
+	g_pD3DDevice->GetViewport(&stViewport);
+
+	RECT rc;										//투영행렬 얻어오기
+	GetClientRect(g_hWnd, &rc);
+	D3DXMATRIXA16 matProj;
+	D3DXMatrixPerspectiveFovLH(&matProj, D3DX_PI / 4.0F, rc.right / (float)rc.bottom,
+		1.0f, 1000.0f);
+	float Width = stViewport.Width;
+	float ViewportX = ((2.0f * g_ptMouse.x) / (float)Width) - 1;
+
+	float ScreenX = ViewportX / (float)matProj._11;
+
+	return ScreenX;
+}
+
+float cMainGame::CalcScreenY()
+{
+	D3DVIEWPORT9 stViewport;						//뷰포트 얻어오기
+	ZeroMemory(&stViewport, sizeof(D3DVIEWPORT9));
+	g_pD3DDevice->GetViewport(&stViewport);
+
+	RECT rc;										//투영행렬 얻어오기
+	GetClientRect(g_hWnd, &rc);
+	D3DXMATRIXA16 matProj;
+	D3DXMatrixPerspectiveFovLH(&matProj, D3DX_PI / 4.0F, rc.right / (float)rc.bottom,
+		1.0f, 1000.0f);
+	float fHeight = stViewport.Height;
+	float fViewportY = ((-2.0f * g_ptMouse.y) / (float)fHeight) + 1;
+
+	float fScreenY = fViewportY / (float)matProj._22;
+
+	return fScreenY;
+}
+
 void cMainGame::Setup_MeshObject()
 {
 	D3DXCreateSphere(g_pD3DDevice, SPHERERADIUS, 30, 30, &m_pMeshSphere, NULL);
@@ -309,4 +351,47 @@ void cMainGame::Mesh_Render()
 	//		m_pObjMesh->DrawSubset(i);
 	//	}
 	//}
+}
+
+void cMainGame::CalcTransPickingRay(IN D3DXVECTOR3 inputPosition, OUT D3DXVECTOR3* vRayPosition, OUT D3DXVECTOR3* vRayDirection)
+{
+	// -> Camera에서 모든 위치가 적용된 데이터가 넘어오도록 변경하자.
+	D3DXVECTOR3 vPosition = inputPosition;
+	D3DXVECTOR3 vDirection = D3DXVECTOR3(CalcScreenX(), CalcScreenY(), 1.0f) - vPosition;
+	D3DXMATRIXA16 matWorld;
+	D3DXMatrixIdentity(&matWorld);
+
+	D3DXVec3TransformCoord(&vPosition, &vPosition, &matWorld);		/// 광선의 원점을 변환
+	D3DXVec3TransformNormal(&vDirection, &vDirection, &matWorld);	/// 광선의 방향을 변환
+	D3DXVec3Normalize(&vDirection, &vDirection);					/// 방향벡터 Normalize
+
+	*vRayPosition = vPosition;
+	*vRayDirection = vDirection;
+}
+
+bool cMainGame::GridCollision(IN cGrid * m_pGrid, IN D3DXVECTOR3 vRayPosition, IN D3DXVECTOR3 vRayDirection,OUT D3DXVECTOR3* Destination)
+{
+	if (!m_pGrid) return false;
+
+	D3DXVECTOR3 RayPosition = vRayPosition;
+	D3DXVECTOR3 RayDirection = vRayDirection;
+	for (size_t i = 0; i < m_pGrid->getVertex()->size(); i += 3)
+	{
+		float u, v, f;
+
+		if (D3DXIntersectTri(&(*m_pGrid->getVertex())[i + 0].p,
+			&(*m_pGrid->getVertex())[i + 1].p,
+			&(*m_pGrid->getVertex())[i + 2].p,
+			&RayPosition,
+			&RayDirection,
+			&u, &v, &f))
+		{
+			D3DXVECTOR3 P0 = (*m_pGrid->getVertex())[i + 0].p;
+			D3DXVECTOR3 P1 = (*m_pGrid->getVertex())[i + 1].p;
+			D3DXVECTOR3 P2 = (*m_pGrid->getVertex())[i + 2].p;
+			(*Destination) = P0 + u * (P1 - P0) + v * (P2 - P0);
+			return true;
+		}
+	}
+	return false;
 }

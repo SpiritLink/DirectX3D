@@ -5,7 +5,8 @@
 cCharacter::cCharacter()
 	: m_fRotY(0.0f),
 	m_vDirection(0, 0, 1),
-	m_vPosition(0, 0, 0)
+	m_vPosition(0, 0, 0),
+	m_vDestination(0,0,0)
 {
 	D3DXMatrixIdentity(&m_matWorld);
 }
@@ -23,6 +24,8 @@ void cCharacter::Update(iMap* pMap)
 {
 	D3DXVECTOR3 vPosition = m_vPosition;
 	m_pMap = pMap;
+	m_vDirection = m_vDestination - m_vPosition;
+	D3DXVec3Normalize(&m_vDirection, &m_vDirection);
 
 	if (GetKeyState('S') & 0x8000)
 	{
@@ -81,4 +84,9 @@ void cCharacter::Render()
 D3DXVECTOR3 & cCharacter::GetPosition()
 {
 	return m_vPosition;
+}
+
+void cCharacter::SetDestination(D3DXVECTOR3 vDestination)
+{
+	m_vDestination = vDestination;
 }

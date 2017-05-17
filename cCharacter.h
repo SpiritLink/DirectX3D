@@ -13,6 +13,7 @@ protected:
 	D3DXVECTOR3		m_vPosition;
 	D3DXMATRIXA16	m_matWorld;
 
+	D3DXVECTOR3		m_vDestination;
 	iMap*			m_pMap;
 public:
 	virtual ~cCharacter();
@@ -22,5 +23,6 @@ public:
 	virtual void Render();
 
 	virtual D3DXVECTOR3 & GetPosition();
+	void SetDestination(D3DXVECTOR3 vDestination);
 };
 

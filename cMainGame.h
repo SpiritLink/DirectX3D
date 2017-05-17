@@ -44,6 +44,12 @@ public:
 	void Create_Font();
 	void Text_Render();
 
+	float CalcScreenX();
+	float CalcScreenY();
 	void Setup_MeshObject();
 	void Mesh_Render();
+
+	void CalcTransPickingRay(IN D3DXVECTOR3 vPosition, OUT D3DXVECTOR3* vRayPosition, OUT D3DXVECTOR3* vRayDirection);
+	bool GridCollision(IN cGrid* m_pGrid, IN D3DXVECTOR3 vRayPosition, IN D3DXVECTOR3 vRayDirection, OUT D3DXVECTOR3* Destination);
+
 };
