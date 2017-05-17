@@ -25,7 +25,6 @@ cMainGame::cMainGame()
 	m_pWoman(NULL),
 	m_pFont(NULL),
 	m_p3DText(NULL),
-	m_pMeshTeapot(NULL),
 	m_pMeshSphere(NULL),
 	m_pObjMesh(NULL)
 {
@@ -43,7 +42,6 @@ cMainGame::~cMainGame()
 	for (size_t i = 0; i < m_vecMap.size(); ++i)
 		SAFE_DELETE(m_vecMap[i]);
 	SAFE_RELEASE(m_pMeshSphere);
-	SAFE_RELEASE(m_pMeshTeapot);
 	SAFE_RELEASE(m_pObjMesh);
 	for (size_t i = 0; i < m_vecObjMtlTex.size(); ++i)
 		SAFE_RELEASE(m_vecObjMtlTex[i]);
@@ -220,13 +218,7 @@ void cMainGame::Text_Render()
 
 void cMainGame::Setup_MeshObject()
 {
-	D3DXCreateTeapot(g_pD3DDevice, &m_pMeshTeapot, NULL);
 	D3DXCreateSphere(g_pD3DDevice, 0.5f, 10, 10, &m_pMeshSphere, NULL);
-
-	ZeroMemory(&m_stMtlTeapot, sizeof(D3DMATERIAL9));
-	m_stMtlTeapot.Ambient = D3DXCOLOR(0.0f, 0.7F, 0.7F, 1.0F);
-	m_stMtlTeapot.Specular = D3DXCOLOR(0.0f, 0.7F, 0.7F, 1.0F);
-	m_stMtlTeapot.Diffuse = D3DXCOLOR(0.0f, 0.7F, 0.7F, 1.0F);
 
 	ZeroMemory(&m_stMtlSphere, sizeof(D3DMATERIAL9));
 	m_stMtlSphere.Ambient = D3DXCOLOR(0.0f, 0.7F, 0.7F, 1.0F);
@@ -243,17 +235,6 @@ void cMainGame::Setup_MeshObject()
 void cMainGame::Mesh_Render()
 {
 	D3DXMATRIXA16 matWorld, matS, matR;
-	{
-		D3DXMatrixIdentity(&matS);
-		D3DXMatrixIdentity(&matR);
-		D3DXMatrixScaling(&matS, 1.0f, 1.0f, 1.0f);
-		matWorld = matS * matR;
-		D3DXMatrixTranslation(&matWorld,
-			0, 0, 10);
-		g_pD3DDevice->SetTransform(D3DTS_WORLD, &matWorld);
-		g_pD3DDevice->SetMaterial(&m_stMtlTeapot);
-		m_pMeshTeapot->DrawSubset(0);
-	}
 
 	{
 		D3DXMatrixIdentity(&matWorld);
@@ -262,7 +243,7 @@ void cMainGame::Mesh_Render()
 		D3DXMatrixScaling(&matS, 1.0f, 1.0f, 1.0f);
 		matWorld = matS * matR;
 		D3DXMatrixTranslation(&matWorld,
-			0, 0, 0);
+			0, 5, 10);
 		g_pD3DDevice->SetTransform(D3DTS_WORLD, &matWorld);
 		g_pD3DDevice->SetMaterial(&m_stMtlSphere);
 		m_pMeshSphere->DrawSubset(0);

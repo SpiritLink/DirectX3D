@@ -26,9 +26,7 @@ private:
 	LPD3DXFONT				m_pFont;
 	ID3DXMesh*				m_p3DText;
 
-	LPD3DXMESH				m_pMeshTeapot;
 	LPD3DXMESH				m_pMeshSphere;
-	D3DMATERIAL9			m_stMtlTeapot;
 	D3DMATERIAL9			m_stMtlSphere;
 
 	LPD3DXMESH				m_pObjMesh;
