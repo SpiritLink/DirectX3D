@@ -86,13 +86,10 @@ void cMainGame::Render()
 	if (m_pGrid) m_pGrid->Render();
 	if (m_pWoman) m_pWoman->Render();
 
-	Text_Render();
+	//Text_Render();
+	//Obj_Render();
+	Mesh_Render();
 
-	for (int i = 0; i < 500; ++i)
-	{
-		//Obj_Render();
-		Mesh_Render();
-	}
 	g_pD3DDevice->EndScene();
 	g_pD3DDevice->Present(NULL, NULL, NULL, NULL);
 }
@@ -271,20 +268,20 @@ void cMainGame::Mesh_Render()
 		m_pMeshSphere->DrawSubset(0);
 	}
 
-	{
-		D3DXMatrixIdentity(&matS);
-		D3DXMatrixIdentity(&matR);
-		D3DXMatrixIdentity(&matWorld);
-		D3DXMatrixScaling(&matS, 0.01f, 0.01f, 0.01f);
-		D3DXMatrixRotationX(&matR, -D3DX_PI / 2.0F);
-		matWorld = matS * matR;
-		g_pD3DDevice->SetTransform(D3DTS_WORLD, &matWorld);
+	//{
+	//	D3DXMatrixIdentity(&matS);
+	//	D3DXMatrixIdentity(&matR);
+	//	D3DXMatrixIdentity(&matWorld);
+	//	D3DXMatrixScaling(&matS, 0.01f, 0.01f, 0.01f);
+	//	D3DXMatrixRotationX(&matR, -D3DX_PI / 2.0F);
+	//	matWorld = matS * matR;
+	//	g_pD3DDevice->SetTransform(D3DTS_WORLD, &matWorld);
 
-		for (size_t i = 0; i < m_vecObjMtlTex.size(); ++i)
-		{
-			g_pD3DDevice->SetMaterial(&m_vecObjMtlTex[i]->GetMaterial());
-			g_pD3DDevice->SetTexture(0, m_vecObjMtlTex[i]->GetTexture());
-			m_pObjMesh->DrawSubset(i);
-		}
-	}
+	//	for (size_t i = 0; i < m_vecObjMtlTex.size(); ++i)
+	//	{
+	//		g_pD3DDevice->SetMaterial(&m_vecObjMtlTex[i]->GetMaterial());
+	//		g_pD3DDevice->SetTexture(0, m_vecObjMtlTex[i]->GetTexture());
+	//		m_pObjMesh->DrawSubset(i);
+	//	}
+	//}
 }
