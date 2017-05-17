@@ -17,6 +17,8 @@
 #include "cWoman.h"
 #include "cFrame.h"
 
+#define SPHERERADIUS 5.0f
+
 cMainGame::cMainGame()
 	: //m_pCubePC(NULL),
 	m_pGrid(NULL),
@@ -63,8 +65,9 @@ void cMainGame::Setup()
 
 	Set_Light();
 	Create_Font();
-
 	Setup_MeshObject();
+	m_vSphere.p = D3DXVECTOR3(0, 5, 10);
+	m_vSphere.r = SPHERERADIUS;
 }
 
 void cMainGame::Update()
@@ -218,7 +221,7 @@ void cMainGame::Text_Render()
 
 void cMainGame::Setup_MeshObject()
 {
-	D3DXCreateSphere(g_pD3DDevice, 0.5f, 10, 10, &m_pMeshSphere, NULL);
+	D3DXCreateSphere(g_pD3DDevice, SPHERERADIUS, 30, 30, &m_pMeshSphere, NULL);
 
 	ZeroMemory(&m_stMtlSphere, sizeof(D3DMATERIAL9));
 	m_stMtlSphere.Ambient = D3DXCOLOR(0.0f, 0.7F, 0.7F, 1.0F);

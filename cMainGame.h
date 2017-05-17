@@ -31,6 +31,8 @@ private:
 
 	LPD3DXMESH				m_pObjMesh;
 	std::vector<cMtlTex*>	m_vecObjMtlTex;
+
+	ST_PR_VERTEX			m_vSphere;
 public:
 	void Setup();
 	void Update();
