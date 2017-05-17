@@ -53,7 +53,6 @@ void cCamera::Update()
 		m_vLookAt = *m_pvTarget;
 		m_vEye = m_vEye + *m_pvTarget;
 	}
-
 	D3DXMATRIXA16 matView;
 	D3DXMatrixLookAtLH(&matView, &m_vEye, &m_vLookAt, &m_vUp);
 

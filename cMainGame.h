@@ -27,12 +27,14 @@ private:
 	ID3DXMesh*				m_p3DText;
 
 	LPD3DXMESH				m_pMeshSphere;
-	D3DMATERIAL9			m_stMtlSphere;
+	D3DMATERIAL9			m_stMtlSphere1;
+	D3DMATERIAL9			m_stMtlSphere2;
 
 	LPD3DXMESH				m_pObjMesh;
 	std::vector<cMtlTex*>	m_vecObjMtlTex;
 
 	ST_PR_VERTEX			m_vSphere;
+	bool					m_bSwitch;
 public:
 	void Setup();
 	void Update();
@@ -44,12 +46,14 @@ public:
 	void Create_Font();
 	void Text_Render();
 
-	float CalcScreenX();
-	float CalcScreenY();
+	float CalcProjectionX();
+	float CalcProjectionY();
 	void Setup_MeshObject();
 	void Mesh_Render();
 
-	void CalcTransPickingRay(IN D3DXVECTOR3 vPosition, OUT D3DXVECTOR3* vRayPosition, OUT D3DXVECTOR3* vRayDirection);
+	D3DXVECTOR3 CalcPickingRayDirection();
+	void TransformRay(D3DXVECTOR3* rayPosition, D3DXVECTOR3* rayDirection, D3DXMATRIX* matWorld);
 	bool GridCollision(IN cGrid* m_pGrid, IN D3DXVECTOR3 vRayPosition, IN D3DXVECTOR3 vRayDirection, OUT D3DXVECTOR3* Destination);
+	bool raySphereIntersectionTest(D3DXVECTOR3* rayPosition, D3DXVECTOR3* rayDirection, ST_PR_VERTEX* sphere);
 
 };
