@@ -96,6 +96,18 @@ struct ST_ROT_SAMPLE
 		D3DXQuaternionIdentity(&q);
 	}
 };
+
+struct ST_PR_VERTEX
+{
+	D3DXVECTOR3 p;
+	float r;
+
+	ST_PR_VERTEX()
+		: r(0),
+		p(0,0,0)
+	{
+	}
+};
 // << :
 #define SYNTHESIZE(varType, varName, funName)\
 private: varType varName;\

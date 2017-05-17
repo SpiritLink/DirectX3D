@@ -8,6 +8,7 @@ cGrid::cGrid()
 	m_nTriNum(0),
 	m_pTexture(NULL)
 {
+	ZeroMemory(&m_pMaterial, sizeof(D3DMATERIAL9));
 }
 
 
@@ -20,8 +21,9 @@ cGrid::~cGrid()
 void cGrid::Setup()
 {
 	m_pTexture = g_pTextureManager->GetTexture("obj/box.jpg");
+	BuildMaterial();
 	ST_PNT_VERTEX v;
-
+	
 	v.n = D3DXVECTOR3(0, 1, 0);
 	int nNumHalfTile = TILENUM;
 	float fInterval = 1.0f;
@@ -61,6 +63,7 @@ void cGrid::Render()
 	g_pD3DDevice->SetTransform(D3DTS_WORLD, &mat);
 	g_pD3DDevice->SetFVF(ST_PNT_VERTEX::FVF);
 	g_pD3DDevice->SetTexture(0, m_pTexture);
+	g_pD3DDevice->SetMaterial(&m_pMaterial);
 
 	g_pD3DDevice->SetStreamSource(0,
 		m_pVertexBuffer,
@@ -86,3 +89,29 @@ void cGrid::BuildVertexBuffer()
 	memcpy_s(pv, m_vecVertex.size() * sizeof(ST_PNT_VERTEX),&m_vecVertex[0], m_vecVertex.size() * sizeof(ST_PNT_VERTEX));
 	m_pVertexBuffer->Unlock();
 }
+
+void cGrid::BuildMaterial()
+{
+	m_pMaterial.Diffuse.r = 0.7f;
+	m_pMaterial.Diffuse.g = 0.7f;
+	m_pMaterial.Diffuse.b = 0.7f;
+	m_pMaterial.Diffuse.a = 0.7f;
+
+	m_pMaterial.Ambient.r = 0.7f;
+	m_pMaterial.Ambient.g = 0.7f;
+	m_pMaterial.Ambient.b = 0.7f;
+	m_pMaterial.Ambient.a = 0.7f;
+
+	m_pMaterial.Emissive.r = 0.7f;
+	m_pMaterial.Emissive.g = 0.7f;
+	m_pMaterial.Emissive.b = 0.7f;
+	m_pMaterial.Emissive.a = 0.7f;
+
+	m_pMaterial.Specular.r = 0.7f;
+	m_pMaterial.Specular.g = 0.7f;
+	m_pMaterial.Specular.b = 0.7f;
+	m_pMaterial.Specular.a = 0.7f;
+
+	m_pMaterial.Power = 0.7f;
+}
+
