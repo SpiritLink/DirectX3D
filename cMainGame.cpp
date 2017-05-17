@@ -87,7 +87,7 @@ void cMainGame::Render()
 	if (m_pGrid) m_pGrid->Render();
 	if (m_pWoman) m_pWoman->Render();
 
-	//Text_Render();
+	Text_Render();
 	//Obj_Render();
 	Mesh_Render();
 
@@ -98,6 +98,24 @@ void cMainGame::Render()
 void cMainGame::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	if (m_pCamera) m_pCamera->WndProc(hWnd, message, wParam, lParam);
+	UINT nMessage = message;
+	switch (message)
+	{
+		// 왼쪽 마우스 클릭시 구와 충돌하는지 검사한다.
+	case WM_LBUTTONDOWN:
+	{
+		int a = 3;
+	}
+		break;
+		// 오른쪽 마우스 클릭시 맵과 충돌하는지 검사한다.
+	case WM_RBUTTONDOWN:
+		break;
+	case WM_MOUSEMOVE:
+		g_ptMouse.y = HIWORD(lParam);
+		g_ptMouse.x = LOWORD(lParam);
+		break;
+
+	}
 }
 
 void cMainGame::Set_Light()
@@ -201,6 +219,29 @@ void cMainGame::Text_Render()
 			&rc,
 			DT_LEFT | DT_TOP | DT_NOCLIP,
 			D3DCOLOR_XRGB(0, 255, 0));
+	}
+	{
+		std::string sText = std::string("X:") + std::to_string(g_ptMouse.x);
+		RECT rc;
+		SetRect(&rc, 0, 40, 1, 0);
+		m_pFont->DrawTextA(NULL,
+			sText.c_str(),
+			sText.length(),
+			&rc,
+			DT_LEFT | DT_TOP | DT_NOCLIP,
+			D3DCOLOR_XRGB(255, 255, 0));
+	}
+
+	{
+		std::string sText = std::string("Y:") + std::to_string(g_ptMouse.y);
+		RECT rc;
+		SetRect(&rc, 0, 80, 1, 0);
+		m_pFont->DrawTextA(NULL,
+			sText.c_str(),
+			sText.length(),
+			&rc,
+			DT_LEFT | DT_TOP | DT_NOCLIP,
+			D3DCOLOR_XRGB(255, 255, 0));
 	}
 
 	{
