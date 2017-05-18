@@ -66,6 +66,13 @@ struct ST_PT_VERTEX
 	enum { FVF = D3DFVF_XYZ | D3DFVF_TEX1};
 };
 
+struct ST_PN_VERTEX
+{
+	D3DXVECTOR3 p;
+	D3DXVECTOR3 n;	// 법선벡터 (빛의 반사량 결정)
+
+	enum { FVF = D3DFVF_XYZ | D3DFVF_NORMAL};
+};
 struct ST_PNT_VERTEX
 {
 	D3DXVECTOR3 p;
@@ -99,16 +106,13 @@ struct ST_ROT_SAMPLE
 	}
 };
 
-struct ST_PR_VERTEX
+struct ST_SPHERE
 {
-	D3DXVECTOR3 p;
-	float r;
+	D3DXVECTOR3 vCenter;
+	float		fRadius;
+	bool		isPicked;
 
-	ST_PR_VERTEX()
-		: r(0),
-		p(0,0,0)
-	{
-	}
+	ST_SPHERE() : fRadius(0.0f), vCenter(0, 0, 0) {}
 };
 // << :
 #define SYNTHESIZE(varType, varName, funName)\

@@ -17,7 +17,8 @@
 #include "cWoman.h"
 #include "cFrame.h"
 
-#define SPHERERADIUS 5.0f
+#include "cRay.h"
+#define SPHERERADIUS 0.5f
 
 cMainGame::cMainGame()
 	: //m_pCubePC(NULL),
@@ -67,6 +68,7 @@ void cMainGame::Setup()
 	Set_Light();
 	Create_Font();
 	Setup_MeshObject();
+	Setup_PickingObj();
 }
 
 void cMainGame::Update()
@@ -83,13 +85,13 @@ void cMainGame::Render()
 	g_pD3DDevice->BeginScene();
 
 
-	if (m_pGrid) m_pGrid->Render();
+	//if (m_pGrid) m_pGrid->Render();
 	if (m_pWoman) m_pWoman->Render();
 
 	Text_Render();
 	//Obj_Render();
 	Mesh_Render();
-
+	PickingObj_Render();
 	g_pD3DDevice->EndScene();
 	g_pD3DDevice->Present(NULL, NULL, NULL, NULL);
 }
@@ -97,43 +99,39 @@ void cMainGame::Render()
 void cMainGame::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	if (m_pCamera) m_pCamera->WndProc(hWnd, message, wParam, lParam);
-	UINT nMessage = message;
 
-	D3DXMATRIXA16 matWorld;
-	D3DXMatrixIdentity(&matWorld);
-	D3DXVECTOR3 vRayPosition = m_pCamera->GetCamPosition();
-	D3DXVECTOR3 vRayDirection;
-	D3DXVECTOR3 vDestination;
 	switch (message)
 	{
 	case WM_LBUTTONDOWN:
-		vRayDirection = CalcPickingRayDirection();
-		TransformRay(&vRayPosition, &vRayDirection, &matWorld);
-		if (raySphereIntersectionTest(&vRayPosition, &vRayDirection, &m_vSphere))
 		{
-			if (m_bSwitch) m_bSwitch = false;
-			else m_bSwitch = true;
+			cRay r = cRay::RayAtWorldSpace(LOWORD(lParam), HIWORD(lParam));
+			for (size_t i = 0; i < m_vecSphere.size(); i++)
+			{
+				m_vecSphere[i].isPicked = r.IsPicked(&m_vecSphere[i]);
+			}
 		}
-		/// 구와 충돌을 검사하는 함수 실행
 		break;
 	case WM_RBUTTONDOWN:
 		{
-		vRayDirection = CalcPickingRayDirection();
+		cRay r = cRay::RayAtWorldSpace(LOWORD(lParam), HIWORD(lParam));
 
-		D3DXMATRIX view;
-		g_pD3DDevice->GetTransform(D3DTS_VIEW, &view);
-		D3DXMATRIX viewInverse;
-		D3DXMatrixInverse(&viewInverse, 0, &view);
-		TransformRay(&vRayPosition, &vRayDirection, &viewInverse);
-
-		if (GridCollision(m_pGrid, &vRayPosition, &vRayDirection, &vDestination))
-			m_pWoman->SetDestination(vDestination);
-
+			for (size_t i = 0; i < m_vecPlaneVertex.size(); i += 3)
+			{
+				D3DXVECTOR3 v(0, 0, 0);
+				if (r.IntersectTri(m_vecPlaneVertex[i + 0].p,
+					m_vecPlaneVertex[i + 1].p,
+					m_vecPlaneVertex[i + 2].p,
+					v
+				))
+				{
+					m_vPickedPosition = v;
+				}
+			}
 		}
 		break;
 	case WM_MOUSEMOVE:
-		g_ptMouse.y = HIWORD(lParam);
 		g_ptMouse.x = LOWORD(lParam);
+		g_ptMouse.y = HIWORD(lParam);
 		break;
 
 	}
@@ -212,18 +210,6 @@ void cMainGame::Create_Font()
 		lf.lfStrikeOut = false;
 		lf.lfCharSet = DEFAULT_CHARSET;
 		strcpy_s(lf.lfFaceName, "굴림체");
-
-		HFONT hFont;
-		HFONT hFontOld;
-		hFont = CreateFontIndirect(&lf);
-		hFontOld = (HFONT)SelectObject(hdc, hFont);
-		///숫자가 작을수록 곡선이 부드럽다.
-		D3DXCreateText(g_pD3DDevice, hdc, "Direct3D", 0.001f, 0.01f,
-			&m_p3DText,
-			0, 0);
-		SelectObject(hdc, hFontOld);
-		DeleteObject(hFont);
-		DeleteDC(hdc);
 	}
 	// << :
 }
@@ -277,14 +263,14 @@ void cMainGame::Text_Render()
 		matWorld = matS * matR * matT;
 
 		g_pD3DDevice->SetTransform(D3DTS_WORLD, &matWorld);
-		m_p3DText->DrawSubset(0);
+		//m_p3DText->DrawSubset(0);
 	}
 }
 
 void cMainGame::Setup_MeshObject()
 {
-	m_vSphere.p = D3DXVECTOR3(0, 5, 10);
-	m_vSphere.r = SPHERERADIUS;
+	m_vSphere.vCenter = D3DXVECTOR3(0, 5, 10);
+	m_vSphere.fRadius = SPHERERADIUS;
 
 	D3DXCreateSphere(g_pD3DDevice, SPHERERADIUS, 30, 30, &m_pMeshSphere, NULL);
 
@@ -449,12 +435,12 @@ bool cMainGame::GridCollision(IN cGrid * m_pGrid, IN D3DXVECTOR3* vRayPosition, 
  * 광선 물체 교차
  *-------------------------------------
  */
-bool cMainGame::raySphereIntersectionTest(IN D3DXVECTOR3 * rayPosition, IN D3DXVECTOR3 * rayDirection, IN ST_PR_VERTEX * sphere)
+bool cMainGame::raySphereIntersectionTest(IN D3DXVECTOR3 * rayPosition, IN D3DXVECTOR3 * rayDirection, IN ST_SPHERE * sphere)
 {
-	D3DXVECTOR3 v = *rayPosition - sphere->p;
+	D3DXVECTOR3 v = *rayPosition - sphere->vCenter;
 
 	float b = 2.0f * D3DXVec3Dot(rayDirection, &v);
-	float c = D3DXVec3Dot(&v, &v) - (sphere->r * sphere->r);
+	float c = D3DXVec3Dot(&v, &v) - (sphere->fRadius * sphere->fRadius);
 
 	// 판별식을 찾는다.
 	float discriminant = (b * b) - (4.0f * c);
@@ -473,4 +459,81 @@ bool cMainGame::raySphereIntersectionTest(IN D3DXVECTOR3 * rayPosition, IN D3DXV
 		return true;
 
 	return false;
+}
+
+void cMainGame::Setup_PickingObj()
+{
+	for (int i = 0; i <= 10; i++)
+	{
+		ST_SPHERE s;
+		s.fRadius = 0.5f;
+		s.vCenter = D3DXVECTOR3(0, 0, -10 + 2 * i);
+		m_vecSphere.push_back(s);
+	}
+
+	ZeroMemory(&m_stMtlNone, sizeof(D3DMATERIAL9));
+	m_stMtlNone.Ambient = D3DXCOLOR(0.7f, 0.7f, 0.0f, 1.0f);
+	m_stMtlNone.Diffuse = D3DXCOLOR(0.7f, 0.7f, 0.0f, 1.0f);
+	m_stMtlNone.Specular = D3DXCOLOR(0.7f, 0.7f, 0.0f, 1.0f);
+
+	ZeroMemory(&m_stMtlPicked, sizeof(D3DMATERIAL9));
+	m_stMtlPicked.Ambient = D3DXCOLOR(0.7f, 0.0f, 0.0f, 1.0f);
+	m_stMtlPicked.Diffuse = D3DXCOLOR(0.7f, 0.0f, 0.0f, 1.0f);
+	m_stMtlPicked.Specular = D3DXCOLOR(0.7f, 0.0f, 0.0f, 1.0f);
+
+	ZeroMemory(&m_stMtlPlane, sizeof(D3DMATERIAL9));
+	m_stMtlPlane.Ambient = D3DXCOLOR(0.7f, 0.7f, 0.7f, 1.0f);
+	m_stMtlPlane.Diffuse = D3DXCOLOR(0.7f, 0.7f, 0.7f, 1.0f);
+	m_stMtlPlane.Specular = D3DXCOLOR(0.7f, 0.7f, 0.7f, 1.0f);
+
+	ST_PN_VERTEX v;
+	v.n = D3DXVECTOR3(0, 1, 0);
+	v.p = D3DXVECTOR3(-10, 0, -10); m_vecPlaneVertex.push_back(v);
+	v.p = D3DXVECTOR3(-10, 0, +10); m_vecPlaneVertex.push_back(v);
+	v.p = D3DXVECTOR3(+10, 0, +10); m_vecPlaneVertex.push_back(v);
+
+	v.p = D3DXVECTOR3(-10, 0, -10); m_vecPlaneVertex.push_back(v);
+	v.p = D3DXVECTOR3(+10, 0, +10); m_vecPlaneVertex.push_back(v);
+	v.p = D3DXVECTOR3(+10, 0, -10); m_vecPlaneVertex.push_back(v);
+
+}
+
+void cMainGame::PickingObj_Render()
+{
+	D3DXMATRIXA16 matWorld;
+	g_pD3DDevice->SetFVF(ST_PN_VERTEX::FVF);
+	g_pD3DDevice->SetMaterial(&m_stMtlPlane);
+	D3DXMatrixIdentity(&matWorld);
+
+	g_pD3DDevice->SetTransform(D3DTS_WORLD, &matWorld);
+	g_pD3DDevice->SetTexture(0, 0);
+	g_pD3DDevice->DrawPrimitiveUP(D3DPT_TRIANGLELIST, 2,
+		&m_vecPlaneVertex[0], sizeof(ST_PN_VERTEX));
+	
+	for (int i = 0; i < m_vecSphere.size(); ++i)
+	{
+		D3DXMatrixIdentity(&matWorld);
+		matWorld._41 = m_vecSphere[i].vCenter.x;
+		matWorld._42 = m_vecSphere[i].vCenter.y;
+		matWorld._43 = m_vecSphere[i].vCenter.z;
+
+		g_pD3DDevice->SetTransform(D3DTS_WORLD, &matWorld);
+		g_pD3DDevice->SetMaterial(m_vecSphere[i].isPicked ?
+			&m_stMtlPicked : &m_stMtlNone);
+
+		m_pMeshSphere->DrawSubset(0);
+	}
+
+	g_pD3DDevice->SetMaterial(&m_stMtlNone);
+	D3DXMatrixTranslation(&matWorld,
+		m_vPickedPosition.x,
+		m_vPickedPosition.y,
+		m_vPickedPosition.z
+		);
+
+	g_pD3DDevice->SetTransform(D3DTS_WORLD, &matWorld);
+	m_pMeshSphere->DrawSubset(0);
+
+
+
 }

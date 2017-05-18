@@ -33,8 +33,15 @@ private:
 	LPD3DXMESH				m_pObjMesh;
 	std::vector<cMtlTex*>	m_vecObjMtlTex;
 
-	ST_PR_VERTEX			m_vSphere;
+	ST_SPHERE			m_vSphere;
 	bool					m_bSwitch;
+
+	std::vector<ST_SPHERE>		m_vecSphere;
+	D3DMATERIAL9				m_stMtlNone;
+	D3DMATERIAL9				m_stMtlPicked;
+	D3DMATERIAL9				m_stMtlPlane;
+	std::vector<ST_PN_VERTEX>	m_vecPlaneVertex;
+	D3DXVECTOR3					m_vPickedPosition;
 public:
 	void Setup();
 	void Update();
@@ -54,6 +61,9 @@ public:
 	D3DXVECTOR3 CalcPickingRayDirection();
 	void TransformRay(D3DXVECTOR3* rayPosition, D3DXVECTOR3* rayDirection, D3DXMATRIX* matWorld);
 	bool GridCollision(IN cGrid* m_pGrid, IN D3DXVECTOR3* vRayPosition, IN D3DXVECTOR3* vRayDirection, OUT D3DXVECTOR3* Destination);
-	bool raySphereIntersectionTest(IN D3DXVECTOR3* rayPosition, IN D3DXVECTOR3* rayDirection, IN ST_PR_VERTEX* sphere);
+	bool raySphereIntersectionTest(IN D3DXVECTOR3* rayPosition, IN D3DXVECTOR3* rayDirection, IN ST_SPHERE* sphere);
+
+	void Setup_PickingObj();
+	void PickingObj_Render();
 
 };
