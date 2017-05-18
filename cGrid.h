@@ -16,6 +16,6 @@ public:
 	void Render();
 	void BuildVertexBuffer();
 	void BuildMaterial();
-	std::vector<ST_PNT_VERTEX>* getVertex() { return &m_vecVertex; }
+	std::vector<ST_PNT_VERTEX> getVertex() { return m_vecVertex; }
 };
 

@@ -53,7 +53,7 @@ public:
 
 	D3DXVECTOR3 CalcPickingRayDirection();
 	void TransformRay(D3DXVECTOR3* rayPosition, D3DXVECTOR3* rayDirection, D3DXMATRIX* matWorld);
-	bool GridCollision(IN cGrid* m_pGrid, IN D3DXVECTOR3 vRayPosition, IN D3DXVECTOR3 vRayDirection, OUT D3DXVECTOR3* Destination);
-	bool raySphereIntersectionTest(D3DXVECTOR3* rayPosition, D3DXVECTOR3* rayDirection, ST_PR_VERTEX* sphere);
+	bool GridCollision(IN cGrid* m_pGrid, IN D3DXVECTOR3* vRayPosition, IN D3DXVECTOR3* vRayDirection, OUT D3DXVECTOR3* Destination);
+	bool raySphereIntersectionTest(IN D3DXVECTOR3* rayPosition, IN D3DXVECTOR3* rayDirection, IN ST_PR_VERTEX* sphere);
 
 };

@@ -117,8 +117,19 @@ void cMainGame::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		/// 구와 충돌을 검사하는 함수 실행
 		break;
 	case WM_RBUTTONDOWN:
+		{
 		vRayDirection = CalcPickingRayDirection();
-		TransformRay(&vRayPosition, &vRayDirection, &matWorld);
+
+		D3DXMATRIX view;
+		g_pD3DDevice->GetTransform(D3DTS_VIEW, &view);
+		D3DXMATRIX viewInverse;
+		D3DXMatrixInverse(&viewInverse, 0, &view);
+		TransformRay(&vRayPosition, &vRayDirection, &viewInverse);
+
+		if (GridCollision(m_pGrid, &vRayPosition, &vRayDirection, &vDestination))
+			m_pWoman->SetDestination(vDestination);
+
+		}
 		break;
 	case WM_MOUSEMOVE:
 		g_ptMouse.y = HIWORD(lParam);
@@ -404,28 +415,31 @@ void cMainGame::TransformRay(D3DXVECTOR3 * rayPosition, D3DXVECTOR3 * rayDirecti
 	D3DXVec3TransformNormal(rayDirection, rayDirection, matWorld);	/// 광선의 방향을 변환
 	D3DXVec3Normalize(rayDirection, rayDirection);					/// 방향벡터 정규화
 }
+/*-------------------------------------
+ * 광선 그리드 교차
+ *-------------------------------------
+ */
 
-bool cMainGame::GridCollision(IN cGrid * m_pGrid, IN D3DXVECTOR3 vRayPosition, IN D3DXVECTOR3 vRayDirection,OUT D3DXVECTOR3* Destination)
+bool cMainGame::GridCollision(IN cGrid * m_pGrid, IN D3DXVECTOR3* vRayPosition, IN D3DXVECTOR3* vRayDirection,OUT D3DXVECTOR3* Destination)
 {
 	if (!m_pGrid) return false;
 
-	D3DXVECTOR3 RayPosition = vRayPosition;
-	D3DXVECTOR3 RayDirection = vRayDirection;
-	for (size_t i = 0; i < m_pGrid->getVertex()->size(); i += 3)
+	for (size_t i = 0; i < m_pGrid->getVertex().size() ; i += 3)
 	{
 		float u, v, f;
 
-		if (D3DXIntersectTri(&(*m_pGrid->getVertex())[i + 0].p,
-			&(*m_pGrid->getVertex())[i + 1].p,
-			&(*m_pGrid->getVertex())[i + 2].p,
-			&RayPosition,
-			&RayDirection,
+		D3DXVECTOR3 P0 = m_pGrid->getVertex()[i + 0].p;
+		D3DXVECTOR3 P1 = m_pGrid->getVertex()[i + 1].p;
+		D3DXVECTOR3 P2 = m_pGrid->getVertex()[i + 2].p;
+		if (D3DXIntersectTri(
+			&P0,
+			&P1,
+			&P2,
+			vRayPosition,
+			vRayDirection,
 			&u, &v, &f))
 		{
-			D3DXVECTOR3 P0 = (*m_pGrid->getVertex())[i + 0].p;
-			D3DXVECTOR3 P1 = (*m_pGrid->getVertex())[i + 1].p;
-			D3DXVECTOR3 P2 = (*m_pGrid->getVertex())[i + 2].p;
-			(*Destination) = P0 + u * (P1 - P0) + v * (P2 - P0);
+			(*Destination) = P0 + (u * (P1 - P0)) + (v * (P2 - P0));
 			return true;
 		}
 	}
@@ -435,7 +449,7 @@ bool cMainGame::GridCollision(IN cGrid * m_pGrid, IN D3DXVECTOR3 vRayPosition, I
  * 광선 물체 교차
  *-------------------------------------
  */
-bool cMainGame::raySphereIntersectionTest(D3DXVECTOR3 * rayPosition, D3DXVECTOR3 * rayDirection, ST_PR_VERTEX * sphere)
+bool cMainGame::raySphereIntersectionTest(IN D3DXVECTOR3 * rayPosition, IN D3DXVECTOR3 * rayDirection, IN ST_PR_VERTEX * sphere)
 {
 	D3DXVECTOR3 v = *rayPosition - sphere->p;
 
