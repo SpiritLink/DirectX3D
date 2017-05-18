@@ -53,16 +53,9 @@ public:
 	void Create_Font();
 	void Text_Render();
 
-	float CalcProjectionX();
-	float CalcProjectionY();
 	void Setup_MeshObject();
 	void Mesh_Render();
-
-	D3DXVECTOR3 CalcPickingRayDirection();
-	void TransformRay(D3DXVECTOR3* rayPosition, D3DXVECTOR3* rayDirection, D3DXMATRIX* matWorld);
 	bool GridCollision(IN cGrid* m_pGrid, IN D3DXVECTOR3* vRayPosition, IN D3DXVECTOR3* vRayDirection, OUT D3DXVECTOR3* Destination);
-	bool raySphereIntersectionTest(IN D3DXVECTOR3* rayPosition, IN D3DXVECTOR3* rayDirection, IN ST_SPHERE* sphere);
-
 	void Setup_PickingObj();
 	void PickingObj_Render();
 

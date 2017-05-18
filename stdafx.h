@@ -112,7 +112,7 @@ struct ST_SPHERE
 	float		fRadius;
 	bool		isPicked;
 
-	ST_SPHERE() : fRadius(0.0f), vCenter(0, 0, 0) {}
+	ST_SPHERE() : fRadius(0.0f), vCenter(0, 0, 0), isPicked(false) {}
 };
 // << :
 #define SYNTHESIZE(varType, varName, funName)\

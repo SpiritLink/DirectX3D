@@ -106,9 +106,7 @@ void cMainGame::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			cRay r = cRay::RayAtWorldSpace(LOWORD(lParam), HIWORD(lParam));
 			for (size_t i = 0; i < m_vecSphere.size(); i++)
-			{
 				m_vecSphere[i].isPicked = r.IsPicked(&m_vecSphere[i]);
-			}
 		}
 		break;
 	case WM_RBUTTONDOWN:
@@ -328,84 +326,9 @@ void cMainGame::Mesh_Render()
 }
 
 /*-------------------------------------
-* 스크린에서 투영창으로의 변환
-*-------------------------------------
-*/
-float cMainGame::CalcProjectionX()
-{
-	D3DVIEWPORT9 stViewport;						//뷰포트 얻어오기
-	ZeroMemory(&stViewport, sizeof(D3DVIEWPORT9));
-	g_pD3DDevice->GetViewport(&stViewport);
-
-	RECT rc;										//투영행렬 얻어오기
-	GetClientRect(g_hWnd, &rc);
-	D3DXMATRIXA16 matProj;
-	D3DXMatrixPerspectiveFovLH(&matProj, D3DX_PI / 4.0F, rc.right / (float)rc.bottom,
-		1.0f, 1000.0f);
-	float Width = stViewport.Width;
-	float ViewportX = ((2.0f * g_ptMouse.x) / (float)Width) - 1.0f;
-
-	float fProjectionX = ViewportX / (float)matProj._11;
-
-	return fProjectionX;
-}
-/*-------------------------------------
-* 스크린에서 투영창으로의 변환
-*-------------------------------------
-*/
-float cMainGame::CalcProjectionY()
-{
-	D3DVIEWPORT9 stViewport;						//뷰포트 얻어오기
-	ZeroMemory(&stViewport, sizeof(D3DVIEWPORT9));
-	g_pD3DDevice->GetViewport(&stViewport);
-
-	RECT rc;										//투영행렬 얻어오기
-	GetClientRect(g_hWnd, &rc);
-	D3DXMATRIXA16 matProj;
-	D3DXMatrixPerspectiveFovLH(&matProj, D3DX_PI / 4.0F, rc.right / (float)rc.bottom,
-		1.0f, 1000.0f);
-	float fHeight = stViewport.Height;
-	float fViewportY = ((-2.0f * g_ptMouse.y) / (float)fHeight) + 1;
-
-	float fProjectionY = fViewportY / (float)matProj._22;
-
-	return fProjectionY;
-}
-/*-------------------------------------
- * 픽킹 광선의 계산
- *-------------------------------------
- */
-D3DXVECTOR3 cMainGame::CalcPickingRayDirection()
-{
-	float px = 0.0f;
-	float py = 0.0f;
-
-	D3DVIEWPORT9 vp;
-	g_pD3DDevice->GetViewport(&vp);
-
-	D3DXMATRIX projection;
-	g_pD3DDevice->GetTransform(D3DTS_PROJECTION, &projection);
-
-	px = ((( 2.0f * g_ptMouse.x) / vp.Width ) - 1.0f) / projection(0, 0);
-	py = (((-2.0f * g_ptMouse.y) / vp.Height) + 1.0f) / projection(1, 1);
-
-	return D3DXVECTOR3(px, py, 1.0f);
-}
-/*-------------------------------------
- * 광선의 변환
- *-------------------------------------
- */
-void cMainGame::TransformRay(D3DXVECTOR3 * rayPosition, D3DXVECTOR3 * rayDirection, D3DXMATRIX * matWorld)
-{
-	D3DXVec3TransformCoord(rayPosition, rayPosition, matWorld);		/// 광선의 원점을 변환
-	D3DXVec3TransformNormal(rayDirection, rayDirection, matWorld);	/// 광선의 방향을 변환
-	D3DXVec3Normalize(rayDirection, rayDirection);					/// 방향벡터 정규화
-}
-/*-------------------------------------
  * 광선 그리드 교차
  *-------------------------------------
  */
-
 bool cMainGame::GridCollision(IN cGrid * m_pGrid, IN D3DXVECTOR3* vRayPosition, IN D3DXVECTOR3* vRayDirection,OUT D3DXVECTOR3* Destination)
 {
 	if (!m_pGrid) return false;
@@ -429,35 +352,6 @@ bool cMainGame::GridCollision(IN cGrid * m_pGrid, IN D3DXVECTOR3* vRayPosition, 
 			return true;
 		}
 	}
-	return false;
-}
-/*-------------------------------------
- * 광선 물체 교차
- *-------------------------------------
- */
-bool cMainGame::raySphereIntersectionTest(IN D3DXVECTOR3 * rayPosition, IN D3DXVECTOR3 * rayDirection, IN ST_SPHERE * sphere)
-{
-	D3DXVECTOR3 v = *rayPosition - sphere->vCenter;
-
-	float b = 2.0f * D3DXVec3Dot(rayDirection, &v);
-	float c = D3DXVec3Dot(&v, &v) - (sphere->fRadius * sphere->fRadius);
-
-	// 판별식을 찾는다.
-	float discriminant = (b * b) - (4.0f * c);
-
-	// 가상의 수에 대한 테스트
-	if (discriminant < 0.0f)
-		return false;
-
-	discriminant = sqrtf(discriminant);
-
-	float s0 = (-b + discriminant) / 2.0f;
-	float s1 = (-b - discriminant) / 2.0f;
-
-	// 해가 >= 0일 경우 구체를 교차하는 것이다.
-	if (s0 >= 0.0f || s1 >= 0.0f)
-		return true;
-
 	return false;
 }
 
@@ -495,7 +389,6 @@ void cMainGame::Setup_PickingObj()
 	v.p = D3DXVECTOR3(-10, 0, -10); m_vecPlaneVertex.push_back(v);
 	v.p = D3DXVECTOR3(+10, 0, +10); m_vecPlaneVertex.push_back(v);
 	v.p = D3DXVECTOR3(+10, 0, -10); m_vecPlaneVertex.push_back(v);
-
 }
 
 void cMainGame::PickingObj_Render()
@@ -533,7 +426,4 @@ void cMainGame::PickingObj_Render()
 
 	g_pD3DDevice->SetTransform(D3DTS_WORLD, &matWorld);
 	m_pMeshSphere->DrawSubset(0);
-
-
-
 }
