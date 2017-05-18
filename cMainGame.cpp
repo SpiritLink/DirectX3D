@@ -85,7 +85,7 @@ void cMainGame::Render()
 	g_pD3DDevice->BeginScene();
 
 
-	//if (m_pGrid) m_pGrid->Render();
+	if (m_pGrid) m_pGrid->Render();
 	if (m_pWoman) m_pWoman->Render();
 
 	Text_Render();

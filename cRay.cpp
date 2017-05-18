@@ -50,7 +50,8 @@ bool cRay::IntersectTri(IN D3DXVECTOR3 & v0, IN D3DXVECTOR3 & v1, IN D3DXVECTOR3
 {
 	float u, v, t;
 	bool b = D3DXIntersectTri(&v0, &v1, &v2, &m_vOriginal, &m_vDirection, &u, &v, &t);
-	vPickedPosition = m_vOriginal + (t * m_vDirection);
+	//vPickedPosition = m_vOriginal + (t * m_vDirection);
+	vPickedPosition = v0 + (u * (v1 - v0)) + (v * (v2 - v0));
 
 	return b;
 }
@@ -73,6 +74,5 @@ bool cRay::IsPicked(ST_SPHERE * pSphere)
 	float qq = D3DXVec3Dot(&r.m_vOriginal, &r.m_vOriginal);
 	float rr = pSphere->fRadius * pSphere->fRadius;
 
-	return qv*qv - vv * (qq - rr) >= 0;
-
+	return qv * qv - vv * (qq - rr) >= 0;
 }
