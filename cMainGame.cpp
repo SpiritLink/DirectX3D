@@ -90,13 +90,13 @@ void cMainGame::Render()
 	g_pD3DDevice->BeginScene();
 
 
-	if (m_pGrid) m_pGrid->Render();
+	//if (m_pGrid) m_pGrid->Render();
 	if (m_pWoman) m_pWoman->Render();
 
-	Text_Render();
+	//Text_Render();
 	//Obj_Render();
 	Mesh_Render();
-	PickingObj_Render();
+	//PickingObj_Render();
 	g_pD3DDevice->EndScene();
 	g_pD3DDevice->Present(NULL, NULL, NULL, NULL);
 }
@@ -272,7 +272,7 @@ void cMainGame::Text_Render()
 
 void cMainGame::Setup_MeshObject()
 {
-	m_pRawTexture = g_pTextureManager->GetTexture("HeightMapData\terrain.jpg");
+	m_pRawTexture = g_pTextureManager->GetTexture("HeightMapData\BlackTexture.jpg");
 
 	m_vSphere.vCenter = D3DXVECTOR3(0, 5, 10);
 	m_vSphere.fRadius = SPHERERADIUS;
@@ -299,19 +299,19 @@ void cMainGame::Mesh_Render()
 	D3DXMATRIXA16 matWorld, matS, matR;
 
 	{
-		D3DXMatrixIdentity(&matWorld);
-		D3DXMatrixIdentity(&matS);
-		D3DXMatrixIdentity(&matR);
-		D3DXMatrixScaling(&matS, 1.0f, 1.0f, 1.0f);
-		matWorld = matS * matR;
-		D3DXMatrixTranslation(&matWorld,
-			0, 5, 10);
-		g_pD3DDevice->SetTransform(D3DTS_WORLD, &matWorld);
-		if (m_bSwitch)
-			g_pD3DDevice->SetMaterial(&m_stMtlSphere1);
-		else
-			g_pD3DDevice->SetMaterial(&m_stMtlSphere2);
-		m_pMeshSphere->DrawSubset(0);
+		//D3DXMatrixIdentity(&matWorld);
+		//D3DXMatrixIdentity(&matS);
+		//D3DXMatrixIdentity(&matR);
+		//D3DXMatrixScaling(&matS, 1.0f, 1.0f, 1.0f);
+		//matWorld = matS * matR;
+		//D3DXMatrixTranslation(&matWorld,
+		//	0, 5, 10);
+		//g_pD3DDevice->SetTransform(D3DTS_WORLD, &matWorld);
+		//if (m_bSwitch)
+		//	g_pD3DDevice->SetMaterial(&m_stMtlSphere1);
+		//else
+		//	g_pD3DDevice->SetMaterial(&m_stMtlSphere2);
+		//m_pMeshSphere->DrawSubset(0);
 	}
 
 	{
@@ -323,9 +323,15 @@ void cMainGame::Mesh_Render()
 		D3DXMatrixTranslation(&matWorld, 0, 0, 0);
 
 		g_pD3DDevice->SetTransform(D3DTS_WORLD, &matWorld);
-		g_pD3DDevice->SetMaterial(&m_stMtlNone);
+		g_pD3DDevice->SetMaterial(&m_stMtlPlane);
+		g_pD3DDevice->SetTexture(0, m_pRawTexture);
+		g_pD3DDevice->SetFVF(ST_PNT_VERTEX::FVF);
+		//g_pD3DDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 		m_pRawMap->DrawSubset(0);
 
+		int a = m_pRawMap->GetNumFaces();
+		int b = m_pRawMap->GetNumVertices();
+		int c = 1;
 	}
 
 	//{
