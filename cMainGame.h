@@ -42,6 +42,10 @@ private:
 	D3DMATERIAL9				m_stMtlPlane;
 	std::vector<ST_PN_VERTEX>	m_vecPlaneVertex;
 	D3DXVECTOR3					m_vPickedPosition;
+
+	std::vector<ST_PNT_VERTEX>	m_vecRawMap;
+	LPD3DXMESH				m_pRawMap;
+	LPDIRECT3DTEXTURE9		m_pRawTexture;
 public:
 	void Setup();
 	void Update();

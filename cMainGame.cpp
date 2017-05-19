@@ -18,6 +18,7 @@
 #include "cFrame.h"
 
 #include "cRay.h"
+#include "cRawLoader.h"
 #define SPHERERADIUS 0.5f
 
 cMainGame::cMainGame()
@@ -30,7 +31,8 @@ cMainGame::cMainGame()
 	m_p3DText(NULL),
 	m_pMeshSphere(NULL),
 	m_pObjMesh(NULL),
-	m_bSwitch(true)
+	m_bSwitch(true),
+	m_pRawMap(NULL)
 {
 }
 
@@ -49,6 +51,7 @@ cMainGame::~cMainGame()
 	SAFE_RELEASE(m_pObjMesh);
 	for (size_t i = 0; i < m_vecObjMtlTex.size(); ++i)
 		SAFE_RELEASE(m_vecObjMtlTex[i]);
+	SAFE_RELEASE(m_pRawMap);
 	g_pTextureManager->Destroy();
 	g_pDeviceManager->Destroy();
 }
@@ -65,6 +68,8 @@ void cMainGame::Setup()
 	m_pCamera = new cCamera;
 	m_pCamera->Setup(&m_pWoman->GetPosition());
 
+	cRawLoader rLoader;
+	m_pRawMap = rLoader.Load("HeightMapData", "HeightMap.raw");
 	Set_Light();
 	Create_Font();
 	Setup_MeshObject();
@@ -267,6 +272,8 @@ void cMainGame::Text_Render()
 
 void cMainGame::Setup_MeshObject()
 {
+	m_pRawTexture = g_pTextureManager->GetTexture("HeightMapData\terrain.jpg");
+
 	m_vSphere.vCenter = D3DXVECTOR3(0, 5, 10);
 	m_vSphere.fRadius = SPHERERADIUS;
 
@@ -305,6 +312,20 @@ void cMainGame::Mesh_Render()
 		else
 			g_pD3DDevice->SetMaterial(&m_stMtlSphere2);
 		m_pMeshSphere->DrawSubset(0);
+	}
+
+	{
+		D3DXMatrixIdentity(&matWorld);
+		D3DXMatrixIdentity(&matS);
+		D3DXMatrixIdentity(&matR);
+		D3DXMatrixScaling(&matS, 1.0f, 1.0f, 1.0f);
+		matWorld = matS * matR;
+		D3DXMatrixTranslation(&matWorld, 0, 0, 0);
+
+		g_pD3DDevice->SetTransform(D3DTS_WORLD, &matWorld);
+		g_pD3DDevice->SetMaterial(&m_stMtlNone);
+		m_pRawMap->DrawSubset(0);
+
 	}
 
 	//{
