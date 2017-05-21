@@ -83,7 +83,10 @@ void cMainGame::Update()
 	if (m_pCamera) 
 		m_pCamera->Update();
 	if (m_pWoman)
+	{
+		RawMapCollision(m_pWoman, m_vecRawMap);
 		m_pWoman->update();
+	}
 }
 
 void cMainGame::Render()
@@ -95,7 +98,7 @@ void cMainGame::Render()
 	//if (m_pGrid) m_pGrid->Render();
 	if (m_pWoman) m_pWoman->Render();
 
-	//Text_Render();
+	Text_Render();
 	//Obj_Render();
 	Mesh_Render();
 	//PickingObj_Render();
@@ -551,4 +554,43 @@ void cMainGame::PickingObj_Render()
 
 	g_pD3DDevice->SetTransform(D3DTS_WORLD, &matWorld);
 	m_pMeshSphere->DrawSubset(0);
+}
+
+void cMainGame::RawMapCollision(cWoman* Woman, std::vector<ST_PNT_VERTEX> vecMap)
+{
+	D3DXVECTOR3 vPosition = Woman->GetPosition();
+	D3DXVECTOR3 vRay = Woman->GetPosition();
+	D3DXVECTOR3 vRayDir(0, -1, 0);
+	vRay.y = 1000;
+	int x = vPosition.x;
+	int z = vPosition.z;
+	if (x < 0 || x > 256) return;
+	if (z < 0 || z > 256) return;
+
+	float u, v, t;
+	if (D3DXIntersectTri(
+		&vecMap[(x * 6) + (z * 256 * 6) + 0].p,
+		&vecMap[(x * 6) + (z * 256 * 6) + 1].p,
+		&vecMap[(x * 6) + (z * 256 * 6) + 2].p,
+		&vRay,
+		&vRayDir,
+		&u, &v, &t))
+	{
+		D3DXVECTOR3 Result = vRay + (vRayDir * t);
+		Woman->SetY(Result.y);
+		return;
+	}
+	if (D3DXIntersectTri(
+		&vecMap[(x * 6) + (z * 256 * 6) + 3].p,
+		&vecMap[(x * 6) + (z * 256 * 6) + 4].p,
+		&vecMap[(x * 6) + (z * 256 * 6) + 5].p,
+		&vRay,
+		&vRayDir,
+		&u, &v, &t))
+	{
+		D3DXVECTOR3 Result = vRay + (vRayDir * t);
+		Woman->SetY(Result.y);
+		return;
+	}
+
 }

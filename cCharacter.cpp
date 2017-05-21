@@ -24,7 +24,6 @@ void cCharacter::Update(iMap* pMap)
 {
 	D3DXVECTOR3 vPosition = m_vPosition;
 	m_pMap = pMap;
-	m_vDirection = m_vDestination - m_vPosition;
 	D3DXVec3Normalize(&m_vDirection, &m_vDirection);
 
 	if (GetKeyState('S') & 0x8000)
@@ -37,11 +36,11 @@ void cCharacter::Update(iMap* pMap)
 	}
 	if (GetKeyState('A') & 0x8000)
 	{
-		m_fRotY -= 0.01f;
+		m_fRotY -= 0.10f;
 	}
 	if (GetKeyState('D') & 0x8000)
 	{
-		m_fRotY += 0.01f;
+		m_fRotY += 0.10f;
 	}
 
 

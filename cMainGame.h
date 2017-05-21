@@ -65,5 +65,7 @@ public:
 	void Setup_PickingObj();
 	void PickingObj_Render();
 
+	void RawMapCollision(cWoman* Woman, std::vector<ST_PNT_VERTEX> vecMap);
+
 
 };

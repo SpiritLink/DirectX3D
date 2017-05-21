@@ -24,5 +24,6 @@ public:
 
 	virtual D3DXVECTOR3 & GetPosition();
 	void SetDestination(D3DXVECTOR3 vDestination);
+	void SetY(float fY) { m_vPosition.y = fY; }
 };
 
