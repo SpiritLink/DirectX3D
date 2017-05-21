@@ -1,20 +1,27 @@
 #include "stdafx.h"
 #include "cObjMap.h"
-#include "cObjLoader.h" // << :
+#include "cObjLoader.h"
+#include "cRawLoader.h"
 
 cObjMap::cObjMap(IN char * szFolder, IN char * szFile, IN D3DXMATRIXA16 * pMat)
 {
-	Load(szFolder, szFile, pMat);
+	LoadRawMap(szFolder, szFile, pMat);
 }
 
 cObjMap::~cObjMap()
 {
 }
 
-void cObjMap::Load(IN char * szFolder, IN char * szFile, IN D3DXMATRIXA16 * pMat)
+void cObjMap::LoadObjMap(IN char * szFolder, IN char * szFile, IN D3DXMATRIXA16 * pMat)
 {
 	cObjLoader loadObj;
 	loadObj.LoadSurface(m_vecSurface, szFolder, szFile, pMat);	//표면만 따로 로드합니다.
+}
+
+void cObjMap::LoadRawMap(IN char* szFolder, IN char* szFile, IN D3DXMATRIXA16* pMat)
+{
+	cRawLoader loadRaw;
+	loadRaw.LoadSurface(m_vecSurface, szFolder, szFile, pMat);
 }
 
 bool cObjMap::GetHeight(IN float x, OUT float & y, IN float z)

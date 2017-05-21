@@ -11,5 +11,7 @@ public:
 	~cRawLoader();
 
 	LPD3DXMESH Load(IN char* szFolder, IN char* szFile);
+	std::vector<unsigned int> LoadRawData(IN char* szFolder, IN char* szFile);
+	void LoadSurface(OUT std::vector<D3DXVECTOR3>& vecSurface,IN char* szFolder, IN char* szFile, IN D3DXMATRIXA16* pMat);
 
 };

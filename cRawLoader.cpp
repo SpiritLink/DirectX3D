@@ -123,3 +123,84 @@ LPD3DXMESH cRawLoader::Load(IN char * szFolder, IN char * szFile)
 	return pMesh;
 
 }
+
+std::vector<unsigned int> cRawLoader::LoadRawData(IN char * szFolder, IN char * szFile)
+{
+	std::vector<unsigned int> vecRaw;
+	std::string sFullPath(szFolder);
+	sFullPath += (std::string("/") + std::string(szFile));
+
+	FILE* fp;
+	fopen_s(&fp, sFullPath.c_str(), "rb");
+
+	unsigned int c;
+
+	while (true)
+	{
+		if (feof(fp)) break;
+
+		c = fgetc(fp);
+		vecRaw.push_back(c);
+	}
+	vecRaw.pop_back();
+
+	return vecRaw;
+}
+
+void cRawLoader::LoadSurface(OUT std::vector<D3DXVECTOR3>& vecSurface, IN char * szFolder, IN char * szFile, IN D3DXMATRIXA16 * pMat)
+{
+	std::vector<unsigned int> vecRaw;
+	std::string sFullPath(szFolder);
+	sFullPath += (std::string("/") + std::string(szFile));
+	std::vector<D3DXVECTOR3>	vecVertex;
+	FILE* fp;
+	fopen_s(&fp, sFullPath.c_str(), "rb");
+
+	unsigned int c;
+
+	while (true)
+	{
+		if (feof(fp)) break;
+
+		c = fgetc(fp);
+		vecRaw.push_back(c);
+	}
+	vecRaw.pop_back();
+
+	D3DXVECTOR3				vPoint;
+	for (int i = 0; i < RAWSIZE; ++i)
+	{
+		for (int j = 0; j < RAWSIZE; ++j)
+		{
+			vPoint.x = j;
+			vPoint.y = vecRaw[j + i * RAWSIZE] / (float)10.0f;
+			vPoint.z = i;
+
+			vecVertex.push_back(vPoint);
+		}
+	}
+
+	for (int i = 0; i < TILESIZE; ++i)		///x
+	{
+		for (int j = 0; j < TILESIZE; ++j)	///y
+		{
+			WORD k;
+			k = j + (i * RAWSIZE);					vecSurface.push_back(vecVertex[k]);	///왼쪽 아래
+			k = j + (i * RAWSIZE) + RAWSIZE;		vecSurface.push_back(vecVertex[k]);	///왼쪽 위
+			k = j + (i * RAWSIZE) + 1 + RAWSIZE;	vecSurface.push_back(vecVertex[k]);	///오른쪽 위
+
+			k = j + i * RAWSIZE;					vecSurface.push_back(vecVertex[k]);	///왼쪽 아래
+			k = j + (i * RAWSIZE) + 1 + RAWSIZE;	vecSurface.push_back(vecVertex[k]);	///오른쪽 위
+			k = j + (i * RAWSIZE) + 1;				vecSurface.push_back(vecVertex[k]);	///오른쪽 아래
+		}
+	}
+
+
+	if (pMat)
+	{
+		for (size_t i = 0; i < vecSurface.size(); ++i)
+		{
+			D3DXVec3TransformCoord(&vecSurface[i], &vecSurface[i], pMat);
+		}
+	}
+}

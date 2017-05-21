@@ -44,6 +44,23 @@ void cWoman::update()
 	}
 }
 
+void cWoman::update(iMap * pMap)
+{
+	cCharacter::Update(pMap);
+	if (m_pRootFrame)
+	{
+		if (GetKeyState('W') & 0x8000)
+		{
+			m_pRootFrame->Update(m_pRootFrame->GetKeyFrame(), &m_matWorld);
+		}
+
+		if (!(GetKeyState('W') & 0x8000))
+		{
+			m_pStandFrame->Update(m_pStandFrame->GetKeyFrame(), &m_matWorld);
+		}
+	}
+}
+
 void cWoman::Render()
 {
 	if (m_pRootFrame)

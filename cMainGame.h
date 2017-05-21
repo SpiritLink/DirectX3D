@@ -22,7 +22,7 @@ private:
 	cWoman*					m_pWoman;
 	std::vector<cGroup*>	m_vecGroup;
 	std::vector<cGroup*>	m_vecMap;
-	iMap* m_pMap;
+	iMap*					m_pMap;
 	LPD3DXFONT				m_pFont;
 	ID3DXMesh*				m_p3DText;
 
@@ -58,9 +58,12 @@ public:
 	void Text_Render();
 
 	void Setup_MeshObject();
+	std::vector<ST_PNT_VERTEX> Setup_RawMap(IN char * szFolder, IN char * szFile);
 	void Mesh_Render();
+	void RawMap_Render();
 	bool GridCollision(IN cGrid* m_pGrid, IN D3DXVECTOR3* vRayPosition, IN D3DXVECTOR3* vRayDirection, OUT D3DXVECTOR3* Destination);
 	void Setup_PickingObj();
 	void PickingObj_Render();
+
 
 };

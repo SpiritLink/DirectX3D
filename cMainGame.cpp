@@ -20,6 +20,9 @@
 #include "cRay.h"
 #include "cRawLoader.h"
 #define SPHERERADIUS 0.5f
+#define RAWSIZE 257
+#define TILESIZE 256
+
 
 cMainGame::cMainGame()
 	: //m_pCubePC(NULL),
@@ -64,12 +67,11 @@ void cMainGame::Setup()
 	m_pWoman = new cWoman;
 	m_pWoman->Setup();
 	Load_Surface();
-
+	
 	m_pCamera = new cCamera;
 	m_pCamera->Setup(&m_pWoman->GetPosition());
 
-	cRawLoader rLoader;
-	m_pRawMap = rLoader.Load("HeightMapData", "HeightMap.raw");
+	m_vecRawMap = Setup_RawMap("HeightMapData","HeightMap.raw");
 	Set_Light();
 	Create_Font();
 	Setup_MeshObject();
@@ -97,6 +99,7 @@ void cMainGame::Render()
 	//Obj_Render();
 	Mesh_Render();
 	//PickingObj_Render();
+	RawMap_Render();
 	g_pD3DDevice->EndScene();
 	g_pD3DDevice->Present(NULL, NULL, NULL, NULL);
 }
@@ -179,7 +182,7 @@ void cMainGame::Load_Surface()
 	D3DXMatrixRotationX(&matR, -D3DX_PI / 2.0f);
 	matWorld = matS * matR;
 
-	m_pMap = new cObjMap("obj", "map_surface.obj", &matWorld);
+	m_pMap = new cObjMap("HeightMapData", "HeightMap.raw", &matWorld);
 }
 
 void cMainGame::Create_Font()
@@ -272,7 +275,7 @@ void cMainGame::Text_Render()
 
 void cMainGame::Setup_MeshObject()
 {
-	m_pRawTexture = g_pTextureManager->GetTexture("HeightMapData\BlackTexture.jpg");
+	m_pRawTexture = g_pTextureManager->GetTexture("HeightMapData/terrain.jpg");
 
 	m_vSphere.vCenter = D3DXVECTOR3(0, 5, 10);
 	m_vSphere.fRadius = SPHERERADIUS;
@@ -294,6 +297,78 @@ void cMainGame::Setup_MeshObject()
 	m_pObjMesh = loadObj.LoadMesh(m_vecObjMtlTex, "obj", "Map.obj");
 }
 
+std::vector<ST_PNT_VERTEX> cMainGame::Setup_RawMap(IN char * szFolder, IN char * szFile)
+{
+	cRawLoader rLoader;
+	std::vector<unsigned int> vecRawData;
+	vecRawData = rLoader.LoadRawData(szFolder, szFile);
+
+	ST_PNT_VERTEX p;
+	p.n = D3DXVECTOR3(0, 1, 0);	///법선 벡터 디폴트값
+	p.p = D3DXVECTOR3(0, 0, 0);	///x, y, z 값을 바꿔줘야함
+	p.t = D3DXVECTOR2(0, 0);	/// 텍스쳐 0 부터 1까지의 값
+
+	///맵 좌표 생성
+	std::vector<ST_PNT_VERTEX> vecVertex;
+	for (int i = 0; i < RAWSIZE; ++i)
+	{
+		for (int j = 0; j < RAWSIZE; ++j)
+		{
+			p.p.x = j;
+			p.p.y = vecRawData[j + i * RAWSIZE] / (float)10.0f;
+
+			p.p.z = i;
+
+			if (j == 0)
+				p.t.x = 0;
+			else
+				p.t.x = j / (float)RAWSIZE;
+
+			if (i == 0)
+				p.t.y = 0;
+			else
+				p.t.y = (i / (float)RAWSIZE);
+
+			vecVertex.push_back(p);
+		}
+	}
+
+	///맵 법선벡터 재설정
+	for (int i = 1; i < TILESIZE; ++i)
+	{
+		for (int j = 1; j < TILESIZE; ++j)
+		{
+			D3DXVECTOR3 vHorizon, vVertical, vn;
+			vHorizon = vecVertex[i + (j * RAWSIZE) + 1].p - vecVertex[i + (j * RAWSIZE) - 1].p;				///수평
+			vVertical = vecVertex[i + (j * RAWSIZE) - RAWSIZE].p - vecVertex[i + (j * RAWSIZE) + RAWSIZE].p;	///수직
+			D3DXVec3Normalize(&vHorizon, &vHorizon);	///수평 정규화
+			D3DXVec3Normalize(&vVertical, &vVertical);	///수직 정규화
+			D3DXVec3Cross(&vn, &vHorizon, &vVertical);	///외적
+			D3DXVec3Normalize(&vn, &vn);				///법선벡터 정규화
+			vecVertex[i + j * RAWSIZE].n = vn;		///대입
+		}
+	}
+
+	///삼각형 그리기 순서에 따른 ST_PNT_VERTEX삽입
+	std::vector<ST_PNT_VERTEX> vecIndex;
+	for (int i = 0; i < TILESIZE; ++i)		///x
+	{
+		for (int j = 0; j < TILESIZE; ++j)	///y
+		{
+			unsigned int k;
+			k = j + (i * RAWSIZE);					vecIndex.push_back(vecVertex[k]);	///왼쪽 아래
+			k = j + (i * RAWSIZE) + RAWSIZE;		vecIndex.push_back(vecVertex[k]);	///왼쪽 위
+			k = j + (i * RAWSIZE) + 1 + RAWSIZE;	vecIndex.push_back(vecVertex[k]);	///오른쪽 위
+
+			k = j + i * RAWSIZE;					vecIndex.push_back(vecVertex[k]);	///왼쪽 아래
+			k = j + (i * RAWSIZE) + 1 + RAWSIZE;	vecIndex.push_back(vecVertex[k]);	///오른쪽 위
+			k = j + (i * RAWSIZE) + 1;				vecIndex.push_back(vecVertex[k]);	///오른쪽 아래
+		}
+	}
+	return vecIndex;
+}
+
+
 void cMainGame::Mesh_Render()
 {
 	D3DXMATRIXA16 matWorld, matS, matR;
@@ -314,6 +389,7 @@ void cMainGame::Mesh_Render()
 		//m_pMeshSphere->DrawSubset(0);
 	}
 
+	if(m_pRawMap)
 	{
 		D3DXMatrixIdentity(&matWorld);
 		D3DXMatrixIdentity(&matS);
@@ -351,6 +427,28 @@ void cMainGame::Mesh_Render()
 	//	}
 	//}
 }
+
+void cMainGame::RawMap_Render()
+{
+	D3DXMATRIXA16 matWorld, matS, matR;
+	D3DXMatrixIdentity(&matWorld);
+	D3DXMatrixIdentity(&matS);
+	D3DXMatrixIdentity(&matR);
+	matWorld = matS * matR;
+	D3DXMatrixTranslation(&matWorld, 0, 0, 0);
+
+	g_pD3DDevice->SetTransform(D3DTS_WORLD, &matWorld);
+	g_pD3DDevice->SetMaterial(&m_stMtlPlane);
+	g_pD3DDevice->SetTexture(0, m_pRawTexture);
+	g_pD3DDevice->SetFVF(ST_PNT_VERTEX::FVF);
+
+	g_pD3DDevice->DrawPrimitiveUP(
+		D3DPT_TRIANGLELIST, 
+		m_vecRawMap.size() / 3,
+		&m_vecRawMap[0], sizeof(ST_PNT_VERTEX));
+
+}
+
 
 /*-------------------------------------
  * 광선 그리드 교차

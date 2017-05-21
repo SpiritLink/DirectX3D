@@ -1,6 +1,7 @@
 #pragma once
 #include "cCharacter.h"
 class cFrame;
+class iMap;
 
 class cWoman : public cCharacter
 {
@@ -12,6 +13,7 @@ public:
 	~cWoman();
 	void Setup();
 	void update();
+	void update(iMap* pMap);
 	void Render();
 	cFrame* getRootFrame() { return m_pRootFrame; }
 };
