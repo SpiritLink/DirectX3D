@@ -2,15 +2,21 @@
 
 #define g_pTextManager cTextManager::GetInstance() //
 
+enum POINTER_TYPE
+{
+	INT_POINTER,
+	FLOAT_POINTER
+};
 struct ST_TEXT
 {
-	std::string Text;
-	void*		pValue;
-	int			nStartX;
-	int			nStartY;
-	int			nRed;
-	int			nBlue;
-	int			nGreen;
+	std::string		Text;
+	void*			pValue;
+	int				nStartX;
+	int				nStartY;
+	int				nRed;
+	int				nBlue;
+	int				nGreen;
+	POINTER_TYPE	eType;
 };
 class cTextManager
 {
@@ -24,7 +30,7 @@ private:
 
 public:
 	void Create_Font();
-	void AddText(std::string Text, void* pValue, int nStartX, int nStartY, int nRed, int nGreen, int nBlue);
+	void AddText(std::string Text, void* pValue, int nStartX, int nStartY, int nRed, int nGreen, int nBlue,POINTER_TYPE type);
 	void RemoveText();
 	void Render();
 	void CursorPosition();

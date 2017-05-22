@@ -97,7 +97,7 @@ void cCubeMan::Setup()
 	pRightLeg->Setup();
 	m_pRoot->AddChild(pRightLeg);
 
-	g_pTextManager->AddText("ManX", &m_vPosition.x, 0, 120, 0, 0, 0);
+	g_pTextManager->AddText("ManX", &m_vPosition.x, 0, 120, 0, 0, 0, FLOAT_POINTER);
 
 }
 
