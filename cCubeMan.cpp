@@ -62,6 +62,7 @@ void cCubeMan::Setup(std::vector<ST_PC_VERTEX>* vecVertex, int nType)
 	cRightLeg* pRightLeg = new cRightLeg;
 	pRightLeg->Setup();
 	m_pRoot->AddChild(pRightLeg);
+
 }
 
 void cCubeMan::Setup()
@@ -95,6 +96,8 @@ void cCubeMan::Setup()
 	cRightLeg* pRightLeg = new cRightLeg;
 	pRightLeg->Setup();
 	m_pRoot->AddChild(pRightLeg);
+
+	g_pTextManager->AddText("ManX", &m_vPosition.x, 0, 120, 0, 0, 0);
 
 }
 

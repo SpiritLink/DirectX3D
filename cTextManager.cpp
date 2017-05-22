@@ -44,7 +44,7 @@ void cTextManager::Create_Font()
 		strcpy_s(lf.lfFaceName, "±¼¸²Ã¼");
 }
 
-void cTextManager::AddText(std::string Text, int* pValue, int nStartX, int nStartY, int nRed, int nGreen, int nBlue)
+void cTextManager::AddText(std::string Text, void* pValue, int nStartX, int nStartY, int nRed, int nGreen, int nBlue)
 {
 	ST_TEXT stText;
 	stText.Text = Text;
@@ -69,7 +69,7 @@ void cTextManager::Render()
 	CursorPosition();
 	for (size_t i = 0; i < m_vecText.size(); ++i)
 	{
-		std::string sText = m_vecText[i].Text + std::string(":") + std::to_string(*m_vecText[i].pValue);
+		std::string sText = m_vecText[i].Text + std::string(":") + std::to_string(*(float *)m_vecText[i].pValue);
 		RECT rc;
 		int x = m_vecText[i].nStartX;
 		int y = m_vecText[i].nStartY;

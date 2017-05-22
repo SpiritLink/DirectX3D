@@ -5,7 +5,7 @@
 struct ST_TEXT
 {
 	std::string Text;
-	int*		pValue;
+	void*		pValue;
 	int			nStartX;
 	int			nStartY;
 	int			nRed;
@@ -24,7 +24,7 @@ private:
 
 public:
 	void Create_Font();
-	void AddText(std::string Text, int* pValue, int nStartX, int nStartY, int nRed, int nGreen, int nBlue);
+	void AddText(std::string Text, void* pValue, int nStartX, int nStartY, int nRed, int nGreen, int nBlue);
 	void RemoveText();
 	void Render();
 	void CursorPosition();
