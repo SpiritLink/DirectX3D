@@ -19,6 +19,8 @@
 
 #include "cRay.h"
 #include "cRawLoader.h"
+
+#include "cHeightMap.h"
 #define SPHERERADIUS 0.5f
 #define RAWSIZE 257
 #define TILESIZE 256
@@ -31,22 +33,22 @@ cMainGame::cMainGame()
 	m_pMap(NULL),
 	m_pWoman(NULL),
 	m_pFont(NULL),
-	m_p3DText(NULL),
 	m_pMeshSphere(NULL),
 	m_pObjMesh(NULL),
 	m_bSwitch(true),
-	m_pRawMap(NULL)
+	m_pRawMap(NULL),
+	m_pCubeMan(NULL)
 {
 }
 
 
 cMainGame::~cMainGame()
 {
+	SAFE_DELETE(m_pCubeMan);
 	SAFE_DELETE(m_pWoman);
 	SAFE_DELETE(m_pGrid);
 	SAFE_DELETE(m_pCamera);
 	SAFE_DELETE(m_pMap);
-	SAFE_RELEASE(m_p3DText);
 	SAFE_RELEASE(m_pFont);
 	for (size_t i = 0; i < m_vecMap.size(); ++i)
 		SAFE_DELETE(m_vecMap[i]);
@@ -67,12 +69,20 @@ void cMainGame::Setup()
 	m_pWoman = new cWoman;
 	m_pWoman->Setup();
 	Load_Surface();
-	
+	{
+		cCubeMan* pCubeMan = new cCubeMan;
+		pCubeMan->Setup();
+		m_pCubeMan = pCubeMan;
+		Setup_HeightMap();
+
+	}
+	m_pCubeMan = new cCharacter;
 	m_pCamera = new cCamera;
-	m_pCamera->Setup(&m_pWoman->GetPosition());
+	m_pCamera->Setup(&m_pCubeMan->GetPosition());
 
 	m_vecRawMap = Setup_RawMap("HeightMapData","HeightMap.raw");
 	Set_Light();
+
 	Create_Font();
 	Setup_MeshObject();
 	Setup_PickingObj();
@@ -83,10 +93,10 @@ void cMainGame::Update()
 	if (m_pCamera) 
 		m_pCamera->Update();
 	if (m_pWoman)
-	{
-		RawMapCollision(m_pWoman, m_vecRawMap);
 		m_pWoman->update();
-	}
+
+	if (m_pCubeMan)
+		m_pCubeMan->Update(m_pMap);
 }
 
 void cMainGame::Render()
@@ -96,8 +106,12 @@ void cMainGame::Render()
 
 
 	//if (m_pGrid) m_pGrid->Render();
-	if (m_pWoman) m_pWoman->Render();
-
+	if (m_pMap)
+		m_pMap->Render();
+	if (m_pWoman) 
+		m_pWoman->Render();
+	if (m_pCubeMan) 
+		m_pCubeMan->Render();
 	Text_Render();
 	//Obj_Render();
 	Mesh_Render();
@@ -185,7 +199,7 @@ void cMainGame::Load_Surface()
 	D3DXMatrixRotationX(&matR, -D3DX_PI / 2.0f);
 	matWorld = matS * matR;
 
-	m_pMap = new cObjMap("HeightMapData", "HeightMap.raw", &matWorld);
+	//m_pMap = new cObjMap("obj", "map_surface.obj", &matWorld);
 }
 
 void cMainGame::Create_Font()
@@ -258,21 +272,6 @@ void cMainGame::Text_Render()
 			&rc,
 			DT_LEFT | DT_TOP | DT_NOCLIP,
 			D3DCOLOR_XRGB(255, 255, 0));
-	}
-
-	{
-		D3DXMATRIXA16 matWorld, matS, matR, matT;
-		D3DXMatrixIdentity(&matS);
-		D3DXMatrixIdentity(&matR);
-		D3DXMatrixIdentity(&matT);
-
-		D3DXMatrixScaling(&matS, 1.0f, 1.0f, 100.0f);
-		D3DXMatrixRotationX(&matR, -D3DX_PI / 4.0F);
-		D3DXMatrixTranslation(&matT, -2.0f, 2.0f, 0.0f);
-		matWorld = matS * matR * matT;
-
-		g_pD3DDevice->SetTransform(D3DTS_WORLD, &matWorld);
-		//m_p3DText->DrawSubset(0);
 	}
 }
 
@@ -593,4 +592,12 @@ void cMainGame::RawMapCollision(cWoman* Woman, std::vector<ST_PNT_VERTEX> vecMap
 		return;
 	}
 
+}
+
+void cMainGame::Setup_HeightMap()
+{
+	cHeightMap *pMap = new cHeightMap;
+	pMap->Setup("HeightMapData/", "HeightMap.raw", "terrain.jpg");
+
+	m_pMap = pMap;
 }

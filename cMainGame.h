@@ -9,6 +9,7 @@ class cWoman;
 class iMap;
 class cFrame;
 class cMtlTex;
+class cCharacter;
 
 class cMainGame
 {
@@ -24,7 +25,6 @@ private:
 	std::vector<cGroup*>	m_vecMap;
 	iMap*					m_pMap;
 	LPD3DXFONT				m_pFont;
-	ID3DXMesh*				m_p3DText;
 
 	LPD3DXMESH				m_pMeshSphere;
 	D3DMATERIAL9			m_stMtlSphere1;
@@ -33,7 +33,7 @@ private:
 	LPD3DXMESH				m_pObjMesh;
 	std::vector<cMtlTex*>	m_vecObjMtlTex;
 
-	ST_SPHERE			m_vSphere;
+	ST_SPHERE				m_vSphere;
 	bool					m_bSwitch;
 
 	std::vector<ST_SPHERE>		m_vecSphere;
@@ -46,6 +46,8 @@ private:
 	std::vector<ST_PNT_VERTEX>	m_vecRawMap;
 	LPD3DXMESH				m_pRawMap;
 	LPDIRECT3DTEXTURE9		m_pRawTexture;
+
+	cCharacter*				m_pCubeMan;
 public:
 	void Setup();
 	void Update();
@@ -64,8 +66,9 @@ public:
 	bool GridCollision(IN cGrid* m_pGrid, IN D3DXVECTOR3* vRayPosition, IN D3DXVECTOR3* vRayDirection, OUT D3DXVECTOR3* Destination);
 	void Setup_PickingObj();
 	void PickingObj_Render();
-
 	void RawMapCollision(cWoman* Woman, std::vector<ST_PNT_VERTEX> vecMap);
+
+	void Setup_HeightMap();
 
 
 };
