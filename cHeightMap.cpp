@@ -111,12 +111,12 @@ void cHeightMap::Setup(char * szFolder, char * szRaw, char * szTex, DWORD dwByte
 		&m_pMesh);							/// mesh pointer
 
 	ST_PNT_VERTEX *pV = NULL;
-	m_pMesh->LockVertexBuffer(0, (LPVOID*)pV);
+	m_pMesh->LockVertexBuffer(0, (LPVOID*)&pV);
 	memcpy_s(pV, vecVertex.size() * sizeof(ST_PNT_VERTEX), &vecVertex[0], vecVertex.size() * sizeof(ST_PNT_VERTEX));
 	m_pMesh->UnlockVertexBuffer();
 
 	DWORD * pI = NULL;
-	m_pMesh->LockIndexBuffer(0, (LPVOID*)pI);
+	m_pMesh->LockIndexBuffer(0, (LPVOID*)&pI);
 	memcpy_s(pI, vecIndex.size() * sizeof(DWORD), &vecIndex[0], vecIndex.size() * sizeof(DWORD));
 	m_pMesh->UnlockIndexBuffer();
 

@@ -19,6 +19,7 @@ public:
 	D3DMATERIAL9	m_stMaterial;
 
 	virtual void Setup(std::vector<ST_PC_VERTEX>* vecVertex, int nType) override;
+	virtual void Setup() override;
 	virtual void Update(iMap* pMap) override;
 	virtual void Render() override;
 	void SetMaterial();

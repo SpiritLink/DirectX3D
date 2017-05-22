@@ -44,19 +44,22 @@ cMainGame::cMainGame()
 
 cMainGame::~cMainGame()
 {
-	SAFE_DELETE(m_pCubeMan);
-	SAFE_DELETE(m_pWoman);
 	SAFE_DELETE(m_pGrid);
 	SAFE_DELETE(m_pCamera);
 	SAFE_DELETE(m_pMap);
+	SAFE_DELETE(m_pWoman);
 	SAFE_RELEASE(m_pFont);
-	for (size_t i = 0; i < m_vecMap.size(); ++i)
-		SAFE_DELETE(m_vecMap[i]);
 	SAFE_RELEASE(m_pMeshSphere);
 	SAFE_RELEASE(m_pObjMesh);
+	SAFE_DELETE(m_pMap);
+	SAFE_RELEASE(m_pFont);
+	SAFE_RELEASE(m_pRawMap);
+	m_pCubeMan->~cCubeMan();
+	SAFE_DELETE(m_pCubeMan);
+	for (size_t i = 0; i < m_vecMap.size(); ++i)
+		SAFE_RELEASE(m_vecMap[i]);
 	for (size_t i = 0; i < m_vecObjMtlTex.size(); ++i)
 		SAFE_RELEASE(m_vecObjMtlTex[i]);
-	SAFE_RELEASE(m_pRawMap);
 	g_pTextureManager->Destroy();
 	g_pDeviceManager->Destroy();
 }
@@ -74,9 +77,8 @@ void cMainGame::Setup()
 		pCubeMan->Setup();
 		m_pCubeMan = pCubeMan;
 		Setup_HeightMap();
-
 	}
-	m_pCubeMan = new cCharacter;
+
 	m_pCamera = new cCamera;
 	m_pCamera->Setup(&m_pCubeMan->GetPosition());
 
@@ -108,8 +110,8 @@ void cMainGame::Render()
 	//if (m_pGrid) m_pGrid->Render();
 	if (m_pMap)
 		m_pMap->Render();
-	if (m_pWoman) 
-		m_pWoman->Render();
+	//if (m_pWoman) 
+	//	m_pWoman->Render();
 	if (m_pCubeMan) 
 		m_pCubeMan->Render();
 	Text_Render();

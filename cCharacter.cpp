@@ -17,7 +17,10 @@ cCharacter::~cCharacter()
 
 void cCharacter::Setup(std::vector<ST_PC_VERTEX>* vecVertex, int nType)
 {
-	//
+}
+
+void cCharacter::Setup()
+{
 }
 
 void cCharacter::Update(iMap* pMap)

@@ -62,8 +62,42 @@ void cCubeMan::Setup(std::vector<ST_PC_VERTEX>* vecVertex, int nType)
 	cRightLeg* pRightLeg = new cRightLeg;
 	pRightLeg->Setup();
 	m_pRoot->AddChild(pRightLeg);
+}
+
+void cCubeMan::Setup()
+{
+	cCharacter::Setup();
+	D3DXCreateTextureFromFile(g_pD3DDevice, "CubeMan.png", &m_pTexture);
+
+	SetMaterial();
+
+	cBody* pBody = new cBody;
+	pBody->Setup();
+	pBody->SetParentWorldTransMatrix(&m_matWorld);
+	m_pRoot = pBody;
+
+	cHead* pHead = new cHead;
+	pHead->Setup();
+	m_pRoot->AddChild(pHead);
+
+	cLeftArm* pLeftArm = new cLeftArm;
+	pLeftArm->Setup();
+	m_pRoot->AddChild(pLeftArm);
+
+	cRightArm* pRightArm = new cRightArm;
+	pRightArm->Setup();
+	m_pRoot->AddChild(pRightArm);
+
+	cLeftLeg* pLeftLeg = new cLeftLeg;
+	pLeftLeg->Setup();
+	m_pRoot->AddChild(pLeftLeg);
+
+	cRightLeg* pRightLeg = new cRightLeg;
+	pRightLeg->Setup();
+	m_pRoot->AddChild(pRightLeg);
 
 }
+
 
 void cCubeMan::Update(iMap* pMap)
 {
