@@ -27,12 +27,10 @@
 
 
 cMainGame::cMainGame()
-	: //m_pCubePC(NULL),
-	m_pGrid(NULL),
+	: m_pGrid(NULL),
 	m_pCamera(NULL),
 	m_pMap(NULL),
 	m_pWoman(NULL),
-	m_pMeshSphere(NULL),
 	m_pObjMesh(NULL),
 	m_bSwitch(true),
 	m_pCubeMan(NULL)
@@ -46,10 +44,8 @@ cMainGame::~cMainGame()
 	SAFE_DELETE(m_pCamera);
 	SAFE_DELETE(m_pMap);
 	SAFE_DELETE(m_pWoman);
-	SAFE_RELEASE(m_pMeshSphere);
 	SAFE_RELEASE(m_pObjMesh);
 	SAFE_DELETE(m_pMap);
-	m_pCubeMan->~cCubeMan();
 	SAFE_DELETE(m_pCubeMan);
 	for (size_t i = 0; i < m_vecObjMtlTex.size(); ++i)
 		SAFE_RELEASE(m_vecObjMtlTex[i]);
@@ -61,6 +57,7 @@ cMainGame::~cMainGame()
 void cMainGame::Setup()
 {
 	g_pTextManager->Create_Font();
+
 	m_pGrid = new cGrid;
 	m_pGrid->Setup();
 
@@ -78,7 +75,6 @@ void cMainGame::Setup()
 	m_pCamera->Setup(&m_pCubeMan->GetPosition());
 
 	Set_Light();
-
 	Setup_MeshObject();
 }
 
@@ -171,22 +167,6 @@ void cMainGame::Load_Surface()
 
 void cMainGame::Setup_MeshObject()
 {
-	m_pRawTexture = g_pTextureManager->GetTexture("HeightMapData/terrain.jpg");
-
-	m_vSphere.vCenter = D3DXVECTOR3(0, 5, 10);
-	m_vSphere.fRadius = SPHERERADIUS;
-
-	D3DXCreateSphere(g_pD3DDevice, SPHERERADIUS, 30, 30, &m_pMeshSphere, NULL);
-
-	ZeroMemory(&m_stMtlSphere1, sizeof(D3DMATERIAL9));
-	m_stMtlSphere1.Ambient = D3DXCOLOR(0.7f, 0.7F, 0.7F, 1.0F);
-	m_stMtlSphere1.Specular = D3DXCOLOR(0.7f, 0.7F, 0.7F, 1.0F);
-	m_stMtlSphere1.Diffuse = D3DXCOLOR(0.7f, 0.7F, 0.7F, 1.0F);
-
-	ZeroMemory(&m_stMtlSphere2, sizeof(D3DMATERIAL9));
-	m_stMtlSphere2.Ambient = D3DXCOLOR(0.7f, 0.0F, 0.0F, 1.0F);
-	m_stMtlSphere2.Specular = D3DXCOLOR(0.7f, 0.0F, 0.0F, 1.0F);
-	m_stMtlSphere2.Diffuse = D3DXCOLOR(0.7f, 0.0F, 0.0F, 1.0F);
 }
 
 void cMainGame::Mesh_Render()

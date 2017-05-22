@@ -25,22 +25,17 @@ private:
 	cCubeMan*		m_pCubeMan;
 	cHeightMap*		m_pMap;
 
-	LPD3DXMESH		m_pMeshSphere;
 	LPD3DXMESH		m_pObjMesh;
 
-	D3DMATERIAL9	m_stMtlSphere1;
-	D3DMATERIAL9	m_stMtlSphere2;
 	D3DMATERIAL9	m_stMtlNone;
 	D3DMATERIAL9	m_stMtlPicked;
 	D3DMATERIAL9	m_stMtlPlane;
 
-	ST_SPHERE					m_vSphere;
 	std::vector<cGroup*>		m_vecGroup;
 	std::vector<ST_PN_VERTEX>	m_vecPlaneVertex;
 	std::vector<cMtlTex*>		m_vecObjMtlTex;
 
 	D3DXVECTOR3					m_vPickedPosition;
-	LPDIRECT3DTEXTURE9			m_pRawTexture;
 	bool						m_bSwitch;
 
 public:
