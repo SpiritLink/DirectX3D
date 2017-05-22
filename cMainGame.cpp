@@ -32,7 +32,6 @@ cMainGame::cMainGame()
 	m_pCamera(NULL),
 	m_pMap(NULL),
 	m_pWoman(NULL),
-	m_pFont(NULL),
 	m_pMeshSphere(NULL),
 	m_pObjMesh(NULL),
 	m_bSwitch(true),
@@ -48,11 +47,9 @@ cMainGame::~cMainGame()
 	SAFE_DELETE(m_pCamera);
 	SAFE_DELETE(m_pMap);
 	SAFE_DELETE(m_pWoman);
-	SAFE_RELEASE(m_pFont);
 	SAFE_RELEASE(m_pMeshSphere);
 	SAFE_RELEASE(m_pObjMesh);
 	SAFE_DELETE(m_pMap);
-	SAFE_RELEASE(m_pFont);
 	SAFE_RELEASE(m_pRawMap);
 	m_pCubeMan->~cCubeMan();
 	SAFE_DELETE(m_pCubeMan);
@@ -60,12 +57,14 @@ cMainGame::~cMainGame()
 		SAFE_RELEASE(m_vecMap[i]);
 	for (size_t i = 0; i < m_vecObjMtlTex.size(); ++i)
 		SAFE_RELEASE(m_vecObjMtlTex[i]);
+	g_pTextManager->Destroy();
 	g_pTextureManager->Destroy();
 	g_pDeviceManager->Destroy();
 }
 
 void cMainGame::Setup()
 {
+	g_pTextManager->Create_Font();
 	m_pGrid = new cGrid;
 	m_pGrid->Setup();
 
@@ -85,7 +84,6 @@ void cMainGame::Setup()
 	m_vecRawMap = Setup_RawMap("HeightMapData","HeightMap.raw");
 	Set_Light();
 
-	Create_Font();
 	Setup_MeshObject();
 	Setup_PickingObj();
 }
@@ -114,11 +112,11 @@ void cMainGame::Render()
 	//	m_pWoman->Render();
 	if (m_pCubeMan) 
 		m_pCubeMan->Render();
-	Text_Render();
 	//Obj_Render();
 	Mesh_Render();
 	//PickingObj_Render();
 	RawMap_Render();
+	g_pTextManager->Render();
 	g_pD3DDevice->EndScene();
 	g_pD3DDevice->Present(NULL, NULL, NULL, NULL);
 }
@@ -202,79 +200,6 @@ void cMainGame::Load_Surface()
 	matWorld = matS * matR;
 
 	//m_pMap = new cObjMap("obj", "map_surface.obj", &matWorld);
-}
-
-void cMainGame::Create_Font()
-{
-	// >> :
-	{
-		D3DXFONT_DESC	fd;
-		ZeroMemory(&fd, sizeof(D3DXFONT_DESC));
-		fd.Height = 50;
-		fd.Width = 40;
-		fd.Weight = FW_MEDIUM;
-		fd.Italic = false;
-		fd.CharSet = DEFAULT_CHARSET;
-		fd.OutputPrecision = OUT_DEFAULT_PRECIS;
-		fd.PitchAndFamily = FF_DONTCARE;
-		AddFontResource("font/NanumBarunGothic.ttf");
-		strcpy_s(fd.FaceName, "NanumBarunGothic");
-
-		D3DXCreateFontIndirect(g_pD3DDevice, &fd, &m_pFont);
-	}
-
-	{
-		HDC hdc = CreateCompatibleDC(0);
-		LOGFONT lf;
-		ZeroMemory(&lf, sizeof(LOGFONT));
-		lf.lfHeight = 25;
-		lf.lfWidth = 12;
-		lf.lfWeight = 500;
-		lf.lfItalic = false;
-		lf.lfUnderline = false;
-		lf.lfStrikeOut = false;
-		lf.lfCharSet = DEFAULT_CHARSET;
-		strcpy_s(lf.lfFaceName, "±¼¸²Ã¼");
-	}
-	// << :
-}
-
-void cMainGame::Text_Render()
-{
-	{
-		std::string sText = std::to_string(g_nFrameCount);
-		RECT rc;
-		SetRect(&rc, 0, 0, 1, 0);
-		m_pFont->DrawTextA(NULL,
-			sText.c_str(),
-			sText.length(),
-			&rc,
-			DT_LEFT | DT_TOP | DT_NOCLIP,
-			D3DCOLOR_XRGB(0, 255, 0));
-	}
-	{
-		std::string sText = std::string("X:") + std::to_string(g_ptMouse.x);
-		RECT rc;
-		SetRect(&rc, 0, 40, 1, 0);
-		m_pFont->DrawTextA(NULL,
-			sText.c_str(),
-			sText.length(),
-			&rc,
-			DT_LEFT | DT_TOP | DT_NOCLIP,
-			D3DCOLOR_XRGB(255, 255, 0));
-	}
-
-	{
-		std::string sText = std::string("Y:") + std::to_string(g_ptMouse.y);
-		RECT rc;
-		SetRect(&rc, 0, 80, 1, 0);
-		m_pFont->DrawTextA(NULL,
-			sText.c_str(),
-			sText.length(),
-			&rc,
-			DT_LEFT | DT_TOP | DT_NOCLIP,
-			D3DCOLOR_XRGB(255, 255, 0));
-	}
 }
 
 void cMainGame::Setup_MeshObject()

@@ -141,3 +141,4 @@ public: virtual void Set##funName(varType var) {\
 #include "cDeviceManager.h"
 #include "cTextureManager.h"
 #include "cObjectManager.h"
+#include "cTextManager.h"

@@ -25,8 +25,6 @@ private:
 	cCubeMan*				m_pCubeMan;
 	cHeightMap*					m_pMap;
 
-	LPD3DXFONT				m_pFont;
-
 	LPD3DXMESH				m_pMeshSphere;
 	LPD3DXMESH				m_pRawMap;
 	LPD3DXMESH				m_pObjMesh;
@@ -57,8 +55,6 @@ public:
 	void Set_Light();
 	void Obj_Render();
 	void Load_Surface();
-	void Create_Font();
-	void Text_Render();
 
 	void Setup_MeshObject();
 	std::vector<ST_PNT_VERTEX> Setup_RawMap(IN char * szFolder, IN char * szFile);
