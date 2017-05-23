@@ -47,7 +47,8 @@ void cHeightMap::Setup(char * szFolder, char * szRaw, char * szTex, DWORD dwByte
 	{
 		ST_PNT_VERTEX v;
 		v.p = D3DXVECTOR3(i % nCol,
-			((unsigned char)fgetc(fp)) / 10.0f,
+			//((unsigned char)fgetc(fp)) / 10.0f,
+			((unsigned char)fgetc(fp)),
 			i / nCol);
 		v.n - D3DXVECTOR3(0, 1, 0);
 		v.t = D3DXVECTOR2((i% nCol) / (float)nCol,
