@@ -23,7 +23,7 @@ private:
 	cGrid*			m_pGrid;
 	cWoman*			m_pWoman;
 	cCubeMan*		m_pCubeMan;
-	cHeightMap*		m_pMap;
+	iMap*			m_pMap;
 
 	LPD3DXMESH		m_pObjMesh;
 

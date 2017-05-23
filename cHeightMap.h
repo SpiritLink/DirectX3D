@@ -5,7 +5,7 @@ class cHeightMap : public iMap
 public:
 	cHeightMap();
 	// >> :
-	virtual ~cHeightMap();
+	virtual ~cHeightMap() override;
 private:
 	LPD3DXMESH					m_pMesh;
 	std::vector<D3DXVECTOR3>	m_vecVertex;

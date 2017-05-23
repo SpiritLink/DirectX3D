@@ -57,6 +57,7 @@ cMainGame::~cMainGame()
 	SAFE_RELEASE(m_pSprite);
 	SAFE_RELEASE(m_pTexture);
 	// << :
+
 	g_pTextManager->Destroy();
 	g_pTextureManager->Destroy();
 	g_pDeviceManager->Destroy();
