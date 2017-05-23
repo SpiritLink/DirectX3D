@@ -11,6 +11,7 @@ class cFrame;
 class cMtlTex;
 class cCharacter;
 class cHeightMap;
+class cUIObject;
 
 class cMainGame
 {
@@ -24,6 +25,7 @@ private:
 	cWoman*			m_pWoman;
 	cCubeMan*		m_pCubeMan;
 	iMap*			m_pMap;
+	cUIObject*		m_pButton;
 
 	LPD3DXMESH		m_pObjMesh;
 
@@ -55,11 +57,9 @@ public:
 	void Setup_MeshObject();
 	void Mesh_Render();
 	void Setup_HeightMap();
-
-	// >> :
 	void Setup_UI();
 	void UI_Render();
-	// << :
+	void Setup_Button();
 
 
 };

@@ -3,7 +3,11 @@
 
 
 cUIObject::cUIObject()
+	: m_pParent(NULL),
+	m_vPosition(0, 0, 0)
 {
+	m_stSize.nWidth = 0;
+	m_stSize.nHeight = 0;
 }
 
 
@@ -33,6 +37,12 @@ void cUIObject::Update()
 
 void cUIObject::Render(LPD3DXSPRITE pSprite)
 {
+	pSprite->Begin(D3DXSPRITE_ALPHABLEND | D3DXSPRITE_SORT_TEXTURE);
+
+	pSprite->End();
+
+	for each(auto p in m_vecChild)
+		p->Render(pSprite);
 }
 
 void cUIObject::Destroy()

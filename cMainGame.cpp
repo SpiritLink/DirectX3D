@@ -21,6 +21,8 @@
 #include "cRawLoader.h"
 
 #include "cHeightMap.h"
+#include "cUIButton.h"
+
 #define SPHERERADIUS 0.5f
 #define RAWSIZE 257
 #define TILESIZE 256
@@ -34,10 +36,9 @@ cMainGame::cMainGame()
 	m_pObjMesh(NULL),
 	m_bSwitch(true),
 	m_pCubeMan(NULL),
-	// >> :
 	m_pSprite(NULL),
-	m_pTexture(NULL)
-	// << :
+	m_pTexture(NULL),
+	m_pButton(NULL)
 {
 }
 
@@ -53,10 +54,9 @@ cMainGame::~cMainGame()
 	SAFE_DELETE(m_pCubeMan);
 	for (size_t i = 0; i < m_vecObjMtlTex.size(); ++i)
 		SAFE_RELEASE(m_vecObjMtlTex[i]);
-	// >> :
 	SAFE_RELEASE(m_pSprite);
 	SAFE_RELEASE(m_pTexture);
-	// << :
+	m_pButton->Destroy();
 
 	g_pTextManager->Destroy();
 	g_pTextureManager->Destroy();
@@ -209,7 +209,7 @@ void cMainGame::Setup_UI()
 			D3DX_DEFAULT_NONPOW2,
 			D3DX_DEFAULT,
 			0,
-			D3DFMT_UNKNOWN,		//파일포맷, 잘못 읽어오면 이부분을 수정해야함
+			D3DFMT_UNKNOWN,		//파일포멧, 잘못 읽어오면 이부분을 수정해야함
 			D3DPOOL_MANAGED,
 			D3DX_FILTER_NONE,
 			D3DX_DEFAULT,
@@ -262,3 +262,13 @@ void cMainGame::UI_Render()
 	}
 }
 
+void cMainGame::Setup_Button()
+{
+	cUIObject* pButton = new cUIObject;
+	ST_SIZEN stSize;
+	stSize.nWidth = 100;
+	stSize.nHeight = 100;
+	pButton->SetSize(stSize);
+	pButton->SetPosition(D3DXVECTOR3(0, 0, 0));
+	m_pButton = pButton;
+}
