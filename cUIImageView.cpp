@@ -38,6 +38,11 @@ void cUIImageView::Render(LPD3DXSPRITE pSprite)
 {
 	pSprite->Begin(D3DXSPRITE_ALPHABLEND | D3DXSPRITE_SORT_TEXTURE);
 	RECT rc;
-	SetRect(&rc, GetPosition().x, GetPosition().y, GetSize().nWidth, GetSize().nHeight);
+	SetRect(&rc, GetPosition().x, GetPosition().y, GetPosition().x + GetSize().nWidth, GetPosition().y + GetSize().nHeight);
+	pSprite->Draw(m_pTexture,
+		&rc,
+		&D3DXVECTOR3(0, 0, 0),
+		&D3DXVECTOR3(GetPosition().x, GetPosition().y, 0),
+		D3DCOLOR_XRGB(255, 255, 255, 255));
 	pSprite->End();
 }

@@ -22,6 +22,7 @@
 
 #include "cHeightMap.h"
 #include "cUIButton.h"
+#include "cUIImageView.h"
 
 #define SPHERERADIUS 0.5f
 #define RAWSIZE 257
@@ -70,14 +71,14 @@ void cMainGame::Setup()
 	m_pGrid = new cGrid;
 	m_pGrid->Setup();
 
-	m_pWoman = new cWoman;
-	m_pWoman->Setup();
+	//m_pWoman = new cWoman;
+	//m_pWoman->Setup();
 	Load_Surface();
 	{
 		cCubeMan* pCubeMan = new cCubeMan;
 		pCubeMan->Setup();
 		m_pCubeMan = pCubeMan;
-		Setup_HeightMap();
+		//Setup_HeightMap();
 	}
 
 	m_pCamera = new cCamera;
@@ -86,6 +87,7 @@ void cMainGame::Setup()
 	Set_Light();
 	Setup_MeshObject();
 	Setup_UI();
+	Setup_Button();
 }
 
 void cMainGame::Update()
@@ -95,7 +97,7 @@ void cMainGame::Update()
 	if (m_pWoman)
 		m_pWoman->update();
 	if (m_pCubeMan)
-		m_pCubeMan->Update(m_pMap);
+		m_pCubeMan->Update(NULL);
 }
 
 void cMainGame::Render()
@@ -105,8 +107,8 @@ void cMainGame::Render()
 
 
 	//if (m_pGrid) m_pGrid->Render();
-	if (m_pMap)
-		m_pMap->Render();
+	//if (m_pMap)
+		//m_pMap->Render();
 	//if (m_pWoman) 
 	//	m_pWoman->Render();
 	if (m_pCubeMan) 
@@ -115,6 +117,7 @@ void cMainGame::Render()
 	Mesh_Render();
 	//PickingObj_Render();
 	UI_Render();	///UI가 최하단에 위치해야됨
+	m_pButton->Render(m_pSprite);
 
 	g_pTextManager->Render();
 	g_pD3DDevice->EndScene();
@@ -183,7 +186,6 @@ void cMainGame::Setup_MeshObject()
 void cMainGame::Mesh_Render()
 {
 	D3DXMATRIXA16 matWorld, matS, matR;
-
 }
 
 void cMainGame::Setup_HeightMap()
@@ -264,11 +266,14 @@ void cMainGame::UI_Render()
 
 void cMainGame::Setup_Button()
 {
-	cUIObject* pButton = new cUIObject;
 	ST_SIZEN stSize;
-	stSize.nWidth = 100;
-	stSize.nHeight = 100;
+	stSize.nWidth = 300;
+	stSize.nHeight = 400;
+
+	//팝업의 배경창
+	cUIImageView* pButton = new cUIImageView;
 	pButton->SetSize(stSize);
-	pButton->SetPosition(D3DXVECTOR3(0, 0, 0));
+	pButton->SetPosition(D3DXVECTOR3(50, 0, 0));
+	pButton->SetTexture("UI/Background.png");
 	m_pButton = pButton;
 }
