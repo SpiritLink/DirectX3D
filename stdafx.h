@@ -34,6 +34,7 @@ extern HWND g_hWnd;
 extern int g_nFrameCount;
 extern int g_nCurrentFrameCount;
 extern POINT g_ptMouse;
+extern POINT g_ptPrevMouse;
 
 #define SAFE_RELEASE(p) {if(p) p->Release(); p = NULL;}
 #define SAFE_DELETE(p) {if(p) delete p; p = NULL;}

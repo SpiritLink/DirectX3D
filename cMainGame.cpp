@@ -92,6 +92,8 @@ void cMainGame::Setup()
 
 void cMainGame::Update()
 {
+	if (m_pButton)
+		m_pButton->Update();
 	if (m_pCamera) 
 		m_pCamera->Update();
 	if (m_pWoman)
@@ -127,18 +129,6 @@ void cMainGame::Render()
 void cMainGame::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	if (m_pCamera) m_pCamera->WndProc(hWnd, message, wParam, lParam);
-
-	switch (message)
-	{
-	case WM_LBUTTONDOWN:
-		break;
-	case WM_RBUTTONDOWN:
-		break;
-	case WM_MOUSEMOVE:
-		g_ptMouse.x = LOWORD(lParam);
-		g_ptMouse.y = HIWORD(lParam);
-		break;
-	}
 }
 
 void cMainGame::Set_Light()
@@ -266,14 +256,32 @@ void cMainGame::UI_Render()
 
 void cMainGame::Setup_Button()
 {
-	ST_SIZEN stSize;
-	stSize.nWidth = 300;
-	stSize.nHeight = 400;
+	ST_SIZEN stSize(300,400);
 
 	//팝업의 배경창
-	cUIImageView* pButton = new cUIImageView;
+	cUIImageView* pImageView = new cUIImageView;
+	pImageView->SetSize(stSize);
+	pImageView->SetPosition(D3DXVECTOR3(50, 0, 0));
+	pImageView->SetTexture("UI/Background.png");
+	m_pButton = pImageView;
+
+	cUIButton*	pButton = new cUIButton;
+	stSize = ST_SIZEN(142, 32);
 	pButton->SetSize(stSize);
-	pButton->SetPosition(D3DXVECTOR3(50, 0, 0));
-	pButton->SetTexture("UI/Background.png");
-	m_pButton = pButton;
+	pButton->SetPosition(D3DXVECTOR3(5, 360, 0));
+	pButton->SetTexture("UI/None.png", "UI/Hover.png", "UI/Select.png");
+	m_pButton->AddChild(pButton);
+
+	cUIButton*	pButton2 = new cUIButton;
+	pButton2->SetSize(stSize);
+	pButton2->SetPosition(D3DXVECTOR3(155, 360, 0));
+	pButton2->SetTexture("UI/None.png", "UI/Hover.png", "UI/Select.png");
+	m_pButton->AddChild(pButton2);
+
+	cUIButton*	_X = new cUIButton;
+	stSize = ST_SIZEN(50, 50);
+	_X->SetSize(stSize);
+	_X->SetPosition(D3DXVECTOR3(m_pButton->GetSize().nWidth - 50, 0, 0));
+	_X->SetTexture("UI/ICON_X_NORMAL.png", "UI/ICON_X_HOVER.png", "UI/ICON_X_SELECT.png");
+	m_pButton->AddChild(_X);
 }

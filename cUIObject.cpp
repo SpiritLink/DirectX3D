@@ -4,7 +4,8 @@
 
 cUIObject::cUIObject()
 	: m_pParent(NULL),
-	m_vPosition(0, 0, 0)
+	m_vPosition(0, 0, 0),
+	m_isHidden(false)
 {
 	m_stSize.nWidth = 0;
 	m_stSize.nHeight = 0;

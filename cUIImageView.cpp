@@ -34,15 +34,42 @@ void cUIImageView::SetTexture(char * szFullPath)
 		&m_pTexture);
 }
 
+void cUIImageView::Update()
+{
+	RECT rc;
+	int nX = GetPosition().x;
+	int nY = GetPosition().y;
+	if (GetParent())
+	{
+		nX += GetParent()->GetPosition().x;
+		nY += GetParent()->GetPosition().y;
+	}
+	SetRect(&rc, nX, nY, nX + GetSize().nWidth, nY + GetSize().nHeight);
+
+	int deltaX = g_ptMouse.x - g_ptPrevMouse.x;
+	int deltaY = g_ptMouse.y - g_ptPrevMouse.y;
+	if (GetAsyncKeyState(VK_LBUTTON) && PtInRect(&rc, g_ptMouse))
+	{
+		SetPosition(GetPosition().x + deltaX , GetPosition().y + deltaY, GetPosition().z);
+		g_ptPrevMouse = g_ptMouse;
+	}
+	for each(auto p in m_vecChild)
+		p->Update();
+}
+
 void cUIImageView::Render(LPD3DXSPRITE pSprite)
 {
 	pSprite->Begin(D3DXSPRITE_ALPHABLEND | D3DXSPRITE_SORT_TEXTURE);
+	D3DXVECTOR3 position = GetPosition();
+	if (GetParent())
+		position = GetParent()->GetPosition() + GetPosition();
+
 	RECT rc;
-	SetRect(&rc, GetPosition().x, GetPosition().y, GetPosition().x + GetSize().nWidth, GetPosition().y + GetSize().nHeight);
+	SetRect(&rc, 0, 0, GetSize().nWidth, GetSize().nHeight);
 	pSprite->Draw(m_pTexture,
 		&rc,
 		&D3DXVECTOR3(0, 0, 0),
-		&GetPosition(),
+		&position,
 		D3DCOLOR_XRGB(255, 255, 255, 255));
 	pSprite->End();
 

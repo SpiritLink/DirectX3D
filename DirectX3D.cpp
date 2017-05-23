@@ -14,6 +14,7 @@ WCHAR		szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
 int			g_nFrameCount;
 int			g_nCurrentFrameCount;
 POINT		g_ptMouse;
+POINT		g_ptPrevMouse;
 // 이 코드 모듈에 들어 있는 함수의 정방향 선언입니다.
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
@@ -159,6 +160,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	if (g_pMainGame) g_pMainGame->WndProc(hWnd, message, wParam, lParam);
     switch (message)
     {
+	case WM_LBUTTONDOWN:
+		g_ptPrevMouse.x = LOWORD(lParam);
+		g_ptPrevMouse.y = HIWORD(lParam);
+		break;
+	case WM_MOUSEMOVE:
+		g_ptMouse.x = LOWORD(lParam);
+		g_ptMouse.y = HIWORD(lParam);
+		break;
     case WM_COMMAND:
         {
             int wmId = LOWORD(wParam);
