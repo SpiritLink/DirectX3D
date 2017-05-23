@@ -42,7 +42,10 @@ void cUIImageView::Render(LPD3DXSPRITE pSprite)
 	pSprite->Draw(m_pTexture,
 		&rc,
 		&D3DXVECTOR3(0, 0, 0),
-		&D3DXVECTOR3(GetPosition().x, GetPosition().y, 0),
+		&GetPosition(),
 		D3DCOLOR_XRGB(255, 255, 255, 255));
 	pSprite->End();
+
+	for each(auto p in m_vecChild)
+		p->Render(pSprite);
 }

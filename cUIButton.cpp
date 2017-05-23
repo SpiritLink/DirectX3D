@@ -84,7 +84,7 @@ void cUIButton::Render(LPD3DXSPRITE pSprite)
 	pSprite->Begin(D3DXSPRITE_ALPHABLEND | D3DXSPRITE_SORT_TEXTURE);
 
 	RECT rc;
-	SetRect(&rc, GetPosition().x, GetPosition().y, GetPosition().x + GetSize().nWidth, GetPosition().x + GetSize().nHeight);
+	SetRect(&rc, GetPosition().x, GetPosition().y, GetPosition().x + GetSize().nWidth, GetPosition().y + GetSize().nHeight);
 	switch (m_eButtonState)
 	{
 	case E_NORMAL:
@@ -97,5 +97,7 @@ void cUIButton::Render(LPD3DXSPRITE pSprite)
 		pSprite->Draw(m_aTexture[E_SELECTED], &rc, &D3DXVECTOR3(0, 0, 0), &GetPosition(), D3DCOLOR_ARGB(255, 255, 255, 255));
 		break;
 	}
+	for each(auto p in m_vecChild)
+		p->Render(pSprite);
 	pSprite->End();
 }
