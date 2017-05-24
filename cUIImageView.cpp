@@ -3,6 +3,7 @@
 
 
 cUIImageView::cUIImageView()
+	: m_pTexture(NULL)
 {
 }
 
@@ -17,62 +18,30 @@ cUIImageView::~cUIImageView()
  */
 void cUIImageView::SetTexture(char * szFullPath)
 {
-	D3DXCreateTextureFromFileEx(
-		g_pD3DDevice,
-		szFullPath,
-		D3DX_DEFAULT_NONPOW2,
-		D3DX_DEFAULT_NONPOW2,
-		D3DX_DEFAULT,
-		0,
-		D3DFMT_UNKNOWN,
-		D3DPOOL_MANAGED,
-		D3DX_FILTER_NONE,
-		D3DX_DEFAULT,
-		0,
-		NULL,
-		NULL,
-		&m_pTexture);
-}
+	D3DXIMAGE_INFO stImageInfo;
+	m_pTexture = g_pTextureManager->GetTexture(szFullPath, &stImageInfo);
 
-void cUIImageView::Update()
-{
-	RECT rc;
-	int nX = GetPosition().x;
-	int nY = GetPosition().y;
-	if (GetParent())
-	{
-		nX += GetParent()->GetPosition().x;
-		nY += GetParent()->GetPosition().y;
-	}
-	SetRect(&rc, nX, nY, nX + GetSize().nWidth, nY + GetSize().nHeight);
+	m_stSize.nWidth = stImageInfo.Width;
+	m_stSize.nHeight = stImageInfo.Height;
 
-	int deltaX = g_ptMouse.x - g_ptPrevMouse.x;
-	int deltaY = g_ptMouse.y - g_ptPrevMouse.y;
-	if (GetAsyncKeyState(VK_LBUTTON) && PtInRect(&rc, g_ptMouse))
-	{
-		SetPosition(GetPosition().x + deltaX , GetPosition().y + deltaY, GetPosition().z);
-		g_ptPrevMouse = g_ptMouse;
-	}
-	for each(auto p in m_vecChild)
-		p->Update();
+
 }
 
 void cUIImageView::Render(LPD3DXSPRITE pSprite)
 {
+	if (m_isHidden) return;
+
 	pSprite->Begin(D3DXSPRITE_ALPHABLEND | D3DXSPRITE_SORT_TEXTURE);
-	D3DXVECTOR3 position = GetPosition();
-	if (GetParent())
-		position = GetParent()->GetPosition() + GetPosition();
+	pSprite->SetTransform(&m_matWorld);
 
 	RECT rc;
-	SetRect(&rc, 0, 0, GetSize().nWidth, GetSize().nHeight);
+	SetRect(&rc, 0, 0, m_stSize.nWidth, m_stSize.nHeight);
 	pSprite->Draw(m_pTexture,
 		&rc,
 		&D3DXVECTOR3(0, 0, 0),
-		&position,
-		D3DCOLOR_XRGB(255, 255, 255, 255));
+		&D3DXVECTOR3(0, 0, 0),
+		D3DCOLOR_ARGB(255, 255, 255, 255));
 	pSprite->End();
-
-	for each(auto p in m_vecChild)
-		p->Render(pSprite);
+	
+	cUIObject::Render(pSprite);
 }

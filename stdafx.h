@@ -125,7 +125,7 @@ struct ST_SIZEN
 };
 // << :
 #define SYNTHESIZE(varType, varName, funName)\
-private: varType varName;\
+protected: varType varName;\
 public: inline varType Get##funName(void) const { return varName; }\
 public: inline void Set##funName(varType var) { varName = var; }
 
@@ -151,3 +151,4 @@ public: virtual void Set##funName(varType var) {\
 #include "cTextureManager.h"
 #include "cObjectManager.h"
 #include "cTextManager.h"
+#include "cFontManager.h"

@@ -5,10 +5,11 @@
 cUIObject::cUIObject()
 	: m_pParent(NULL),
 	m_vPosition(0, 0, 0),
-	m_isHidden(false)
+	m_isHidden(false),
+	m_nTag(0),
+	m_stSize(0, 0)
 {
-	m_stSize.nWidth = 0;
-	m_stSize.nHeight = 0;
+	D3DXMatrixIdentity(&m_matWorld);
 }
 
 
@@ -31,16 +32,26 @@ void cUIObject::AddChild(cUIObject * pChild)
 
 void cUIObject::Update()
 {
-	///부모의 좌표를 기준으로 자신의 좌표를 재설정한다.
-	for each(auto p in m_vecChild)
-		p->Update();
+	if (m_isHidden) return;
+	
+	D3DXMatrixIdentity(&m_matWorld);
+	m_matWorld._41 = m_vPosition.x;
+	m_matWorld._42 = m_vPosition.y;
+	m_matWorld._43 = m_vPosition.z;
+
+	if (m_pParent)
+	{
+		m_matWorld._41 += m_pParent->m_matWorld._41;
+		m_matWorld._42 += m_pParent->m_matWorld._42;
+		m_matWorld._43 += m_pParent->m_matWorld._43;;
+	}
+	for each(auto c in m_vecChild)
+		c->Update();
 }
 
 void cUIObject::Render(LPD3DXSPRITE pSprite)
 {
-	pSprite->Begin(D3DXSPRITE_ALPHABLEND | D3DXSPRITE_SORT_TEXTURE);
-
-	pSprite->End();
+	if (m_isHidden) return;
 
 	for each(auto p in m_vecChild)
 		p->Render(pSprite);
@@ -48,8 +59,23 @@ void cUIObject::Render(LPD3DXSPRITE pSprite)
 
 void cUIObject::Destroy()
 {
+	m_isHidden = true;
+
 	for each(auto p in m_vecChild)
 		p->Destroy();
 
-	delete this;
+	this->Release();
+
+}
+cUIObject* cUIObject::FindChildByTag(int nTag)
+{
+	if (m_nTag == nTag) return this;
+
+	for each(auto c in m_vecChild)
+	{
+		cUIObject* p = c->FindChildByTag(nTag);
+		if (p) return p;
+	}
+
+	return NULL;
 }

@@ -21,8 +21,17 @@
 #include "cRawLoader.h"
 
 #include "cHeightMap.h"
-#include "cUIButton.h"
 #include "cUIImageView.h"
+#include "cUITextView.h"
+#include "cUIButton.h"
+
+enum
+{
+	E_BUTTON_OK = 11,
+	E_BUTTON_CANCEL,
+	E_BUTTON_EXIT,
+	E_TEXT_VIEW,
+};
 
 #define SPHERERADIUS 0.5f
 #define RAWSIZE 257
@@ -39,7 +48,7 @@ cMainGame::cMainGame()
 	m_pCubeMan(NULL),
 	m_pSprite(NULL),
 	m_pTexture(NULL),
-	m_pButton(NULL)
+	m_pUIRoot(NULL)
 {
 }
 
@@ -57,7 +66,8 @@ cMainGame::~cMainGame()
 		SAFE_RELEASE(m_vecObjMtlTex[i]);
 	SAFE_RELEASE(m_pSprite);
 	SAFE_RELEASE(m_pTexture);
-	m_pButton->Destroy();
+	if(m_pUIRoot)
+		m_pUIRoot->Destroy();
 
 	g_pTextManager->Destroy();
 	g_pTextureManager->Destroy();
@@ -92,8 +102,8 @@ void cMainGame::Setup()
 
 void cMainGame::Update()
 {
-	if (m_pButton)
-		m_pButton->Update();
+	if (m_pUIRoot)
+		m_pUIRoot->Update();
 	if (m_pCamera) 
 		m_pCamera->Update();
 	if (m_pWoman)
@@ -106,8 +116,6 @@ void cMainGame::Render()
 {
 	g_pD3DDevice->Clear(NULL, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(128, 128, 128), 1.0f, 0);
 	g_pD3DDevice->BeginScene();
-
-
 	//if (m_pGrid) m_pGrid->Render();
 	//if (m_pMap)
 		//m_pMap->Render();
@@ -119,7 +127,7 @@ void cMainGame::Render()
 	Mesh_Render();
 	//PickingObj_Render();
 	UI_Render();	///UI가 최하단에 위치해야됨
-	m_pButton->Render(m_pSprite);
+	m_pUIRoot->Render(m_pSprite);
 
 	g_pTextManager->Render();
 	g_pD3DDevice->EndScene();
@@ -128,6 +136,12 @@ void cMainGame::Render()
 
 void cMainGame::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	RECT rc;
+	int nX = m_pUIRoot->GetPosition().x;
+	int nY = m_pUIRoot->GetPosition().y;
+	SetRect(&rc, nX, nY, nX + m_pUIRoot->GetSize().nWidth, nY + m_pUIRoot->GetSize().nHeight);
+	if (PtInRect(&rc, g_ptMouse)) return;
+
 	if (m_pCamera) m_pCamera->WndProc(hWnd, message, wParam, lParam);
 }
 
@@ -256,32 +270,41 @@ void cMainGame::UI_Render()
 
 void cMainGame::Setup_Button()
 {
-	ST_SIZEN stSize(300,400);
+	cUIImageView * pImageView = new cUIImageView;
+	pImageView->SetPosition(0, 0, 0);
+	pImageView->SetTexture("UI/panel-info.png");
+	m_pUIRoot = pImageView;
 
-	//팝업의 배경창
-	cUIImageView* pImageView = new cUIImageView;
-	pImageView->SetSize(stSize);
-	pImageView->SetPosition(D3DXVECTOR3(50, 0, 0));
-	pImageView->SetTexture("UI/Background.png");
-	m_pButton = pImageView;
+	cUITextView * pTextView = new cUITextView;
+	pTextView->SetText("좀비출현");
+	pTextView->SetSize(ST_SIZEN(300, 200));
+	pTextView->SetPosition(100, 100);
+	pTextView->SetDrawTextFormat(DT_CENTER | DT_VCENTER | DT_WORDBREAK);
+	pTextView->SetTextColor(D3DCOLOR_XRGB(255, 255, 0));
+	pTextView->SetTag(E_TEXT_VIEW);
+	m_pUIRoot->AddChild(pTextView);
 
-	cUIButton*	pButton = new cUIButton;
-	stSize = ST_SIZEN(142, 32);
-	pButton->SetSize(stSize);
-	pButton->SetPosition(D3DXVECTOR3(5, 360, 0));
-	pButton->SetTexture("UI/None.png", "UI/Hover.png", "UI/Select.png");
-	m_pButton->AddChild(pButton);
+	cUIButton * pButtonOK = new cUIButton;
+	pButtonOK->SetTexture(
+		"UI/btn-med-up.png",
+		"UI/btn-med-over.png",
+		"UI/btn-med-down.png");
+	pButtonOK->SetPosition(135, 330);
+	pButtonOK->SetDelegate(this);
+	pButtonOK->SetTag(E_BUTTON_OK);
+	m_pUIRoot->AddChild(pButtonOK);
+}
 
-	cUIButton*	pButton2 = new cUIButton;
-	pButton2->SetSize(stSize);
-	pButton2->SetPosition(D3DXVECTOR3(155, 360, 0));
-	pButton2->SetTexture("UI/None.png", "UI/Hover.png", "UI/Select.png");
-	m_pButton->AddChild(pButton2);
+void cMainGame::OnClick(cUIButton * pSender)
+{
+	cUITextView* pTextView = (cUITextView*)m_pUIRoot->FindChildByTag(E_TEXT_VIEW);
 
-	cUIButton*	_X = new cUIButton;
-	stSize = ST_SIZEN(50, 50);
-	_X->SetSize(stSize);
-	_X->SetPosition(D3DXVECTOR3(m_pButton->GetSize().nWidth - 50, 0, 0));
-	_X->SetTexture("UI/ICON_X_NORMAL.png", "UI/ICON_X_HOVER.png", "UI/ICON_X_SELECT.png");
-	m_pButton->AddChild(_X);
+	if (pSender->GetTag() == E_BUTTON_OK)
+	{
+		pTextView->SetText("확인");
+	}
+	else
+	{
+		pTextView->SetText("기타");
+	}
 }

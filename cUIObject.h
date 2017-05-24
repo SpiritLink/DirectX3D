@@ -1,11 +1,11 @@
 #pragma once
 #include "cObject.h"
-class cUIObject :
-	public cObject
+class cUIObject : public cObject
 {
 public:
 	cUIObject();
 	virtual ~cUIObject();
+
 protected:
 	std::vector<cUIObject*> m_vecChild;
 	D3DXMATRIXA16			m_matWorld;
@@ -14,7 +14,7 @@ protected:
 	SYNTHESIZE(ST_SIZEN, m_stSize, Size);
 
 	// >> : tag
-
+	SYNTHESIZE(int, m_nTag, Tag);		/// UI인지 플레이어 인지 장애물인지 확인하기 위한 Tag번호 (이름 개념)
 	// << :
 	bool m_isHidden;
 public:
@@ -25,6 +25,7 @@ public:
 	virtual void Destroy();
 
 	// >> : tag
+	virtual cUIObject* FindChildByTag(int nTag);
 	// << :
 };
 

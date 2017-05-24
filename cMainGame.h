@@ -13,7 +13,9 @@ class cCharacter;
 class cHeightMap;
 class cUIObject;
 
-class cMainGame
+#include "cUIButton.h"
+
+class cMainGame : public iButtonDelegate
 {
 public:
 	cMainGame();
@@ -25,7 +27,7 @@ private:
 	cWoman*			m_pWoman;
 	cCubeMan*		m_pCubeMan;
 	iMap*			m_pMap;
-	cUIObject*		m_pButton;
+	cUIObject*		m_pUIRoot;
 
 	LPD3DXMESH		m_pObjMesh;
 
@@ -42,7 +44,6 @@ private:
 
 	LPD3DXSPRITE	m_pSprite;
 	D3DXIMAGE_INFO	m_stImageInfo;
-
 	LPDIRECT3DTEXTURE9	m_pTexture;
 
 public:
@@ -60,6 +61,8 @@ public:
 	void Setup_UI();
 	void UI_Render();
 	void Setup_Button();
+
+	virtual void OnClick(cUIButton* pSender) override;
 
 
 };
