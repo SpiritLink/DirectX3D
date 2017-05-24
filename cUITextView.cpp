@@ -3,7 +3,7 @@
 
 
 cUITextView::cUITextView()
-	: m_eFontType(cFontManager::E_DEFAULT)
+	: m_sFontType(std::string("NanumBarunGothic"))
 	, m_dwDrawTextFormat(DT_LEFT | DT_TOP)
 	, m_stTextColor(D3DCOLOR_XRGB(0, 0, 0))
 {
@@ -17,7 +17,7 @@ cUITextView::~cUITextView()
 void cUITextView::Render(LPD3DXSPRITE pSprite)
 {
 	if (m_isHidden) return;
-	LPD3DXFONT pFont = g_pFontManager->GetFont(m_eFontType);
+	LPD3DXFONT pFont = g_pTextManager->GetFont(m_sFontType);
 
 	RECT rc;
 	SetRect(&rc,

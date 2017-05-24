@@ -25,16 +25,13 @@ class cTextManager
 //	~cTextManager();
 private:
 	SINGLETONE(cTextManager);
-	std::vector<ST_TEXT>	m_vecText;
+	std::map<std::string, LPD3DXFONT> m_mapFont;
 	LPD3DXFONT				m_pFont;
 
 public:
-	void Create_Font();
-	void AddText(std::string Text, void* pValue, int nStartX, int nStartY, int nRed, int nGreen, int nBlue,POINTER_TYPE type);
-	void RemoveText();
-	void Render();
-	void CursorPosition();
-	void FrameCount();
-	void Destroy();
+	LPD3DXFONT GetFont(char* KeyName);
+	LPD3DXFONT GetFont(std::string keyName);
+	void TextRender(std::string Text, void* pValue, int nStartX, int nStartY, POINTER_TYPE type);
+	void TextRender(std::string Text, void* pValue, int nStartX, int nStartY, int nR, int nG, int nB, POINTER_TYPE type);
 };
 

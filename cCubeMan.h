@@ -11,8 +11,8 @@ public:
 protected:
 	LPDIRECT3DTEXTURE9			m_pTexture;
 	std::vector<ST_PC_VERTEX>*	m_pVertex;
-	int							m_nType;
-	int							m_nCurrentPoint;
+	unsigned int				m_nType;
+	unsigned int				m_nCurrentPoint;
 	float						m_fT;
 public:
 	cCubeNode*	m_pRoot;

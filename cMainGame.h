@@ -43,8 +43,6 @@ private:
 	bool						m_bSwitch;
 
 	LPD3DXSPRITE	m_pSprite;
-	D3DXIMAGE_INFO	m_stImageInfo;
-	LPDIRECT3DTEXTURE9	m_pTexture;
 
 public:
 	void Setup();
@@ -58,8 +56,6 @@ public:
 	void Setup_MeshObject();
 	void Mesh_Render();
 	void Setup_HeightMap();
-	void Setup_UI();
-	void UI_Render();
 	void Setup_Button();
 
 	virtual void OnClick(cUIButton* pSender) override;

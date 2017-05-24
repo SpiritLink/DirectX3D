@@ -151,4 +151,3 @@ public: virtual void Set##funName(varType var) {\
 #include "cTextureManager.h"
 #include "cObjectManager.h"
 #include "cTextManager.h"
-#include "cFontManager.h"

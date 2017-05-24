@@ -13,133 +13,74 @@ cTextManager::~cTextManager()
 	SAFE_RELEASE(m_pFont);
 }
 
-
-void cTextManager::Create_Font()
+/*-----------------------------------------
+ * Key에 해당하는 Font를 반환합니다.
+ * 없다면 파일로부터 읽은뒤 Map에 저장합니다.
+ */
+LPD3DXFONT cTextManager::GetFont(char * KeyName)
 {
-		/// 나눔 바른 고딕체 등록
-		D3DXFONT_DESC	fd;
+	return GetFont(std::string(KeyName));
+}
+
+LPD3DXFONT cTextManager::GetFont(std::string keyName)
+{
+	///해당 폰트가 없다면 폰트를 생성합니다.
+	if (m_mapFont.find(keyName) == m_mapFont.end())
+	{
+		D3DXFONT_DESC fd;
 		ZeroMemory(&fd, sizeof(D3DXFONT_DESC));
-		fd.Height = 50;
-		fd.Width = 40;
+		fd.Height = 30;
+		fd.Width = 25;
 		fd.Weight = FW_MEDIUM;
 		fd.Italic = false;
 		fd.CharSet = DEFAULT_CHARSET;
 		fd.OutputPrecision = OUT_DEFAULT_PRECIS;
 		fd.PitchAndFamily = FF_DONTCARE;
-		AddFontResource("font/NanumBarunGothic.ttf");
-		strcpy_s(fd.FaceName, "NanumBarunGothic");
-		D3DXCreateFontIndirect(g_pD3DDevice, &fd, &m_pFont);
-
-		/// 굴림체 등록
-		HDC hdc = CreateCompatibleDC(0);
-		LOGFONT lf;
-		ZeroMemory(&lf, sizeof(LOGFONT));
-		lf.lfHeight = 25;
-		lf.lfWidth = 12;
-		lf.lfWeight = 500;
-		lf.lfItalic = false;
-		lf.lfUnderline = false;
-		lf.lfStrikeOut = false;
-		lf.lfCharSet = DEFAULT_CHARSET;
-		strcpy_s(lf.lfFaceName, "굴림체");
-}
-
-void cTextManager::AddText(std::string Text, void* pValue, int nStartX, int nStartY, int nRed, int nGreen, int nBlue, POINTER_TYPE type)
-{
-	ST_TEXT stText;
-	stText.Text = Text;
-	stText.pValue = pValue;
-	stText.nStartX = nStartX;
-	stText.nStartY = nStartY;
-	stText.nRed = nRed;
-	stText.nGreen = nGreen;
-	stText.nBlue = nBlue;
-	stText.eType = type;
-
-	m_vecText.push_back(stText);
-}
-
-void cTextManager::RemoveText()
-{
-	m_vecText.clear();
-}
-
-void cTextManager::Render()
-{
-	FrameCount();
-	CursorPosition();
-	for (size_t i = 0; i < m_vecText.size(); ++i)
-	{
-		std::string sText = m_vecText[i].Text + std::string(":");
-		switch (m_vecText[i].eType)
-		{
-		case FLOAT_POINTER:
-			sText += std::to_string(*(float *)m_vecText[i].pValue);
-			break;
-		case INT_POINTER:
-			sText += std::to_string(*(int *)m_vecText[i].pValue);
-			break;
-		}
-		RECT rc;
-		int x = m_vecText[i].nStartX;
-		int y = m_vecText[i].nStartY;
-		SetRect(&rc, x, y, x + 1, y);
-
-		int R, G, B;
-		R = m_vecText[i].nRed;
-		G = m_vecText[i].nGreen;
-		B = m_vecText[i].nBlue;
-
-		m_pFont->DrawTextA(NULL,
-			sText.c_str(),
-			sText.length(),
-			&rc,
-			DT_LEFT | DT_TOP | DT_NOCLIP,
-			D3DCOLOR_XRGB(R, G, B));
+		std::string name = keyName;
+		std::string szFullPath = std::string("font/") + name + std::string(".ttf");
+		AddFontResource(szFullPath.c_str());
+		strcpy_s(fd.FaceName, name.c_str());
+		D3DXCreateFontIndirect(g_pD3DDevice, &fd, &m_mapFont[keyName]);
 	}
+	/// 있다면 반환함
+	if (m_mapFont.find(keyName) != m_mapFont.end())
+		return m_mapFont[keyName];
+
+	/// 없다면 NULL을 반환합니다. (파일이 없거나 잘못된 키를 입력)
+	return NULL;
 }
-void cTextManager::CursorPosition()
+
+void cTextManager::TextRender(std::string Text, void * pValue, int nStartX, int nStartY, POINTER_TYPE type)
 {
-	std::string sText = std::string("X:") + std::to_string(g_ptMouse.x);
+	TextRender(Text, pValue, nStartX, nStartY, 0, 0, 0, type);	
+}
+void cTextManager::TextRender(std::string Text, void * pValue, int nStartX, int nStartY, int nR, int nG, int nB, POINTER_TYPE type)
+{
+	int x = nStartX;
+	int y = nStartY;
+	std::string sText = Text;
+
+	switch (type)
+	{
+	case INT_POINTER:
+		sText += std::to_string(*(int *)pValue);
+		break;
+	case FLOAT_POINTER:
+		sText += std::to_string(*(float *)pValue);
+		break;
+	}
 	RECT rc;
-	SetRect(&rc, 0, 40, 1, 40);
+	SetRect(&rc, x, y, x + 1, y);
 
-	if (m_pFont)
-		m_pFont->DrawTextA(NULL,
-			sText.c_str(),
-			sText.length(),
-			&rc,
-			DT_LEFT | DT_TOP | DT_NOCLIP,
-			D3DCOLOR_XRGB(255, 255, 0));
+	int R, G, B;
+	R = nR;
+	G = nG;
+	B = nB;
 
-	sText = std::string("Y:") + std::to_string(g_ptMouse.y);
-	SetRect(&rc, 0, 80, 1, 80);
-
-	if(m_pFont)
-		m_pFont->DrawTextA(NULL,
-			sText.c_str(),
-			sText.length(),
-			&rc,
-			DT_LEFT | DT_TOP | DT_NOCLIP,
-			D3DCOLOR_XRGB(255, 255, 0));
-}
-
-void cTextManager::FrameCount()
-{
-	std::string sText = std::string("FPS:") + std::to_string(g_nFrameCount);
-	RECT rc;
-	SetRect(&rc, 0, 0, 1, 0);
-	if (m_pFont)
-		m_pFont->DrawTextA(NULL,
-			sText.c_str(),
-			sText.length(),
-			&rc,
-			DT_LEFT | DT_TOP | DT_NOCLIP,
-			D3DCOLOR_XRGB(0, 255, 0));
-}
-
-void cTextManager::Destroy()
-{
-	SAFE_RELEASE(m_pFont);
-	m_vecText.clear();
+	m_mapFont["NanumBarunGothic"]->DrawTextA(NULL,
+		sText.c_str(),
+		sText.length(),
+		&rc,
+		DT_LEFT | DT_TOP | DT_NOCLIP,
+		D3DCOLOR_XRGB(R, G, B));
 }

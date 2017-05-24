@@ -7,7 +7,7 @@ public:
 	cUITextView();
 	virtual ~cUITextView();
 protected:
-	SYNTHESIZE(cFontManager::eFontType, m_eFontType, FontType);
+	SYNTHESIZE(std::string, m_sFontType, FontType);
 	SYNTHESIZE(std::string, m_sText, Text);
 	SYNTHESIZE(DWORD, m_dwDrawTextFormat, DrawTextFormat);
 	SYNTHESIZE(D3DCOLOR, m_stTextColor, TextColor);

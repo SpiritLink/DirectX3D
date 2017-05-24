@@ -96,9 +96,6 @@ void cCubeMan::Setup()
 	cRightLeg* pRightLeg = new cRightLeg;
 	pRightLeg->Setup();
 	m_pRoot->AddChild(pRightLeg);
-
-	g_pTextManager->AddText("ManX", &m_vPosition.x, 0, 120, 0, 0, 0, FLOAT_POINTER);
-
 }
 
 
@@ -140,7 +137,7 @@ void cCubeMan::SetMaterial()
 
 void cCubeMan::MoveStraight()
 {
-	int nextPoint = m_nCurrentPoint + 2;
+	unsigned int nextPoint = m_nCurrentPoint + 2;
 	if (nextPoint > m_pVertex->size() - 1) nextPoint = 0;
 
 	if (fabs(m_vPosition.x - (*m_pVertex)[nextPoint].p.x) < EPSILON &&
