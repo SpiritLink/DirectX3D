@@ -30,10 +30,13 @@ private:
 	cUIObject*		m_pUIRoot;
 
 	LPD3DXMESH		m_pObjMesh;
+	LPD3DXMESH		m_pZealot;
 
 	D3DMATERIAL9	m_stMtlNone;
 	D3DMATERIAL9	m_stMtlPicked;
 	D3DMATERIAL9	m_stMtlPlane;
+	std::vector<D3DMATERIAL9>	Mtrls;
+	std::vector<IDirect3DTexture9*> Textures;
 
 	std::vector<cGroup*>		m_vecGroup;
 	std::vector<ST_PN_VERTEX>	m_vecPlaneVertex;
@@ -57,6 +60,8 @@ public:
 	void Mesh_Render();
 	void Setup_HeightMap();
 	void Setup_Button();
+	bool Setup_Xfile();
+	bool Display(float timeDelta);
 
 	virtual void OnClick(cUIButton* pSender) override;
 
