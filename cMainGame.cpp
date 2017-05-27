@@ -25,6 +25,8 @@
 #include "cUITextView.h"
 #include "cUIButton.h"
 
+#include "cSkinnedMesh.h"
+
 enum
 {
 	E_BUTTON_OK = 11,
@@ -39,16 +41,17 @@ enum
 
 
 cMainGame::cMainGame()
-	: m_pGrid(NULL),
-	m_pCamera(NULL),
-	m_pMap(NULL),
-	m_pWoman(NULL),
-	m_pObjMesh(NULL),
-	m_bSwitch(true),
-	m_pCubeMan(NULL),
-	m_pSprite(NULL),
-	m_pUIRoot(NULL),
-	m_pZealot(NULL)
+	: m_pGrid(NULL)
+	, m_pCamera(NULL)
+	, m_pMap(NULL)
+	, m_pWoman(NULL)
+	, m_pObjMesh(NULL)
+	, m_bSwitch(true)
+	, m_pCubeMan(NULL)
+	, m_pSprite(NULL)
+	, m_pUIRoot(NULL)
+	, m_pZealot(NULL)
+	, m_pSkinnedMesh(NULL)
 {
 }
 
@@ -59,17 +62,19 @@ cMainGame::~cMainGame()
 	SAFE_DELETE(m_pCamera);
 	SAFE_DELETE(m_pMap);
 	SAFE_DELETE(m_pWoman);
-	SAFE_RELEASE(m_pObjMesh);
 	SAFE_DELETE(m_pMap);
 	SAFE_DELETE(m_pCubeMan);
-	for (size_t i = 0; i < m_vecObjMtlTex.size(); ++i)
-		SAFE_RELEASE(m_vecObjMtlTex[i]);
+	SAFE_DELETE(m_pUIRoot);
+	SAFE_DELETE(m_pSkinnedMesh);
+
 	SAFE_RELEASE(m_pSprite);
 	if(m_pUIRoot)
 		m_pUIRoot->Destroy();
-	SAFE_DELETE(m_pUIRoot);
+	for (size_t i = 0; i < m_vecObjMtlTex.size(); ++i)
+		SAFE_RELEASE(m_vecObjMtlTex[i]);
 	SAFE_RELEASE(m_pZealot);
-
+	SAFE_RELEASE(m_pObjMesh);
+	g_pTextManager->Destroy();
 	g_pTextureManager->Destroy();
 	g_pDeviceManager->Destroy();
 }
@@ -97,7 +102,9 @@ void cMainGame::Setup()
 	Set_Light();
 	Setup_MeshObject();
 	Setup_Button();
-	Setup_Xfile();
+
+	//m_pSkinnedMesh = new cSkinnedMesh;
+	//m_pSkinnedMesh->Setup("Zealot", "Zealot.x");
 }
 
 void cMainGame::Update()
@@ -114,27 +121,27 @@ void cMainGame::Update()
 
 void cMainGame::Render()
 {
-	//g_pD3DDevice->Clear(NULL, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(128, 128, 128), 1.0f, 0);
-	//g_pD3DDevice->BeginScene();
-	////if (m_pGrid) m_pGrid->Render();
-	////if (m_pMap)
-	//	//m_pMap->Render();
-	////if (m_pWoman) 
-	////	m_pWoman->Render();
-	//if (m_pCubeMan) 
-	//	m_pCubeMan->Render();
-	////Obj_Render();
-	//Mesh_Render();
-	////PickingObj_Render();
-	//m_pUIRoot->Render(m_pSprite);
+	g_pD3DDevice->Clear(NULL, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(128, 128, 128), 1.0f, 0);
+	g_pD3DDevice->BeginScene();
+	//if (m_pGrid) m_pGrid->Render();
+	//if (m_pMap)
+		//m_pMap->Render();
+	//if (m_pWoman) 
+	//	m_pWoman->Render();
+	if (m_pCubeMan) 
+		m_pCubeMan->Render();
+	//Obj_Render();
+	Mesh_Render();
+	//PickingObj_Render();
+	m_pUIRoot->Render(m_pSprite);
+	if (m_pSkinnedMesh)	m_pSkinnedMesh->Render(NULL);
+	g_pTextManager->TextRender("FPS:", &g_nFrameCount, 0, 0, 0, 255, 0, INT_POINTER);
+	g_pTextManager->TextRender("MouseX:", &g_ptMouse.x, 0, 30, INT_POINTER);
+	g_pTextManager->TextRender("MouseY:", &g_ptMouse.y, 0, 60, INT_POINTER);
+	g_pD3DDevice->EndScene();
+	g_pD3DDevice->Present(NULL, NULL, NULL, NULL);
 
-	//g_pTextManager->TextRender("FPS:", &g_nFrameCount, 0, 0, 0, 255, 0, INT_POINTER);
-	//g_pTextManager->TextRender("MouseX:", &g_ptMouse.x, 0, 30, INT_POINTER);
-	//g_pTextManager->TextRender("MouseY:", &g_ptMouse.y, 0, 60, INT_POINTER);
-	//g_pD3DDevice->EndScene();
-	//g_pD3DDevice->Present(NULL, NULL, NULL, NULL);
-
-	Display(0.1f);
+	//Display(0.1f);
 }
 
 void cMainGame::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -242,100 +249,4 @@ void cMainGame::OnClick(cUIButton * pSender)
 	{
 		pTextView->SetText("기타");
 	}
-}
-
-bool cMainGame::Setup_Xfile()
-{
-	HRESULT hr = 0;
-
-	ID3DXBuffer* adjBuffer = 0;
-	ID3DXBuffer* mtrlBuffer = 0;
-	DWORD numMtrls = 0;
-	hr = D3DXLoadMeshFromX(
-		"Xfile/Zealot.X",
-		D3DXMESH_MANAGED,
-		g_pD3DDevice,
-		&adjBuffer,
-		&mtrlBuffer,
-		0,
-		&numMtrls,
-		&m_pZealot);
-
-	if (FAILED(hr))
-	{
-		::MessageBox(0, "D3DXLoadMeshFromX () - FAILED", 0, 0);
-		return false;
-	}
-
-	if (mtrlBuffer != 0 && numMtrls != 0)
-	{
-		D3DXMATERIAL* mtrls = (D3DXMATERIAL*)mtrlBuffer->GetBufferPointer();
-		for (int i = 0; i < numMtrls; i++)
-		{
-			// MatD3D 속성은 로드될 때 ambient 값을 가지지 않으므로
-			// 지금 이를 지정한다.
-			mtrls[i].MatD3D.Ambient = mtrls[i].MatD3D.Diffuse;
-
-			// i번재 재질을 저장한다.
-			Mtrls.push_back(mtrls[i].MatD3D);
-
-			// i번째 재질에 연결된 텍스처가 있는지를 확인한다.
-			if (mtrls[i].pTextureFilename != 0)
-			{
-				// 만약 그렇다면 i번째 서브셋을 위한 텍스처를 읽어들인다.
-				IDirect3DTexture9* tex = 0;
-				D3DXCreateTextureFromFile(
-					g_pD3DDevice,
-					mtrls[i].pTextureFilename,
-					&tex);
-
-				// 읽어들인 텍스처를 저장한다.
-				Textures.push_back(tex);
-			}
-			else
-			{
-				// i번째 서브셋에 텍스쳐가 없다.
-				Textures.push_back(0);
-			}
-		}
-	}
-	SAFE_RELEASE(mtrlBuffer);
-
-	return true;
-}
-
-bool cMainGame::Display(float timeDelta)
-{
-	if (g_pD3DDevice)
-	{
-		static float y = 0.0f;
-		D3DXMATRIX yRot;
-		D3DXMatrixRotationY(&yRot, y);
-		y += timeDelta;
-
-		if (y >= 6.28f)
-			y = 0.0f;
-
-		D3DXMATRIX World = yRot;
-
-		g_pD3DDevice->SetTransform(D3DTS_WORLD, &World);
-
-		// 렌더링
-		
-		g_pD3DDevice->Clear(0, 0, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER,
-			0xffffffff, 1.0f, 0);
-
-		g_pD3DDevice->BeginScene();
-
-		for (int i = 0; i < Mtrls.size(); i++)
-		{
-			g_pD3DDevice->SetMaterial(&Mtrls[i]);
-			g_pD3DDevice->SetTexture(0, Textures[i]);
-			m_pZealot->DrawSubset(i);
-		}
-
-		g_pD3DDevice->EndScene();
-		g_pD3DDevice->Present(0, 0, 0, 0);
-	}
-	return true;
 }

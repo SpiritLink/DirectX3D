@@ -33,5 +33,6 @@ public:
 	LPD3DXFONT GetFont(std::string keyName);
 	void TextRender(std::string Text, void* pValue, int nStartX, int nStartY, POINTER_TYPE type);
 	void TextRender(std::string Text, void* pValue, int nStartX, int nStartY, int nR, int nG, int nB, POINTER_TYPE type);
+	void Destroy();
 };
 

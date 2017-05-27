@@ -84,3 +84,12 @@ void cTextManager::TextRender(std::string Text, void * pValue, int nStartX, int 
 		DT_LEFT | DT_TOP | DT_NOCLIP,
 		D3DCOLOR_XRGB(R, G, B));
 }
+
+void cTextManager::Destroy()
+{
+	std::map<std::string, LPD3DXFONT>::iterator Iter;
+	for (Iter = m_mapFont.begin(); Iter != m_mapFont.end(); Iter++)
+	{
+		SAFE_RELEASE(Iter->second);
+	}
+}

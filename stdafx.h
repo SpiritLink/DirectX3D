@@ -39,6 +39,7 @@ extern POINT g_ptPrevMouse;
 #define SAFE_RELEASE(p) {if(p) p->Release(); p = NULL;}
 #define SAFE_DELETE(p) {if(p) delete p; p = NULL;}
 #define SAFE_ADD_REF(p) {if(p) p->AddRef();}
+#define SAFE_DELETE_ARRAY(p) {if(p) delete[] p; p = NULL;}
 #define EPSILON 0.001f
 
 // >> :
@@ -151,3 +152,4 @@ public: virtual void Set##funName(varType var) {\
 #include "cTextureManager.h"
 #include "cObjectManager.h"
 #include "cTextManager.h"
+#include "cTimeManager.h"

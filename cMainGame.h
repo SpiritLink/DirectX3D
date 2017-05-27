@@ -12,6 +12,7 @@ class cMtlTex;
 class cCharacter;
 class cHeightMap;
 class cUIObject;
+class cSkinnedMesh;
 
 #include "cUIButton.h"
 
@@ -47,6 +48,8 @@ private:
 
 	LPD3DXSPRITE	m_pSprite;
 
+	cSkinnedMesh *	m_pSkinnedMesh;
+
 public:
 	void Setup();
 	void Update();
@@ -60,8 +63,6 @@ public:
 	void Mesh_Render();
 	void Setup_HeightMap();
 	void Setup_Button();
-	bool Setup_Xfile();
-	bool Display(float timeDelta);
 
 	virtual void OnClick(cUIButton* pSender) override;
 
