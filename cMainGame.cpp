@@ -52,6 +52,7 @@ cMainGame::cMainGame()
 	, m_pUIRoot(NULL)
 	, m_pZealot(NULL)
 	, m_pSkinnedMesh(NULL)
+	, nAnimIndex(0)
 {
 }
 
@@ -89,22 +90,22 @@ void cMainGame::Setup()
 	//m_pWoman = new cWoman;
 	//m_pWoman->Setup();
 	Load_Surface();
-	{
-		cCubeMan* pCubeMan = new cCubeMan;
-		pCubeMan->Setup();
-		m_pCubeMan = pCubeMan;
-		//Setup_HeightMap();
-	}
+	//{
+	//	cCubeMan* pCubeMan = new cCubeMan;
+	//	pCubeMan->Setup();
+	//	m_pCubeMan = pCubeMan;
+	//	//Setup_HeightMap();
+	//}
 
 	m_pCamera = new cCamera;
-	m_pCamera->Setup(&m_pCubeMan->GetPosition());
+	m_pCamera->Setup(NULL);
 
 	Set_Light();
 	Setup_MeshObject();
 	Setup_Button();
 
-	//m_pSkinnedMesh = new cSkinnedMesh;
-	//m_pSkinnedMesh->Setup("Zealot", "Zealot.x");
+	m_pSkinnedMesh = new cSkinnedMesh;
+	m_pSkinnedMesh->Setup("Zealot", "Zealot.x");
 }
 
 void cMainGame::Update()
@@ -117,13 +118,15 @@ void cMainGame::Update()
 		m_pWoman->update();
 	if (m_pCubeMan)
 		m_pCubeMan->Update(NULL);
+	if (m_pSkinnedMesh)
+		m_pSkinnedMesh->Update();
 }
 
 void cMainGame::Render()
 {
 	g_pD3DDevice->Clear(NULL, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(128, 128, 128), 1.0f, 0);
 	g_pD3DDevice->BeginScene();
-	//if (m_pGrid) m_pGrid->Render();
+	if (m_pGrid) m_pGrid->Render();
 	//if (m_pMap)
 		//m_pMap->Render();
 	//if (m_pWoman) 
@@ -153,6 +156,19 @@ void cMainGame::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	if (PtInRect(&rc, g_ptMouse)) return;
 
 	if (m_pCamera) m_pCamera->WndProc(hWnd, message, wParam, lParam);
+
+	switch (message)
+	{
+	case WM_RBUTTONDOWN:
+		if (m_pSkinnedMesh)
+		{
+			nAnimIndex++;
+			if (m_pSkinnedMesh->GetAnimationIndex() < nAnimIndex)
+				nAnimIndex = 0;
+			m_pSkinnedMesh->SetAnimationIndex(nAnimIndex);
+		}
+		break;
+	}
 }
 
 void cMainGame::Set_Light()

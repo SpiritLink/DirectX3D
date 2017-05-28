@@ -50,6 +50,8 @@ private:
 
 	cSkinnedMesh *	m_pSkinnedMesh;
 
+	int nAnimIndex;
+
 public:
 	void Setup();
 	void Update();

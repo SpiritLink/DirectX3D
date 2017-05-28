@@ -173,3 +173,15 @@ void cSkinnedMesh::UpdateSkinnedMesh(LPD3DXFRAME pFrame)
 		UpdateSkinnedMesh(pFrame->pFrameSibling);
 	}
 }
+void cSkinnedMesh::SetAnimationIndex(int nIndex)
+{
+	/// const INT 로 구분할까 ?
+	int nAniNum = m_pAnimController->GetNumAnimationSets();
+	LPD3DXANIMATIONSET Data;
+	m_pAnimController->GetAnimationSet(nIndex, &Data);
+	m_pAnimController->SetTrackAnimationSet(0,Data);
+}
+int cSkinnedMesh::GetAnimationIndex()
+{
+	return m_pAnimController->GetNumAnimationSets();
+}
