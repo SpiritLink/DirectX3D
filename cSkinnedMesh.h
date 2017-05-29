@@ -8,6 +8,12 @@ public:
 protected:
 	LPD3DXFRAME m_pRoot;
 	LPD3DXANIMATIONCONTROLLER	m_pAnimController;
+
+	// >> :
+	float m_fBlendTime;
+	float m_fPassedBlendTime;
+	bool m_isAnimBlend;
+	// << :
 public:
 	void Setup(char* szFolder, char* szFile);
 	void Update();
@@ -17,7 +23,8 @@ public:
 	void UpdateSkinnedMesh(LPD3DXFRAME pFrame);
 
 	void SetAnimationIndex(int nIndex);
-	int GetAnimationIndex();
+
+	void SetAnimationIndexBlend(int nIndex);
 	/*
 	이 함수를 구현해 와야 한다.
 	m_pAnimController->GetNumAnimationSets(); 현재 설정된 애니메이션의 개수를 알 수 있음

@@ -163,9 +163,8 @@ void cMainGame::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		if (m_pSkinnedMesh)
 		{
 			nAnimIndex++;
-			if (m_pSkinnedMesh->GetAnimationIndex() < nAnimIndex)
-				nAnimIndex = 0;
-			m_pSkinnedMesh->SetAnimationIndex(nAnimIndex);
+			//m_pSkinnedMesh->SetAnimationIndex(nAnimIndex);
+			m_pSkinnedMesh->SetAnimationIndexBlend(nAnimIndex);
 		}
 		break;
 	}

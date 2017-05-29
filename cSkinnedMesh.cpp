@@ -5,6 +5,9 @@
 cSkinnedMesh::cSkinnedMesh()
 	: m_pRoot(NULL)
 	, m_pAnimController(NULL)
+	, m_fBlendTime(0.3f)		/// 두개의 애니메이션을 0.3초에 걸쳐서 플레이 시킨다.
+	, m_fPassedBlendTime(0.0f)
+	, m_isAnimBlend(false)		/// 블렌딩이 되고 있는지 아닌지의 여부
 {
 }
 
@@ -38,6 +41,25 @@ void cSkinnedMesh::Setup(char* szFolder, char* szFile)
 
 void cSkinnedMesh::Update()
 {
+	// >> :
+	if (m_isAnimBlend)
+	{
+		m_fPassedBlendTime += g_pTimeManager->GetElapsedTime();
+		if (m_fPassedBlendTime >= m_fBlendTime)
+		{
+			m_isAnimBlend = false;	///0.3초가 지나면 더이상 적용하지 않겠다.
+			m_pAnimController->SetTrackWeight(0, 1.0f);
+			m_pAnimController->SetTrackWeight(1, false);	/// 1번트랙은 더이상 사용하지 않겠다.
+		}
+		else
+		{
+			float fWeight = m_fPassedBlendTime / m_fBlendTime;
+			m_pAnimController->SetTrackWeight(0, fWeight);			/// 가중치가 변경되면서 들어가게 된다.
+			m_pAnimController->SetTrackWeight(1, 1.0f - fWeight);
+		}
+	}
+	// << : 가중치와 관련된 부분
+
 	m_pAnimController->AdvanceTime(g_pTimeManager->GetElapsedTime(), NULL);
 	Update(m_pRoot, NULL);
 	UpdateSkinnedMesh(m_pRoot);
@@ -175,13 +197,47 @@ void cSkinnedMesh::UpdateSkinnedMesh(LPD3DXFRAME pFrame)
 }
 void cSkinnedMesh::SetAnimationIndex(int nIndex)
 {
-	/// const INT 로 구분할까 ?
+	int nCnt = nIndex;
 	int nAniNum = m_pAnimController->GetNumAnimationSets();
-	LPD3DXANIMATIONSET Data;
-	m_pAnimController->GetAnimationSet(nIndex, &Data);
-	m_pAnimController->SetTrackAnimationSet(0,Data);
+	if (nIndex >= nAniNum) nCnt = nCnt % nAniNum;
+
+	LPD3DXANIMATIONSET pAnimSet;
+	m_pAnimController->GetAnimationSet(nCnt, &pAnimSet);
+	m_pAnimController->SetTrackAnimationSet(0,pAnimSet);
+
+	// 보충
+	m_pAnimController->GetPriorityBlend();
+
+	SAFE_RELEASE(pAnimSet);
 }
-int cSkinnedMesh::GetAnimationIndex()
+
+void cSkinnedMesh::SetAnimationIndexBlend(int nIndex)
 {
-	return m_pAnimController->GetNumAnimationSets();
+	m_isAnimBlend = true;
+	m_fPassedBlendTime = 0.0f;
+
+	int nAniNum = m_pAnimController->GetNumAnimationSets();
+	if (nIndex >= nAniNum) nIndex = nIndex % nAniNum;
+
+	LPD3DXANIMATIONSET pPrevAnimSet = NULL;
+	LPD3DXANIMATIONSET pNextAnimSet = NULL;
+
+	D3DXTRACK_DESC stTrackDesc;
+	m_pAnimController->GetTrackDesc(0, &stTrackDesc);			/// 0번트랙을 먼저 저장해놓음 [현재 플레이중임]
+	
+	m_pAnimController->GetTrackAnimationSet(0, &pPrevAnimSet);
+	m_pAnimController->SetTrackAnimationSet(1, pPrevAnimSet);
+	m_pAnimController->SetTrackDesc(1, &stTrackDesc);
+
+	m_pAnimController->GetAnimationSet(nIndex, &pNextAnimSet);	/// 다음 애니메이션의 정보를 얻어온다.
+	m_pAnimController->SetTrackAnimationSet(0, pNextAnimSet);
+	m_pAnimController->SetTrackPosition(0, 0.0f);				/// 애니메이션의 첫번째부터 재생한다.
+
+	m_pAnimController->SetTrackWeight(0, 0.0f);					/// 가중치 (0번트랙에 있는건 가중치가 없음 에서 천천히 늘어난다)
+	m_pAnimController->SetTrackWeight(1, 1.0f);					/// 1.0에서 시작한다.
+
+	SAFE_RELEASE(pPrevAnimSet);
+	SAFE_RELEASE(pNextAnimSet);
+
+
 }
