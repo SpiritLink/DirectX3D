@@ -120,6 +120,8 @@ void cMainGame::Update()
 		m_pCubeMan->Update(NULL);
 	if (m_pSkinnedMesh)
 		m_pSkinnedMesh->Update();
+
+	Keyboard();
 }
 
 void cMainGame::Render()
@@ -141,6 +143,10 @@ void cMainGame::Render()
 	g_pTextManager->TextRender("FPS:", &g_nFrameCount, 0, 0, 0, 255, 0, INT_POINTER);
 	g_pTextManager->TextRender("MouseX:", &g_ptMouse.x, 0, 30, INT_POINTER);
 	g_pTextManager->TextRender("MouseY:", &g_ptMouse.y, 0, 60, INT_POINTER);
+	for (int i = 0; i < m_vecChar.size(); ++i)
+	{
+		g_pTextManager->TextRender(std::to_string(m_vecChar[i]), NULL, i * 20, 100,255,0,0, NULL_POINTER);
+	}
 	g_pD3DDevice->EndScene();
 	g_pD3DDevice->Present(NULL, NULL, NULL, NULL);
 
@@ -264,4 +270,60 @@ void cMainGame::OnClick(cUIButton * pSender)
 	{
 		pTextView->SetText("기타");
 	}
+}
+
+void cMainGame::Keyboard()
+{
+	// IP의 주소가 전부 들어왔으면 더이상 push_back하지 않는다.
+	// IP주소는 일반적으로 12자리 이다.
+	if (GetAsyncKeyState(VK_BACK) & 0x0001)				///BackSpace 누르면 Pop_back
+	{
+		if(!m_vecChar.empty()) m_vecChar.pop_back();
+	}
+	if (m_vecChar.size() >= 12)
+	{
+		while (m_vecChar.size() > 12)
+			m_vecChar.pop_back();
+	}
+	if (GetAsyncKeyState('0') & 0x0001 || GetAsyncKeyState(VK_NUMPAD0) & 0x0001)
+	{
+		m_vecChar.push_back(0);
+	}
+	if (GetAsyncKeyState('1') & 0x0001 || GetAsyncKeyState(VK_NUMPAD1) & 0x0001)
+	{
+		m_vecChar.push_back(1);
+	}
+	if (GetAsyncKeyState('2') & 0x0001 || GetAsyncKeyState(VK_NUMPAD2) & 0x0001)
+	{
+		m_vecChar.push_back(2);
+	}	
+	if (GetAsyncKeyState('3') & 0x0001 || GetAsyncKeyState(VK_NUMPAD3) & 0x0001)
+	{
+		m_vecChar.push_back(3);
+	}	
+	if (GetAsyncKeyState('4') & 0x0001 || GetAsyncKeyState(VK_NUMPAD4) & 0x0001)
+	{
+		m_vecChar.push_back(4);
+	}	
+	if (GetAsyncKeyState('5') & 0x0001 || GetAsyncKeyState(VK_NUMPAD5) & 0x0001)
+	{
+		m_vecChar.push_back(5);
+	}	
+	if (GetAsyncKeyState('6') & 0x0001 || GetAsyncKeyState(VK_NUMPAD6) & 0x0001)
+	{
+		m_vecChar.push_back(6);
+	}
+	if (GetAsyncKeyState('7') & 0x0001 || GetAsyncKeyState(VK_NUMPAD7) & 0x0001)
+	{
+		m_vecChar.push_back(7);
+	}
+	if (GetAsyncKeyState('8') & 0x0001 || GetAsyncKeyState(VK_NUMPAD8) & 0x0001)
+	{
+		m_vecChar.push_back(8);
+	}
+	if (GetAsyncKeyState('9') & 0x0001 || GetAsyncKeyState(VK_NUMPAD9) & 0x0001)
+	{
+		m_vecChar.push_back(9);
+	}
+	// 주소를 저장한다.
 }

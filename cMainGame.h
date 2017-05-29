@@ -52,6 +52,8 @@ private:
 
 	int nAnimIndex;
 
+	std::vector<int> m_vecChar;
+
 public:
 	void Setup();
 	void Update();
@@ -68,5 +70,5 @@ public:
 
 	virtual void OnClick(cUIButton* pSender) override;
 
-
+	void Keyboard();
 };

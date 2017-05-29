@@ -1,9 +1,10 @@
 #pragma once
 
-#define g_pTextManager cTextManager::GetInstance() //
+#define g_pTextManager cTextManager::GetInstance()
 
 enum POINTER_TYPE
 {
+	NULL_POINTER,
 	INT_POINTER,
 	FLOAT_POINTER
 };
