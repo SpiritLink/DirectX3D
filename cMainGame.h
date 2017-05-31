@@ -13,6 +13,7 @@ class cCharacter;
 class cHeightMap;
 class cUIObject;
 class cSkinnedMesh;
+class cFrustum;
 
 #include "cUIButton.h"
 
@@ -29,9 +30,12 @@ private:
 	cCubeMan*		m_pCubeMan;
 	iMap*			m_pMap;
 	cUIObject*		m_pUIRoot;
+	cFrustum*		m_pFrustrum;
 
 	LPD3DXMESH		m_pObjMesh;
 	LPD3DXMESH		m_pZealot;
+	LPD3DXMESH		m_pSphere;
+	std::vector<ST_SPHERE>		m_vecStSphere;
 
 	D3DMATERIAL9	m_stMtlNone;
 	D3DMATERIAL9	m_stMtlPicked;
@@ -67,7 +71,7 @@ public:
 	void Mesh_Render();
 	void Setup_HeightMap();
 	void Setup_Button();
-
+	void DrawSphere();
 	virtual void OnClick(cUIButton* pSender) override;
 
 	void Keyboard();

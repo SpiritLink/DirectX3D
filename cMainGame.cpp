@@ -27,6 +27,8 @@
 
 #include "cSkinnedMesh.h"
 
+#include "cFrustum.h"
+
 enum
 {
 	E_BUTTON_OK = 11,
@@ -53,7 +55,17 @@ cMainGame::cMainGame()
 	, m_pZealot(NULL)
 	, m_pSkinnedMesh(NULL)
 	, nAnimIndex(0)
+	, m_pFrustrum(NULL)
+	, m_pSphere(NULL)
 {
+	D3DXCreateSphere(g_pD3DDevice, 0.5f, 10, 10, &m_pSphere, NULL);
+	for (int i = 0; i < 1000; ++i)
+	{
+		ST_SPHERE stTemp;
+		stTemp.fRadius = 0.5f;
+		stTemp.vCenter = D3DXVECTOR3(0, 5, 0);
+		m_vecStSphere.push_back(stTemp);
+	}
 }
 
 
@@ -67,6 +79,7 @@ cMainGame::~cMainGame()
 	SAFE_DELETE(m_pCubeMan);
 	SAFE_DELETE(m_pUIRoot);
 	SAFE_DELETE(m_pSkinnedMesh);
+	SAFE_DELETE(m_pFrustrum);
 
 	SAFE_RELEASE(m_pSprite);
 	if(m_pUIRoot)
@@ -75,6 +88,8 @@ cMainGame::~cMainGame()
 		SAFE_RELEASE(m_vecObjMtlTex[i]);
 	SAFE_RELEASE(m_pZealot);
 	SAFE_RELEASE(m_pObjMesh);
+	SAFE_RELEASE(m_pSphere);
+
 	g_pTextManager->Destroy();
 	g_pTextureManager->Destroy();
 	g_pDeviceManager->Destroy();
@@ -84,6 +99,12 @@ void cMainGame::Setup()
 {
 	D3DXCreateSprite(g_pD3DDevice, &m_pSprite);
 	g_pTextManager->GetFont("NanumBarunGothic");
+	m_pCamera = new cCamera;
+	m_pCamera->Setup(NULL);
+
+	m_pFrustrum = new cFrustum;
+	m_pFrustrum->Setup();
+
 	m_pGrid = new cGrid;
 	m_pGrid->Setup();
 
@@ -97,8 +118,6 @@ void cMainGame::Setup()
 	//	//Setup_HeightMap();
 	//}
 
-	m_pCamera = new cCamera;
-	m_pCamera->Setup(NULL);
 
 	Set_Light();
 	Setup_MeshObject();
@@ -120,6 +139,8 @@ void cMainGame::Update()
 		m_pCubeMan->Update(NULL);
 	if (m_pSkinnedMesh)
 		m_pSkinnedMesh->Update();
+	if (m_pFrustrum)
+		m_pFrustrum->Update();
 
 	Keyboard();
 }
@@ -140,6 +161,8 @@ void cMainGame::Render()
 	//PickingObj_Render();
 	m_pUIRoot->Render(m_pSprite);
 	if (m_pSkinnedMesh)	m_pSkinnedMesh->Render(NULL);
+	DrawSphere();
+
 	g_pTextManager->TextRender("FPS:", &g_nFrameCount, 0, 0, 0, 255, 0, INT_POINTER);
 	g_pTextManager->TextRender("MouseX:", &g_ptMouse.x, 0, 30, INT_POINTER);
 	g_pTextManager->TextRender("MouseY:", &g_ptMouse.y, 0, 60, INT_POINTER);
@@ -280,6 +303,7 @@ void cMainGame::Keyboard()
 	{
 		if(!m_vecChar.empty()) m_vecChar.pop_back();
 	}
+
 	if (m_vecChar.size() >= 12)
 	{
 		while (m_vecChar.size() > 12)
@@ -326,4 +350,27 @@ void cMainGame::Keyboard()
 		m_vecChar.push_back(9);
 	}
 	// 주소를 저장한다.
+}
+
+void cMainGame::DrawSphere()
+{
+	D3DXMATRIXA16 matWorld, matS, matR;
+
+	D3DXMatrixIdentity(&matS);
+	D3DXMatrixIdentity(&matR);
+	D3DXMatrixScaling(&matS, 1.0f, 1.0f, 1.0f);
+	matWorld = matS * matR;
+	D3DXMatrixTranslation(&matWorld, 0, 5, 0);
+	g_pD3DDevice->SetTransform(D3DTS_WORLD, &matWorld);
+	g_pD3DDevice->SetMaterial(&m_stMtlNone);
+	for (int i = 0; i < m_vecStSphere.size(); ++i)
+	{
+		if (m_pFrustrum->IsIn(&m_vecStSphere[i]))
+		{
+			for (int i = 0; i < 100; ++i)
+			{
+				m_pSphere->DrawSubset(0);
+			}
+		}
+	}
 }
