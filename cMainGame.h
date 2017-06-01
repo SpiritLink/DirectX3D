@@ -71,6 +71,8 @@ public:
 	void Mesh_Render();
 	void Setup_HeightMap();
 	void Setup_Button();
+
+	void Setup_Frustum();
 	void DrawSphere();
 	virtual void OnClick(cUIButton* pSender) override;
 

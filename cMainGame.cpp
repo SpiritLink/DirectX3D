@@ -58,14 +58,6 @@ cMainGame::cMainGame()
 	, m_pFrustrum(NULL)
 	, m_pSphere(NULL)
 {
-	D3DXCreateSphere(g_pD3DDevice, 0.5f, 10, 10, &m_pSphere, NULL);
-	for (int i = 0; i < 1000; ++i)
-	{
-		ST_SPHERE stTemp;
-		stTemp.fRadius = 0.5f;
-		stTemp.vCenter = D3DXVECTOR3(0, 5, 0);
-		m_vecStSphere.push_back(stTemp);
-	}
 }
 
 
@@ -122,9 +114,10 @@ void cMainGame::Setup()
 	Set_Light();
 	Setup_MeshObject();
 	Setup_Button();
+	Setup_Frustum();
 
-	m_pSkinnedMesh = new cSkinnedMesh;
-	m_pSkinnedMesh->Setup("Zealot", "Zealot.x");
+	//m_pSkinnedMesh = new cSkinnedMesh;
+	//m_pSkinnedMesh->Setup("Zealot", "Zealot.x");
 }
 
 void cMainGame::Update()
@@ -352,6 +345,18 @@ void cMainGame::Keyboard()
 	// 주소를 저장한다.
 }
 
+void cMainGame::Setup_Frustum()
+{
+	D3DXCreateSphere(g_pD3DDevice, 0.5f, 10, 10, &m_pSphere, NULL);
+	for (int i = 0; i < 1000; ++i)
+	{
+		ST_SPHERE stTemp;
+		stTemp.fRadius = 0.5f;
+		stTemp.vCenter = D3DXVECTOR3(0, 5, 0);
+		m_vecStSphere.push_back(stTemp);
+	}
+}
+
 void cMainGame::DrawSphere()
 {
 	D3DXMATRIXA16 matWorld, matS, matR;
@@ -367,7 +372,7 @@ void cMainGame::DrawSphere()
 	{
 		if (m_pFrustrum->IsIn(&m_vecStSphere[i]))
 		{
-			for (int i = 0; i < 100; ++i)
+			for (int i = 0; i < 200; ++i)
 			{
 				m_pSphere->DrawSubset(0);
 			}
