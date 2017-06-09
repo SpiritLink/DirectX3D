@@ -17,6 +17,8 @@ class cFrustum;
 
 #include "cUIButton.h"
 
+
+
 class cMainGame : public iButtonDelegate
 {
 public:
@@ -58,6 +60,7 @@ private:
 
 	std::vector<int> m_vecChar;
 
+
 public:
 	void Setup();
 	void Update();
@@ -77,4 +80,9 @@ public:
 	virtual void OnClick(cUIButton* pSender) override;
 
 	void Keyboard();
+
+	std::vector<ST_PC_VERTEX>	m_vecParticleVertex;
+	void Setup_Particle();
+	void Update_Particle();
+	void Render_Particle();
 };

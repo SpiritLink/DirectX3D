@@ -36,7 +36,10 @@ enum
 	E_BUTTON_EXIT,
 	E_TEXT_VIEW,
 };
-
+DWORD FtoDw(float f)
+{
+	return *((DWORD*)&f);
+}
 #define SPHERERADIUS 0.5f
 #define RAWSIZE 257
 #define TILESIZE 256
@@ -118,6 +121,8 @@ void cMainGame::Setup()
 
 	//m_pSkinnedMesh = new cSkinnedMesh;
 	//m_pSkinnedMesh->Setup("Zealot", "Zealot.x");
+
+	Setup_Particle();
 }
 
 void cMainGame::Update()
@@ -136,6 +141,7 @@ void cMainGame::Update()
 		m_pFrustrum->Update();
 
 	Keyboard();
+	Update_Particle();
 }
 
 void cMainGame::Render()
@@ -154,7 +160,7 @@ void cMainGame::Render()
 	//PickingObj_Render();
 	m_pUIRoot->Render(m_pSprite);
 	if (m_pSkinnedMesh)	m_pSkinnedMesh->Render(NULL);
-	DrawSphere();
+	//DrawSphere();
 
 	g_pTextManager->TextRender("FPS:", &g_nFrameCount, 0, 0, 0, 255, 0, INT_POINTER);
 	g_pTextManager->TextRender("MouseX:", &g_ptMouse.x, 0, 30, INT_POINTER);
@@ -163,6 +169,8 @@ void cMainGame::Render()
 	{
 		g_pTextManager->TextRender(std::to_string(m_vecChar[i]), NULL, i * 20, 100,255,0,0, NULL_POINTER);
 	}
+
+	Render_Particle();
 	g_pD3DDevice->EndScene();
 	g_pD3DDevice->Present(NULL, NULL, NULL, NULL);
 
@@ -343,6 +351,104 @@ void cMainGame::Keyboard()
 		m_vecChar.push_back(9);
 	}
 	// 주소를 저장한다.
+}
+
+void cMainGame::Setup_Particle()
+{
+	m_vecParticleVertex.resize(1000);	// << : 이정도 이상 잡아야 어느정도 보임
+	for (int i = 0; i < m_vecParticleVertex.size(); ++i)
+	{
+		float fRadius = rand() % 100 / 10.0f;
+		m_vecParticleVertex[i].p = D3DXVECTOR3(0, 0, fRadius);
+
+		D3DXVECTOR3 vAngle = D3DXVECTOR3(
+			D3DXToRadian(rand() % 3600 / 10.0f),
+			D3DXToRadian(rand() % 3600 / 10.0f),
+			D3DXToRadian(rand() % 3600 / 10.0f));
+		D3DXMATRIX matRX, matRY, matRZ, matWorld;
+		D3DXMatrixRotationX(&matRX, vAngle.x);
+		D3DXMatrixRotationX(&matRY, vAngle.y);
+		D3DXMatrixRotationX(&matRZ, vAngle.z);
+		matWorld = matRX * matRY * matRZ;
+
+		D3DXVec3TransformCoord(&m_vecParticleVertex[i].p,
+			&m_vecParticleVertex[i].p,
+			&matWorld);
+
+		m_vecParticleVertex[i].c = D3DCOLOR_ARGB(255, 180, 70, 20);
+	}
+
+	g_pD3DDevice->SetRenderState(D3DRS_POINTSCALEENABLE, true);	// << : 점을 확대할지 말지 결정하는 부분
+	g_pD3DDevice->SetRenderState(D3DRS_POINTSIZE, 
+		FtoDw(5.0f));
+
+	g_pD3DDevice->SetRenderState(D3DRS_POINTSCALE_A, FtoDw(0.0f));
+	g_pD3DDevice->SetRenderState(D3DRS_POINTSCALE_B, FtoDw(0.0f));
+	g_pD3DDevice->SetRenderState(D3DRS_POINTSCALE_C, FtoDw(1.0f));	// << : 나중에 10.0f로 변경해보자.
+
+	g_pD3DDevice->SetRenderState(D3DRS_POINTSPRITEENABLE, true);	// << : 텍스처를 사용할수 있게 하느냐 마느냐
+	g_pD3DDevice->SetRenderState(D3DRS_POINTSIZE_MIN, FtoDw(0.0f));
+	g_pD3DDevice->SetRenderState(D3DRS_POINTSIZE_MAX, FtoDw(100.0f));
+
+	// : 텍스처 알파 옵션 설정
+	g_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+	g_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+	g_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
+
+	// : 텍스처 알파 블렌딩 방식 결정
+	g_pD3DDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+	g_pD3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+	g_pD3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
+}
+
+void cMainGame::Update_Particle()
+{
+	// << : 파티클에 약간의 값 변화를 준다.
+	static int nAlpha = 0;
+	static int nDelta = 4;
+	
+	nAlpha += nDelta;
+	if (nAlpha > 255)
+	{
+		nAlpha = 255;
+		nDelta *= -1;
+	}
+
+	if (nAlpha < 0)
+	{
+		nAlpha = 0;
+		nDelta *= -1;
+	}
+
+	for (int i = 0; i < m_vecParticleVertex.size(); ++i)
+	{
+		if (i % 2)
+			continue;
+		m_vecParticleVertex[i].c = D3DCOLOR_ARGB(nAlpha, 180, 70, 20);	// < : 알파값만 변경
+	}
+}
+
+void cMainGame::Render_Particle()
+{
+	D3DXMATRIXA16 matWorld;
+	D3DXMatrixIdentity(&matWorld);
+
+	g_pD3DDevice->SetTransform(D3DTS_WORLD, &matWorld);
+	g_pD3DDevice->SetRenderState(D3DRS_LIGHTING, false);
+	g_pD3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
+	g_pD3DDevice->SetRenderState(D3DRS_ZWRITEENABLE, false);
+	
+	g_pD3DDevice->SetFVF(ST_PC_VERTEX::FVF);
+	g_pD3DDevice->SetTexture(0, g_pTextureManager->GetTexture("box.jpg"));
+
+	g_pD3DDevice->DrawPrimitiveUP(D3DPT_POINTLIST,
+		m_vecParticleVertex.size(),
+		&m_vecParticleVertex[0],
+		sizeof(ST_PC_VERTEX));
+
+	g_pD3DDevice->SetRenderState(D3DRS_ZWRITEENABLE, true);
+	g_pD3DDevice->SetRenderState(D3DRS_LIGHTING, true);
+	g_pD3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, false);
 }
 
 void cMainGame::Setup_Frustum()
